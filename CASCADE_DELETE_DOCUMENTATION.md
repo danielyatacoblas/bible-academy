@@ -91,3 +91,4 @@ ESTUDIANTE → (Preparado para futuras relaciones)
 
 Ahora cuando elimines cualquier entidad desde la interfaz, automáticamente se eliminarán todas sus dependencias, garantizando la integridad de los datos y evitando registros huérfanos.
 
+

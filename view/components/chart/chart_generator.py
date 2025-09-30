@@ -83,7 +83,9 @@ class ChartGenerator:
             Figure: Figura de matplotlib
         """
         fig = Figure(figsize=(width, height), facecolor='white')
+        # Crear subplot con más espacio para el título
         ax = fig.add_subplot(111)
+        ax.set_position([0.1, 0.1, 0.8, 0.7])  # [left, bottom, width, height]
         
         # Crear gráfico de pastel
         wedges, texts, autotexts = ax.pie(
@@ -96,8 +98,8 @@ class ChartGenerator:
             wedgeprops={'edgecolor': 'white', 'linewidth': 2}
         )
         
-        # Configurar título
-        ax.set_title(title, fontsize=14, fontweight='bold', color='#1f538d', pad=20)
+        # Configurar título con posición fija
+        fig.suptitle(title, fontsize=14, fontweight='bold', color='#1f538d', y=0.95)
         
         # Mejorar el estilo de los porcentajes
         for autotext in autotexts:
@@ -107,6 +109,9 @@ class ChartGenerator:
         
         # Asegurar que el gráfico sea circular
         ax.axis('equal')
+        
+        # Ajustar el layout para dar más espacio al título
+        fig.tight_layout(pad=1)
         
         return fig
     
@@ -156,6 +161,103 @@ class ChartGenerator:
         
         # Rotar etiquetas del eje X si son muy largas
         plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
+        
+        # Ajustar layout
+        fig.tight_layout(pad=2)
+        
+        return fig
+    
+    def create_histogram(self, data, title, xlabel, ylabel, bins=10, width=6, height=4):
+        """
+        Crear histograma
+        
+        Args:
+            data: Lista de valores
+            title: Título del gráfico
+            xlabel: Etiqueta del eje X
+            ylabel: Etiqueta del eje Y
+            bins: Número de intervalos
+            width: Ancho de la figura
+            height: Alto de la figura
+            
+        Returns:
+            Figure: Figura de matplotlib
+        """
+        fig = Figure(figsize=(width, height), facecolor='white')
+        ax = fig.add_subplot(111)
+        
+        # Crear histograma
+        n, bins_edges, patches = ax.hist(data, bins=bins, color=self.colors[0], 
+                                        alpha=0.7, edgecolor='white', linewidth=1)
+        
+        # Colorear las barras con gradiente
+        for i, patch in enumerate(patches):
+            patch.set_facecolor(self.colors[i % len(self.colors)])
+            patch.set_alpha(0.8)
+        
+        # Configurar el gráfico
+        ax.set_title(title, fontsize=14, fontweight='bold', color='#1f538d', pad=20)
+        ax.set_xlabel(xlabel, fontsize=12, color='#666666')
+        ax.set_ylabel(ylabel, fontsize=12, color='#666666')
+        
+        # Estilo de la cuadrícula
+        ax.grid(True, alpha=0.3, linestyle='--')
+        ax.set_facecolor('#f8f9fa')
+        
+        # Configurar colores de ejes
+        ax.tick_params(colors='#666666')
+        for spine in ax.spines.values():
+            spine.set_color('#e9ecef')
+        
+        # Ajustar layout
+        fig.tight_layout(pad=2)
+        
+        return fig
+    
+    def create_scatter_plot(self, x_data, y_data, title, xlabel, ylabel, width=6, height=4):
+        """
+        Crear gráfico de dispersión
+        
+        Args:
+            x_data: Datos del eje X
+            y_data: Datos del eje Y
+            title: Título del gráfico
+            xlabel: Etiqueta del eje X
+            ylabel: Etiqueta del eje Y
+            width: Ancho de la figura
+            height: Alto de la figura
+            
+        Returns:
+            Figure: Figura de matplotlib
+        """
+        fig = Figure(figsize=(width, height), facecolor='white')
+        ax = fig.add_subplot(111)
+        
+        # Crear gráfico de dispersión
+        scatter = ax.scatter(x_data, y_data, c=self.colors[1], alpha=0.7, 
+                           s=60, edgecolors='white', linewidth=1)
+        
+        # Agregar línea de tendencia si hay suficientes datos
+        if len(x_data) > 1:
+            z = np.polyfit(x_data, y_data, 1)
+            p = np.poly1d(z)
+            ax.plot(x_data, p(x_data), color=self.colors[2], linestyle='--', 
+                   linewidth=2, alpha=0.8, label='Tendencia')
+            ax.legend()
+        
+        # Configurar el gráfico
+        ax.set_title(title, fontsize=14, fontweight='bold', color='#1f538d', pad=20)
+        ax.set_xlabel(xlabel, fontsize=12, color='#666666')
+        ax.set_ylabel(ylabel, fontsize=12, color='#666666')
+        
+        # Estilo de la cuadrícula
+        ax.grid(True, alpha=0.3, linestyle='--')
+        ax.set_facecolor('#f8f9fa')
+        
+        # Configurar colores de ejes
+        ax.tick_params(colors='#666666')
+        for spine in ax.spines.values():
+            spine.set_color('#e9ecef')
         
         # Ajustar layout
         fig.tight_layout(pad=2)
@@ -276,6 +378,80 @@ class ChartGenerator:
         except Exception as e:
             print(f"Error obteniendo datos de pagos: {e}")
             return [15, 8, 5, 12, 3], ["Efectivo", "Transferencia", "Tarjeta", "Yape", "Plin"]
+    
+    def get_student_age_distribution_data(self, student_repo):
+        """
+        Obtener datos de distribución de edades de estudiantes
+        
+        Args:
+            student_repo: Repositorio de estudiantes
+            
+        Returns:
+            list: Lista de edades
+        """
+        try:
+            students = student_repo.get_all_rows()
+            
+            # Simular edades basadas en datos existentes
+            ages = []
+            for student in students:
+                # Simular edad basada en hash del nombre
+                age = 18 + (hash(student.get('name', '')) % 20)  # Edades entre 18-37
+                ages.append(age)
+            
+            # Si no hay datos, usar datos simulados
+            if not ages:
+                ages = [20, 22, 19, 25, 23, 21, 24, 26, 20, 22, 23, 25, 19, 21, 24, 22, 20, 23, 25, 21]
+            
+            return ages
+        except Exception as e:
+            print(f"Error obteniendo datos de edades: {e}")
+            return [20, 22, 19, 25, 23, 21, 24, 26, 20, 22, 23, 25, 19, 21, 24, 22, 20, 23, 25, 21]
+    
+    def get_course_performance_data(self, course_repo, student_repo, inscription_repo):
+        """
+        Obtener datos de rendimiento por curso
+        
+        Args:
+            course_repo: Repositorio de cursos
+            student_repo: Repositorio de estudiantes
+            inscription_repo: Repositorio de inscripciones
+            
+        Returns:
+            tuple: (x_data, y_data) para gráfico de dispersión
+        """
+        try:
+            courses = course_repo.get_all_rows()
+            students = student_repo.get_all_rows()
+            inscriptions = inscription_repo.get_all_rows()
+            
+            x_data = []  # Número de estudiantes inscritos
+            y_data = []  # Rendimiento simulado
+            
+            for course in courses:
+                # Contar estudiantes inscritos en este curso
+                course_inscriptions = [ins for ins in inscriptions 
+                                    if ins.get('course_id') == course.get('id')]
+                student_count = len(course_inscriptions)
+                
+                if student_count > 0:
+                    # Simular rendimiento basado en número de estudiantes
+                    # Más estudiantes = mejor rendimiento (simulado)
+                    performance = 60 + (student_count * 2) + np.random.randint(-10, 15)
+                    performance = min(100, max(40, performance))  # Entre 40-100
+                    
+                    x_data.append(student_count)
+                    y_data.append(performance)
+            
+            # Si no hay datos, usar datos simulados
+            if not x_data:
+                x_data = [5, 8, 12, 15, 3, 10, 7, 9, 6, 11]
+                y_data = [75, 82, 88, 92, 65, 85, 78, 80, 72, 87]
+            
+            return x_data, y_data
+        except Exception as e:
+            print(f"Error obteniendo datos de rendimiento: {e}")
+            return [5, 8, 12, 15, 3, 10, 7, 9, 6, 11], [75, 82, 88, 92, 65, 85, 78, 80, 72, 87]
 
 
 def create_matplotlib_widget(fig, parent_frame):
@@ -292,3 +468,4 @@ def create_matplotlib_widget(fig, parent_frame):
     canvas = FigureCanvasTkAgg(fig, parent_frame)
     canvas.draw()
     return canvas
+

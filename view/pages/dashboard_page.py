@@ -433,20 +433,39 @@ class DashboardPage:
         )
         charts_title.pack(pady=(20, 15), anchor="w")
         
-        # Frame para los gráficos
-        charts_frame = ctk.CTkFrame(parent, fg_color="transparent")
-        charts_frame.pack(fill="both", expand=True)
+        # Frame principal para los gráficos
+        charts_main_frame = ctk.CTkFrame(parent, fg_color="transparent")
+        charts_main_frame.pack(fill="both", expand=True)
+        
+        # Primera fila de gráficos (3 gráficos)
+        first_row_frame = ctk.CTkFrame(charts_main_frame, fg_color="transparent")
+        first_row_frame.pack(fill="x", pady=(0, 10))
+        first_row_frame.grid_columnconfigure(0, weight=1)
+        first_row_frame.grid_columnconfigure(1, weight=1)
+        first_row_frame.grid_columnconfigure(2, weight=1)
         
         # Gráfico 1: Gráfico de Línea - Tendencia de Matrículas
-        self.create_line_chart_widget(charts_frame)
+        self.create_line_chart_widget(first_row_frame, 0, 0)
         
         # Gráfico 2: Gráfico de Pastel - Distribución de Estudiantes por Equipo
-        self.create_pie_chart_widget(charts_frame)
+        self.create_pie_chart_widget(first_row_frame, 0, 1)
         
         # Gráfico 3: Gráfico de Barras - Pagos por Método
-        self.create_bar_chart_widget(charts_frame)
+        self.create_bar_chart_widget(first_row_frame, 0, 2)
+        
+        # Segunda fila de gráficos (2 gráficos nuevos)
+        second_row_frame = ctk.CTkFrame(charts_main_frame, fg_color="transparent")
+        second_row_frame.pack(fill="x", pady=(10, 0))
+        second_row_frame.grid_columnconfigure(0, weight=1)
+        second_row_frame.grid_columnconfigure(1, weight=1)
+        
+        # Gráfico 4: Histograma - Distribución de Edades
+        self.create_histogram_widget(second_row_frame, 0, 0)
+        
+        # Gráfico 5: Gráfico de Dispersión - Rendimiento por Curso
+        self.create_scatter_plot_widget(second_row_frame, 0, 1)
     
-    def create_line_chart_widget(self, parent):
+    def create_line_chart_widget(self, parent, row=0, column=0):
         """Crear widget de gráfico de línea"""
         try:
             # Frame del gráfico
@@ -457,7 +476,7 @@ class DashboardPage:
                 corner_radius=15,
                 fg_color="white"
             )
-            chart_frame.pack(side="left", padx=10, pady=10, fill="both", expand=True)
+            chart_frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
             chart_frame.pack_propagate(False)
             
             # Obtener datos para el gráfico de línea
@@ -488,7 +507,7 @@ class DashboardPage:
             )
             error_label.pack(expand=True)
     
-    def create_pie_chart_widget(self, parent):
+    def create_pie_chart_widget(self, parent, row=0, column=0):
         """Crear widget de gráfico de pastel"""
         try:
             # Frame del gráfico
@@ -499,7 +518,7 @@ class DashboardPage:
                 corner_radius=15,
                 fg_color="white"
             )
-            chart_frame.pack(side="left", padx=10, pady=10, fill="both", expand=True)
+            chart_frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
             chart_frame.pack_propagate(False)
             
             # Obtener datos para el gráfico de pastel
@@ -513,7 +532,7 @@ class DashboardPage:
                 labels=labels,
                 title="Estudiantes por Equipo",
                 width=5.5,
-                height=4
+                height=4.5
             )
             
             # Crear widget de matplotlib
@@ -531,7 +550,7 @@ class DashboardPage:
             )
             error_label.pack(expand=True)
     
-    def create_bar_chart_widget(self, parent):
+    def create_bar_chart_widget(self, parent, row=0, column=0):
         """Crear widget de gráfico de barras"""
         try:
             # Frame del gráfico
@@ -542,7 +561,7 @@ class DashboardPage:
                 corner_radius=15,
                 fg_color="white"
             )
-            chart_frame.pack(side="left", padx=10, pady=10, fill="both", expand=True)
+            chart_frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
             chart_frame.pack_propagate(False)
             
             # Obtener datos para el gráfico de barras
@@ -569,6 +588,94 @@ class DashboardPage:
             error_label = ctk.CTkLabel(
                 chart_frame,
                 text="Error al cargar gráfico de barras",
+                font=ctk.CTkFont(size=12),
+                text_color="#dc3545"
+            )
+            error_label.pack(expand=True)
+    
+    def create_histogram_widget(self, parent, row=0, column=0):
+        """Crear widget de histograma"""
+        try:
+            # Frame del gráfico
+            chart_frame = ctk.CTkFrame(
+                parent,
+                width=350,
+                height=280,
+                corner_radius=15,
+                fg_color="white"
+            )
+            chart_frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+            chart_frame.pack_propagate(False)
+            
+            # Obtener datos para el histograma
+            ages = self.chart_generator.get_student_age_distribution_data(self.student_repo)
+            
+            # Crear histograma
+            fig = self.chart_generator.create_histogram(
+                data=ages,
+                title="Distribución de Edades",
+                xlabel="Edad",
+                ylabel="Cantidad de Estudiantes",
+                bins=8,
+                width=5.5,
+                height=4
+            )
+            
+            # Crear widget de matplotlib
+            canvas = create_matplotlib_widget(fig, chart_frame)
+            canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
+            
+        except Exception as e:
+            print(f"Error creando histograma: {e}")
+            # Crear mensaje de error
+            error_label = ctk.CTkLabel(
+                chart_frame,
+                text="Error al cargar histograma",
+                font=ctk.CTkFont(size=12),
+                text_color="#dc3545"
+            )
+            error_label.pack(expand=True)
+    
+    def create_scatter_plot_widget(self, parent, row=0, column=0):
+        """Crear widget de gráfico de dispersión"""
+        try:
+            # Frame del gráfico
+            chart_frame = ctk.CTkFrame(
+                parent,
+                width=350,
+                height=280,
+                corner_radius=15,
+                fg_color="white"
+            )
+            chart_frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+            chart_frame.pack_propagate(False)
+            
+            # Obtener datos para el gráfico de dispersión
+            x_data, y_data = self.chart_generator.get_course_performance_data(
+                self.course_repo, self.student_repo, self.inscription_repo
+            )
+            
+            # Crear gráfico de dispersión
+            fig = self.chart_generator.create_scatter_plot(
+                x_data=x_data,
+                y_data=y_data,
+                title="Rendimiento por Curso",
+                xlabel="Estudiantes Inscritos",
+                ylabel="Rendimiento (%)",
+                width=5.5,
+                height=4
+            )
+            
+            # Crear widget de matplotlib
+            canvas = create_matplotlib_widget(fig, chart_frame)
+            canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
+            
+        except Exception as e:
+            print(f"Error creando gráfico de dispersión: {e}")
+            # Crear mensaje de error
+            error_label = ctk.CTkLabel(
+                chart_frame,
+                text="Error al cargar gráfico de dispersión",
                 font=ctk.CTkFont(size=12),
                 text_color="#dc3545"
             )
