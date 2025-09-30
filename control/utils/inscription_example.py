@@ -157,3 +157,4 @@ if __name__ == "__main__":
     print("\n4. Obtener resumen de inscripción:")
     example_get_inscription_summary()
 
+

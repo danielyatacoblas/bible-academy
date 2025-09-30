@@ -248,3 +248,4 @@ result = flow_manager.get_inscription_summary(inscription_id=1)
 4. **Notifications**: Notificaciones automáticas
 5. **Backup**: Estrategia de respaldo de datos
 
+
