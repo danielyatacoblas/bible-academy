@@ -79,7 +79,7 @@ def test_update_payment(setup_test_db, test_db):
         'amount': 450,
         'method_payment': 'Plin'
     }
-    repo.update_row(payment_id, update_data)
+    repo.update_row(update_data, {'id': payment_id})
     
     result = repo.get_row(payment_id)
     assert result is not None
@@ -103,7 +103,7 @@ def test_delete_payment(setup_test_db, test_db):
     cursor.execute('SELECT id FROM payment WHERE id_inscription = ?', (4,))
     payment_id = cursor.fetchone()[0]
     
-    repo.delete_row(payment_id)
+    repo.delete_row({'id': payment_id})
     
     result = repo.get_row(payment_id)
     assert result is None

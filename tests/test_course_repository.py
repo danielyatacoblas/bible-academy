@@ -65,7 +65,7 @@ def test_update_course(setup_test_db, test_db):
     update_data = {
         'name': 'Python 102'
     }
-    repo.update_row(course_id, update_data)
+    repo.update_row(update_data, {'id': course_id})
     
     result = repo.get_row(course_id)
     assert result is not None
@@ -85,7 +85,7 @@ def test_delete_course(setup_test_db, test_db):
     cursor.execute('SELECT id FROM course WHERE name = ?', ('Python 101',))
     course_id = cursor.fetchone()[0]
     
-    repo.delete_row(course_id)
+    repo.delete_row({'id': course_id})
     
     result = repo.get_row(course_id)
     assert result is None
