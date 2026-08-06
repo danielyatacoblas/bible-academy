@@ -88,7 +88,7 @@ def test_update_student(setup_test_db, test_db):
     update_data = {
         'phone': '999888777'
     }
-    repo.update_row(student_id, update_data)
+    repo.update_row(update_data, {'id': student_id})
     
     result = repo.get_row(student_id)
     assert result is not None
@@ -113,7 +113,7 @@ def test_delete_student(setup_test_db, test_db):
     cursor.execute('SELECT id FROM student WHERE name = ?', ('John',))
     student_id = cursor.fetchone()[0]
     
-    repo.delete_row(student_id)
+    repo.delete_row({'id': student_id})
     
     result = repo.get_row(student_id)
     assert result is None
