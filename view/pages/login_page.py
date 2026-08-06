@@ -189,16 +189,14 @@ class LoginPage:
         dialog = ForgotPasswordDialog(self.parent)
         self.parent.wait_window(dialog.dialog)
         
-        # Si el diálogo retorna True, navegar al dashboard
-        if dialog.result:
+        # Si el diálogo autenticó correctamente contra la base de datos,
+        # navegar al dashboard con los datos reales del usuario
+        if dialog.result and dialog.user_data:
             # Cerrar la ventana de login
             self.parent.destroy()
-            
-            # Crear información del usuario admin para el dashboard
-            admin_user_data = {"user": "admin", "role": "Administrador"}
-            
+
             # Crear nueva ventana para el dashboard
-            self.create_dashboard_window(admin_user_data)
+            self.create_dashboard_window(dialog.user_data)
     
     def create_dashboard_window(self, user_data=None):
         """Crear nueva ventana para el dashboard"""
