@@ -79,7 +79,7 @@ def test_update_team(setup_test_db, test_db):
         'age_end': 18,
         'gender': 'Female'
     }
-    repo.update_row(team_id, update_data)
+    repo.update_row(update_data, {'id': team_id})
     
     result = repo.get_row(team_id)
     assert result is not None
@@ -103,7 +103,7 @@ def test_delete_team(setup_test_db, test_db):
     cursor.execute('SELECT id FROM team WHERE name = ?', ('Team Alpha',))
     team_id = cursor.fetchone()[0]
     
-    repo.delete_row(team_id)
+    repo.delete_row({'id': team_id})
     
     result = repo.get_row(team_id)
     assert result is None

@@ -75,7 +75,7 @@ def test_update_cicle(setup_test_db, test_db):
     update_data = {
         'manager': 'New Manager'
     }
-    repo.update_row(cicle_id, update_data)
+    repo.update_row(update_data, {'id': cicle_id})
     
     result = repo.get_row(cicle_id)
     assert result is not None
@@ -97,7 +97,7 @@ def test_delete_cicle(setup_test_db, test_db):
     cursor.execute('SELECT id FROM cicle WHERE cicle = ?', ('A1',))
     cicle_id = cursor.fetchone()[0]
     
-    repo.delete_row(cicle_id)
+    repo.delete_row({'id': cicle_id})
     
     result = repo.get_row(cicle_id)
     assert result is None
