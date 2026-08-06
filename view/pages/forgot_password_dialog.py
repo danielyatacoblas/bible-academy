@@ -2,10 +2,13 @@ import customtkinter as ctk
 import tkinter as tk
 from tkinter import messagebox
 
+from control.session.user_repository import UserRepository
+
 class ForgotPasswordDialog:
     def __init__(self, parent):
         self.parent = parent
         self.result = False
+        self.user_data = None
         self.setup_dialog()
         
     def setup_dialog(self):
@@ -96,36 +99,38 @@ class ForgotPasswordDialog:
         self.dialog.geometry(f"450x350+{x}+{y}")
         
     def verify_admin_credentials(self):
-        """Verificar credenciales de administrador"""
-        username = self.admin_user_entry.get()
+        """Verificar credenciales de administrador contra la base de datos"""
+        username = self.admin_user_entry.get().strip()
         password = self.admin_password_entry.get()
-        
-        # Validación hardcodeada: admin/admin (sin base de datos)
-        if username == "admin" and password == "admin":
-            # Cerrar el diálogo de administrador
+
+        if not username or not password:
+            messagebox.showerror("Error", "Por favor complete todos los campos.")
+            return
+
+        try:
+            user_repo = UserRepository()
+
+            # Autenticacion real contra la base de datos (Argon2)
+            if not user_repo.login(username, password):
+                messagebox.showerror(
+                    "Error",
+                    "Credenciales incorrectas.\n"
+                    "Si olvidó su contraseña, contacte al administrador del sistema."
+                )
+                return
+
+            user_data = user_repo.get_user_by_username(username)
+            if not user_data or user_data.get("role") != "Administrador":
+                messagebox.showerror(
+                    "Acceso denegado",
+                    "Solo un usuario administrador puede recuperar el acceso.\n"
+                    "Contacte al administrador del sistema."
+                )
+                return
+
+            # Credenciales validas: informar al llamador (LoginPage)
+            self.user_data = user_data
+            self.result = True
             self.dialog.destroy()
-            
-            # Cerrar también la ventana de login principal
-            self.parent.destroy()
-            
-            # Crear nueva ventana para el dashboard
-            import customtkinter as ctk
-            dashboard_window = ctk.CTk()
-            dashboard_window.title("Academia Bíblica - Dashboard")
-            dashboard_window.geometry("1200x800")
-            dashboard_window.resizable(True, True)
-            
-            # Centrar la ventana
-            dashboard_window.update_idletasks()
-            x = (dashboard_window.winfo_screenwidth() // 2) - (1200 // 2)
-            y = (dashboard_window.winfo_screenheight() // 2) - (800 // 2)
-            dashboard_window.geometry(f"1200x800+{x}+{y}")
-            
-            # Crear el dashboard
-            from .dashboard_page import DashboardPage
-            dashboard = DashboardPage(dashboard_window)
-            
-            # Ejecutar la ventana del dashboard
-            dashboard_window.mainloop()
-        else:
-            messagebox.showerror("Error", "Credenciales incorrectas.\nUse: admin / admin")
+        except Exception as e:
+            messagebox.showerror("Error", f"Error de conexión: {str(e)}")
