@@ -1,0 +1,456 @@
+{
+  "schema_version": 1,
+  "project": "Bible Academy",
+  "views": {
+    "gitflow": {
+      "name": "Gitflow",
+      "subtitle": "Modelo de ramas: el trabajo nace de develop, se verifica y solo entonces llega a main.",
+      "footer": "Convención: ramas cortas por propósito, merges --no-ff para conservar la traza, commits convencionales en inglés.",
+      "legend": [
+        {
+          "status": "FEATURE",
+          "label": "trabajo"
+        },
+        {
+          "status": "DEVELOP",
+          "label": "integracion"
+        },
+        {
+          "status": "MAIN",
+          "label": "publicado"
+        }
+      ],
+      "groups": [
+        {
+          "id": "trabajo",
+          "title": "Ramas de trabajo",
+          "x": 48,
+          "y": 105,
+          "width": 300,
+          "height": 835,
+          "color": "#ede9fe"
+        },
+        {
+          "id": "integracion",
+          "title": "Integración",
+          "x": 396,
+          "y": 105,
+          "width": 300,
+          "height": 835,
+          "color": "#dbeafe"
+        },
+        {
+          "id": "verificacion",
+          "title": "Verificación",
+          "x": 744,
+          "y": 105,
+          "width": 300,
+          "height": 835,
+          "color": "#fef3c7"
+        },
+        {
+          "id": "publicacion",
+          "title": "Publicación",
+          "x": 1092,
+          "y": 105,
+          "width": 300,
+          "height": 835,
+          "color": "#dcfce7"
+        },
+        {
+          "id": "distribucion",
+          "title": "Distribución",
+          "x": 1440,
+          "y": 105,
+          "width": 432,
+          "height": 835,
+          "color": "#e2e8f0"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "feature",
+          "label": "feature/*",
+          "detail": "funcionalidad nueva",
+          "x": 90,
+          "y": 150,
+          "group": "trabajo",
+          "kind": "branch",
+          "status": "FEATURE"
+        },
+        {
+          "id": "fix",
+          "label": "fix/*",
+          "detail": "corrección de defecto",
+          "x": 90,
+          "y": 345,
+          "group": "trabajo",
+          "kind": "branch",
+          "status": "FIX"
+        },
+        {
+          "id": "chore",
+          "label": "chore/*",
+          "detail": "mantenimiento y tooling",
+          "x": 90,
+          "y": 540,
+          "group": "trabajo",
+          "kind": "branch",
+          "status": "DOCS"
+        },
+        {
+          "id": "docs",
+          "label": "docs/*",
+          "detail": "documentación y capturas",
+          "x": 90,
+          "y": 735,
+          "group": "trabajo",
+          "kind": "branch",
+          "status": "DOCS"
+        },
+        {
+          "id": "develop",
+          "label": "develop",
+          "detail": "integra el trabajo antes de publicar",
+          "x": 438,
+          "y": 420,
+          "group": "integracion",
+          "kind": "merge",
+          "status": "DEVELOP"
+        },
+        {
+          "id": "tests",
+          "label": "pytest",
+          "detail": "44 pruebas de repositorio",
+          "x": 786,
+          "y": 250,
+          "group": "verificacion",
+          "kind": "check",
+          "status": "DOCS"
+        },
+        {
+          "id": "ci",
+          "label": "GitHub Actions",
+          "detail": "se ejecuta en push y pull request",
+          "x": 786,
+          "y": 445,
+          "group": "verificacion",
+          "kind": "check",
+          "status": "DOCS"
+        },
+        {
+          "id": "main",
+          "label": "main",
+          "detail": "solo recibe merges desde develop",
+          "x": 1134,
+          "y": 420,
+          "group": "publicacion",
+          "kind": "release",
+          "status": "MAIN"
+        },
+        {
+          "id": "github",
+          "label": "GitHub",
+          "detail": "historia con un único autor",
+          "x": 1482,
+          "y": 345,
+          "group": "distribucion",
+          "kind": "release",
+          "status": "MAIN"
+        },
+        {
+          "id": "release",
+          "label": "Versión publicada",
+          "detail": "clonar y ejecutar",
+          "x": 1482,
+          "y": 540,
+          "group": "distribucion",
+          "kind": "release",
+          "status": "MAIN"
+        }
+      ],
+      "edges": [
+        {
+          "from": "feature",
+          "to": "develop",
+          "label": "merge --no-ff",
+          "style": "solid"
+        },
+        {
+          "from": "fix",
+          "to": "develop",
+          "label": "merge --no-ff",
+          "style": "solid"
+        },
+        {
+          "from": "chore",
+          "to": "develop",
+          "label": "merge --no-ff",
+          "style": "solid"
+        },
+        {
+          "from": "docs",
+          "to": "develop",
+          "label": "merge --no-ff",
+          "style": "solid"
+        },
+        {
+          "from": "develop",
+          "to": "tests",
+          "label": "se verifica",
+          "style": "solid"
+        },
+        {
+          "from": "tests",
+          "to": "ci",
+          "label": "y además",
+          "style": "solid"
+        },
+        {
+          "from": "ci",
+          "to": "main",
+          "label": "merge --no-ff",
+          "style": "solid"
+        },
+        {
+          "from": "main",
+          "to": "github",
+          "label": "push",
+          "style": "solid"
+        },
+        {
+          "from": "github",
+          "to": "release",
+          "label": "publica",
+          "style": "solid"
+        },
+        {
+          "from": "tests",
+          "to": "develop",
+          "label": "si falla, se corrige",
+          "style": "dashed"
+        }
+      ]
+    },
+    "flujo": {
+      "name": "Flujo de la aplicación",
+      "subtitle": "Aplicación de escritorio en tres capas: vista, repositorios y base local.",
+      "footer": "Sin servicios externos: la base SQLite viaja con el repositorio y la app arranca al clonar.",
+      "legend": [
+        {
+          "status": "IMPLEMENTED",
+          "label": "implementado"
+        },
+        {
+          "status": "LOCAL",
+          "label": "local"
+        }
+      ],
+      "groups": [
+        {
+          "id": "persona",
+          "title": "Personas",
+          "x": 48,
+          "y": 105,
+          "width": 300,
+          "height": 835,
+          "color": "#e2e8f0"
+        },
+        {
+          "id": "vista",
+          "title": "Vista (CustomTkinter)",
+          "x": 396,
+          "y": 105,
+          "width": 300,
+          "height": 835,
+          "color": "#ede9fe"
+        },
+        {
+          "id": "control",
+          "title": "Control (repositorios)",
+          "x": 744,
+          "y": 105,
+          "width": 300,
+          "height": 835,
+          "color": "#dbeafe"
+        },
+        {
+          "id": "modelo",
+          "title": "Modelo y datos",
+          "x": 1092,
+          "y": 105,
+          "width": 300,
+          "height": 835,
+          "color": "#dcfce7"
+        },
+        {
+          "id": "salida",
+          "title": "Salidas",
+          "x": 1440,
+          "y": 105,
+          "width": 432,
+          "height": 835,
+          "color": "#fef3c7"
+        }
+      ],
+      "nodes": [
+        {
+          "id": "admin",
+          "label": "Administrador",
+          "detail": "gestiona la academia",
+          "x": 90,
+          "y": 420,
+          "group": "persona",
+          "kind": "actor",
+          "status": "EXTERNAL"
+        },
+        {
+          "id": "login",
+          "label": "Login",
+          "detail": "usuario y clave",
+          "x": 438,
+          "y": 180,
+          "group": "vista",
+          "kind": "api",
+          "status": "IMPLEMENTED"
+        },
+        {
+          "id": "dashboard",
+          "label": "Dashboard",
+          "detail": "indicadores y navegacion",
+          "x": 438,
+          "y": 420,
+          "group": "vista",
+          "kind": "api",
+          "status": "IMPLEMENTED"
+        },
+        {
+          "id": "modulos",
+          "label": "Módulos",
+          "detail": "ciclos, aulas, matrículas, personas",
+          "x": 438,
+          "y": 660,
+          "group": "vista",
+          "kind": "api",
+          "status": "IMPLEMENTED"
+        },
+        {
+          "id": "auth",
+          "label": "Autenticación",
+          "detail": "verificación de clave con Argon2",
+          "x": 786,
+          "y": 250,
+          "group": "control",
+          "kind": "security",
+          "status": "IMPLEMENTED"
+        },
+        {
+          "id": "repos",
+          "label": "Repositorios",
+          "detail": "una clase por entidad sobre una base común",
+          "x": 786,
+          "y": 480,
+          "group": "control",
+          "kind": "queue",
+          "status": "IMPLEMENTED"
+        },
+        {
+          "id": "flujo",
+          "label": "Flujo de matrícula",
+          "detail": "inscripción, pagos y borrado en cascada",
+          "x": 786,
+          "y": 710,
+          "group": "control",
+          "kind": "queue",
+          "status": "IMPLEMENTED"
+        },
+        {
+          "id": "sqlite",
+          "label": "SQLite",
+          "detail": "academy.db versionado como datos demo",
+          "x": 1134,
+          "y": 420,
+          "group": "modelo",
+          "kind": "database",
+          "status": "LOCAL"
+        },
+        {
+          "id": "graficos",
+          "label": "Gráficos",
+          "detail": "matplotlib embebido en la ventana",
+          "x": 1482,
+          "y": 300,
+          "group": "salida",
+          "kind": "monitor",
+          "status": "IMPLEMENTED"
+        },
+        {
+          "id": "tests",
+          "label": "Pruebas",
+          "detail": "44 pruebas sobre base en memoria",
+          "x": 1482,
+          "y": 560,
+          "group": "salida",
+          "kind": "check",
+          "status": "IMPLEMENTED"
+        }
+      ],
+      "edges": [
+        {
+          "from": "admin",
+          "to": "login",
+          "label": "abre la app",
+          "style": "solid"
+        },
+        {
+          "from": "login",
+          "to": "auth",
+          "label": "valida",
+          "style": "solid"
+        },
+        {
+          "from": "auth",
+          "to": "dashboard",
+          "label": "sesión iniciada",
+          "style": "solid"
+        },
+        {
+          "from": "dashboard",
+          "to": "modulos",
+          "label": "navega",
+          "style": "solid"
+        },
+        {
+          "from": "modulos",
+          "to": "repos",
+          "label": "consulta y escribe",
+          "style": "solid"
+        },
+        {
+          "from": "repos",
+          "to": "sqlite",
+          "label": "SQL",
+          "style": "solid"
+        },
+        {
+          "from": "flujo",
+          "to": "repos",
+          "label": "orquesta",
+          "style": "solid"
+        },
+        {
+          "from": "dashboard",
+          "to": "graficos",
+          "label": "dibuja",
+          "style": "solid"
+        },
+        {
+          "from": "repos",
+          "to": "tests",
+          "label": "cubierto por",
+          "style": "dashed"
+        }
+      ]
+    }
+  }
+}
