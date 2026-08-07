@@ -13,3 +13,19 @@ venv/
 # OS / editor files
 .DS_Store
 Thumbs.db
+
+# --- Credenciales y variables de entorno -------------------------------------
+# Nunca versionar valores reales. Para documentar que variables hacen falta,
+# usar un .env.example con marcadores de posicion, que si se versiona.
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.jks
+secrets.json
+credentials.json
+service-account*.json
