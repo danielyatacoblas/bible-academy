@@ -29,3 +29,15 @@ Thumbs.db
 secrets.json
 credentials.json
 service-account*.json
+
+# --- Editores, IDE y artefactos del sistema -----------------------------
+# Configuracion personal del editor: no pertenece al repositorio.
+.vscode/
+.idea/
+*.iml
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+desktop.ini
