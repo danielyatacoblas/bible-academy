@@ -81,11 +81,11 @@ ESTUDIANTE → (Preparado para futuras relaciones)
 
 ## Características de Seguridad
 
-- ✅ **Transacciones**: Cada método maneja errores y rollback
-- ✅ **Validación**: Verifica que las eliminaciones sean exitosas
-- ✅ **Logging**: Registra errores para debugging
-- ✅ **Retorno**: Devuelve `True/False` para indicar éxito/fallo
-- ✅ **Integridad**: Mantiene la integridad referencial de la base de datos
+- **Transacciones**: Cada método maneja errores y rollback
+- **Validación**: Verifica que las eliminaciones sean exitosas
+- **Logging**: Registra errores para debugging
+- **Retorno**: Devuelve `True/False` para indicar éxito/fallo
+- **Integridad**: Mantiene la integridad referencial de la base de datos
 
 ## Uso en la Aplicación
 

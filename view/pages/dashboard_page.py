@@ -134,17 +134,17 @@ class DashboardPage:
                 # Si no existe la imagen, usar texto como fallback
                 self.logo_text = ctk.CTkLabel(
                     self.logo_frame,
-                    text="🌍✝️",
-                    font=ctk.CTkFont(size=25),
-            text_color="#1f538d"
-        )
+                    text="AB",
+                    font=ctk.CTkFont(size=25, weight="bold"),
+                    text_color="#1f538d"
+                )
                 self.logo_text.pack(expand=True)
         except ImportError:
             # Si no hay PIL, usar texto como fallback
             self.logo_text = ctk.CTkLabel(
                 self.logo_frame,
-                text="🌍✝️",
-                font=ctk.CTkFont(size=25),
+                text="AB",
+                font=ctk.CTkFont(size=25, weight="bold"),
                 text_color="#1f538d"
             )
             self.logo_text.pack(expand=True)
@@ -175,21 +175,21 @@ class DashboardPage:
         
         # Elementos del menú
         self.menu_items = [
-            ("Dashboard", "📊", "dashboard"),
-            ("Academia", "⛪", "academia"),
-            ("Red", "👥", "red"),
-            ("Cursos", "💻", "cursos"),
-            ("Estudiantes", "👤", "estudiantes"),
-            ("Docentes", "🎓", "docentes")
+            ("Dashboard", "dashboard"),
+            ("Academia", "academia"),
+            ("Red", "red"),
+            ("Cursos", "cursos"),
+            ("Estudiantes", "estudiantes"),
+            ("Docentes", "docentes")
         ]
         
         self.menu_buttons = {}
         
-        for text, icon, section in self.menu_items:
+        for text, section in self.menu_items:
             # Crear botón del menú
             btn = ctk.CTkButton(
                 self.menu_frame,
-                text=f"{icon}  {text}",
+                text=text,
             width=200,
             height=40,
             font=ctk.CTkFont(size=14),
@@ -211,7 +211,7 @@ class DashboardPage:
         # Botón de configuración
         self.config_btn = ctk.CTkButton(
             self.config_frame,
-            text="⚙️ Configuración",
+            text="Configuración",
             width=200,
             height=40,
             font=ctk.CTkFont(size=14),
@@ -226,7 +226,7 @@ class DashboardPage:
         # Botón de logout
         self.logout_btn = ctk.CTkButton(
             self.config_frame,
-            text="🚪 Cerrar Sesión",
+            text="Cerrar Sesión",
             width=200,
             height=40,
             font=ctk.CTkFont(size=14),
@@ -324,7 +324,6 @@ class DashboardPage:
             indicators_frame,
             title="Total Estudiantes",
             value=str(stats["total_students"]),
-            icon="👥",
             color="#28a745",
             row=0,
             column=0
@@ -335,7 +334,6 @@ class DashboardPage:
             indicators_frame,
             title="Aulas Activas",
             value=str(stats["active_classrooms"]),
-            icon="🏫",
             color="#007bff",
             row=0,
             column=1
@@ -346,13 +344,12 @@ class DashboardPage:
             indicators_frame,
             title="Matrículas del Mes",
             value=str(stats["monthly_inscriptions"]),
-            icon="📝",
             color="#ffc107",
             row=0,
             column=2
         )
     
-    def create_indicator_card(self, parent, title, value, icon, color, row, column):
+    def create_indicator_card(self, parent, title, value, color, row, column):
         """Crear una tarjeta de indicador"""
         # Frame de la tarjeta
         card = ctk.CTkFrame(
@@ -370,15 +367,6 @@ class DashboardPage:
         # Configurar peso de columna
         parent.grid_columnconfigure(column, weight=1)
         
-        # Ícono
-        icon_label = ctk.CTkLabel(
-            card,
-            text=icon,
-            font=ctk.CTkFont(size=24),
-            text_color=color
-        )
-        icon_label.pack(pady=(15, 5))
-        
         # Valor
         value_label = ctk.CTkLabel(
             card,
@@ -386,7 +374,7 @@ class DashboardPage:
             font=ctk.CTkFont(size=32, weight="bold"),
             text_color=color
         )
-        value_label.pack(pady=(0, 5))
+        value_label.pack(pady=(28, 5))
         
         # Título
         title_label = ctk.CTkLabel(
@@ -762,7 +750,7 @@ class DashboardPage:
         # Botón Finalizar Ciclo
         finalizar_btn = ctk.CTkButton(
             actions_frame,
-            text="✅ Finalizar Ciclo",
+            text="Finalizar Ciclo",
             width=160,
             height=42,
             command=self.finalizar_ciclo_activo,
@@ -775,7 +763,7 @@ class DashboardPage:
         # Botón Exportar Excel
         export_btn = ctk.CTkButton(
             actions_frame,
-            text="📊 Exportar Excel",
+            text="Exportar Excel",
             width=160,
             height=42,
             command=self.export_ciclos_excel,
@@ -788,7 +776,7 @@ class DashboardPage:
         # Botón Agregar Ciclo
         add_ciclo_btn = ctk.CTkButton(
             actions_frame,
-            text="➕ Agregar Ciclo",
+            text="Agregar Ciclo",
             width=160,
             height=42,
             command=self.show_add_ciclo_dialog,
@@ -818,7 +806,7 @@ class DashboardPage:
         # Título de filtros
         filters_title = ctk.CTkLabel(
             filters_frame,
-            text="🔍 FILTROS DE BÚSQUEDA",
+            text="FILTROS DE BÚSQUEDA",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#1f538d"
         )
@@ -927,7 +915,7 @@ class DashboardPage:
         # Botón limpiar filtros
         clear_filters_btn = ctk.CTkButton(
             filters_row2,
-            text="🗑️ Limpiar Filtros",
+            text="Limpiar Filtros",
             width=140,
             height=32,
             command=self.clear_ciclo_filters,
@@ -942,7 +930,7 @@ class DashboardPage:
         # Título de la tabla
         table_title = ctk.CTkLabel(
             parent,
-            text="📋 LISTADO DE CICLOS",
+            text="LISTADO DE CICLOS",
             font=ctk.CTkFont(size=20, weight="bold"),
             text_color="#1f538d"
         )
@@ -1031,7 +1019,7 @@ class DashboardPage:
         
         prev_btn = ctk.CTkButton(
             nav_frame,
-            text="◀ Anterior",
+            text="Anterior",
             width=110,
             height=32,
             command=self.previous_ciclo_page,
@@ -1043,7 +1031,7 @@ class DashboardPage:
         
         next_btn = ctk.CTkButton(
             nav_frame,
-            text="Siguiente ▶",
+            text="Siguiente",
             width=110,
             height=32,
             command=self.next_ciclo_page,
@@ -1109,7 +1097,7 @@ class DashboardPage:
             df_data = []
             for ciclo in ciclos:
                 df_data.append({
-                    'Estado': '🟢 ACTIVO' if (self.active_cicle and self.active_cicle.get("id") == ciclo.get("id")) else '⚪ Inactivo',
+                    'Estado': 'ACTIVO' if (self.active_cicle and self.active_cicle.get("id") == ciclo.get("id")) else 'Inactivo',
                     'Año': str(ciclo.get("date_start", ""))[:4] if ciclo.get("date_start") else "",
                     'Ciclo': ciclo.get("cicle", ""),
                     'Fecha Inicio': str(ciclo.get("date_start", "")),
@@ -1203,12 +1191,12 @@ class DashboardPage:
             
             # Determinar estado del ciclo
             if self.active_cicle and self.active_cicle.get("id") == ciclo.get("id"):
-                estado = "🟢 ACTIVO"
-                acciones = "👁️ ✏️ 🔄"
+                estado = "ACTIVO"
+                acciones = "Ver | Editar | Desactivar"
                 tags = ("activo",)
             else:
-                estado = "⚪ INACTIVO"
-                acciones = "👁️ ✏️ ✅"
+                estado = "INACTIVO"
+                acciones = "Ver | Editar | Activar"
                 tags = ("inactivo",)
             
             item_id = self.ciclo_tree.insert("", "end", values=(
@@ -1269,7 +1257,7 @@ class DashboardPage:
         # Título
         title = ctk.CTkLabel(
             dialog,
-            text="➕ AGREGAR CICLO",
+            text="AGREGAR CICLO",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#1f538d"
         )
@@ -1368,7 +1356,7 @@ class DashboardPage:
         # Botones (más grandes y centrados)
         add_btn = ctk.CTkButton(
             buttons_frame,
-            text="➕ AGREGAR CICLO",
+            text="AGREGAR CICLO",
             width=200,
             height=50,
             command=add_ciclo,
@@ -1380,7 +1368,7 @@ class DashboardPage:
         
         cancel_btn = ctk.CTkButton(
             buttons_frame,
-            text="❌ CANCELAR",
+            text="CANCELAR",
             width=200,
             height=50,
             command=cancel,
@@ -1445,19 +1433,19 @@ class DashboardPage:
             
             # Ver aulas
             context_menu.add_command(
-                label="👁️ Ver Aulas", 
+                label="Ver Aulas",
                 command=lambda: self.on_ciclo_double_click(event)
             )
             
             # Editar
             context_menu.add_command(
-                label="✏️ Editar Ciclo", 
+                label="Editar Ciclo",
                 command=lambda: self.show_edit_ciclo_dialog(event)
             )
             
             # Eliminar
             context_menu.add_command(
-                label="🗑️ Eliminar Ciclo", 
+                label="Eliminar Ciclo",
                 command=lambda: self.delete_ciclo(ciclo_index + 1)  # ID temporal
             )
             
@@ -1465,14 +1453,14 @@ class DashboardPage:
             context_menu.add_separator()
             
             # Activar/Desactivar
-            if values[0] == "🟢 ACTIVO":
+            if values[0] == "ACTIVO":
                 context_menu.add_command(
-                    label="⚪ Desactivar", 
+                    label="Desactivar",
                     command=lambda: self.deactivate_ciclo()
                 )
             else:
                 context_menu.add_command(
-                    label="🟢 Activar Ciclo", 
+                    label="Activar Ciclo",
                     command=lambda: self.activate_ciclo(ciclo_index + 1)  # ID temporal
                 )
             
@@ -1519,7 +1507,7 @@ class DashboardPage:
                 "Confirmar Eliminación",
                 f"¿Está seguro de que desea eliminar el ciclo {ciclo_name}?\n\n"
                 f"Encargado: {manager}\n\n"
-                f"⚠️ ADVERTENCIA: Esta acción eliminará:\n"
+                f"ADVERTENCIA: Esta acción eliminará:\n"
                 f"• Todas las aulas del ciclo\n"
                 f"• Todas las inscripciones de esas aulas\n"
                 f"• Todos los pagos relacionados\n\n"
@@ -1593,7 +1581,7 @@ class DashboardPage:
         # Título
         title = ctk.CTkLabel(
             dialog,
-            text=f"🏫 AULAS - CICLO {ciclo_data.get('cicle')} {ciclo_data.get('date_start')[:4]}",
+            text=f"AULAS - CICLO {ciclo_data.get('cicle')} {ciclo_data.get('date_start')[:4]}",
             font=ctk.CTkFont(size=20, weight="bold"),
             text_color="#1f538d"
         )
@@ -1603,7 +1591,7 @@ class DashboardPage:
         info_frame = ctk.CTkFrame(dialog, fg_color="#e3f2fd", corner_radius=8)
         info_frame.pack(fill="x", padx=20, pady=(0, 20))
         
-        info_text = f"📅 Período: {ciclo_data.get('date_start')} - {ciclo_data.get('date_end')} | 👨‍💼 Encargado: {ciclo_data.get('manager')}"
+        info_text = f"Período: {ciclo_data.get('date_start')} - {ciclo_data.get('date_end')} | Encargado: {ciclo_data.get('manager')}"
         info_label = ctk.CTkLabel(
             info_frame,
             text=info_text,
@@ -1619,7 +1607,7 @@ class DashboardPage:
         # Botón Agregar Aula
         add_aula_btn = ctk.CTkButton(
             buttons_frame,
-            text="➕ Agregar Aula",
+            text="Agregar Aula",
             width=150,
             height=40,
             command=lambda: self.show_add_aula_dialog(ciclo_data.get('id'), aulas_tree),
@@ -1632,7 +1620,7 @@ class DashboardPage:
         # Botón Matrícula
         matricula_btn = ctk.CTkButton(
             buttons_frame,
-            text="📝 Matrícula",
+            text="Matrícula",
             width=150,
             height=40,
             command=lambda: self.show_matricula_from_aulas(ciclo_data),
@@ -1679,7 +1667,7 @@ class DashboardPage:
         # Botón cerrar
         close_btn = ctk.CTkButton(
             dialog,
-            text="❌ Cerrar",
+            text="Cerrar",
             width=100,
             height=35,
             command=dialog.destroy,
@@ -1722,7 +1710,7 @@ class DashboardPage:
                     docente_nombre,
                     str(aula.get("start_date", "")),
                     str(aula.get("end_date", "")),
-                    "👁️ ✏️ 🗑️"
+                    "Ver | Editar | Eliminar"
                 ))
                 
         except Exception as e:
@@ -1767,7 +1755,7 @@ class DashboardPage:
         # Título
         title = ctk.CTkLabel(
             dialog,
-            text=f"👥 MATRICULADOS - {aula_name}",
+            text=f"MATRICULADOS - {aula_name}",
             font=ctk.CTkFont(size=20, weight="bold"),
             text_color="#1f538d"
         )
@@ -1777,7 +1765,7 @@ class DashboardPage:
         info_frame = ctk.CTkFrame(dialog, fg_color="#e8f5e8", corner_radius=8)
         info_frame.pack(fill="x", padx=20, pady=(0, 20))
         
-        info_text = f"🏫 Aula: {aula_name} | 🎓 Ciclo: {ciclo_data.get('cicle')} {ciclo_data.get('date_start')[:4]} | 👨‍💼 Encargado: {ciclo_data.get('manager')}"
+        info_text = f"Aula: {aula_name} | Ciclo: {ciclo_data.get('cicle')} {ciclo_data.get('date_start')[:4]} | Encargado: {ciclo_data.get('manager')}"
         info_label = ctk.CTkLabel(
             info_frame,
             text=info_text,
@@ -1789,7 +1777,7 @@ class DashboardPage:
         # Botón Agregar Matrícula
         add_matricula_btn = ctk.CTkButton(
             dialog,
-            text="➕ Agregar Matrícula",
+            text="Agregar Matrícula",
             width=180,
             height=40,
             command=lambda: self.show_add_matricula_dialog(aula_name, ciclo_data),
@@ -1842,7 +1830,7 @@ class DashboardPage:
         # Botón cerrar
         close_btn = ctk.CTkButton(
             dialog,
-            text="❌ Cerrar",
+            text="Cerrar",
             width=100,
             height=35,
             command=dialog.destroy,
@@ -1931,7 +1919,7 @@ class DashboardPage:
                     # Contar pagos de la inscripción
                     payments = payment_repo.get_all_rows({"id_inscription": inscription["id"]})
                     num_pagos = len(payments) if payments else 0
-                    pagos_text = f"💰 {num_pagos}" if num_pagos > 0 else "❌ 0"
+                    pagos_text = f"{num_pagos}" if num_pagos > 0 else "0"
                     
                     # Nombre completo del estudiante
                     nombre_completo = f"{student.get('name', '')} {student.get('lastname', '')}".strip()
@@ -1946,7 +1934,7 @@ class DashboardPage:
                         estado,
                         material_estado,
                         pagos_text,
-                        "✏️ 🗑️"
+                        "Editar | Eliminar"
                     ))
                     
                 except Exception as e:
@@ -1980,19 +1968,19 @@ class DashboardPage:
             
             # Editar matrícula
             context_menu.add_command(
-                label="✏️ Editar Matrícula", 
+                label="Editar Matrícula",
                 command=lambda: self.show_edit_matricula_dialog(event, tree, aula_name, ciclo_data)
             )
             
             # Eliminar matrícula
             context_menu.add_command(
-                label="🗑️ Eliminar Matrícula", 
+                label="Eliminar Matrícula",
                 command=lambda: self.delete_matricula_from_context(values, tree, aula_name, ciclo_data)
             )
             
             # Ver pagos
             context_menu.add_command(
-                label="💰 Ver Pagos", 
+                label="Ver Pagos",
                 command=lambda: self.show_pagos_matricula(values, tree, aula_name, ciclo_data)
             )
             
@@ -2074,7 +2062,7 @@ class DashboardPage:
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text=f"✏️ EDITAR MATRÍCULA - {estudiante_name}",
+                text=f"EDITAR MATRÍCULA - {estudiante_name}",
                 font=ctk.CTkFont(size=20, weight="bold"),
                 text_color="#1f538d"
             )
@@ -2092,7 +2080,7 @@ class DashboardPage:
             material_status_var = ctk.BooleanVar(value=bool(inscription_data.get('status_material', True)))
             
             # Campo: Año
-            ctk.CTkLabel(main_frame, text="📅 Año:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Año:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
             year_entry = ctk.CTkEntry(
                 main_frame,
                 textvariable=year_var,
@@ -2102,7 +2090,7 @@ class DashboardPage:
             year_entry.pack(fill="x", pady=(0, 10))
             
             # Campo: Ciclo
-            ctk.CTkLabel(main_frame, text="🔄 Ciclo:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Ciclo:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
             cycle_entry = ctk.CTkEntry(
                 main_frame,
                 textvariable=cycle_var,
@@ -2112,7 +2100,7 @@ class DashboardPage:
             cycle_entry.pack(fill="x", pady=(0, 10))
             
             # Campo: Tipo de Material
-            ctk.CTkLabel(main_frame, text="📚 Tipo de Material:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Tipo de Material:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
             material_combo = ctk.CTkComboBox(
                 main_frame,
                 variable=material_type,
@@ -2125,7 +2113,7 @@ class DashboardPage:
             # Campo: Estado de la Matrícula
             status_checkbox = ctk.CTkCheckBox(
                 main_frame,
-                text="✅ Matrícula Activa",
+                text="Matrícula Activa",
                 variable=status_var,
                 font=ctk.CTkFont(size=14, weight="bold")
             )
@@ -2134,7 +2122,7 @@ class DashboardPage:
             # Campo: Estado del Material
             material_checkbox = ctk.CTkCheckBox(
                 main_frame,
-                text="📦 Material Entregado",
+                text="Material Entregado",
                 variable=material_status_var,
                 font=ctk.CTkFont(size=14, weight="bold")
             )
@@ -2179,7 +2167,7 @@ class DashboardPage:
             
             update_btn = ctk.CTkButton(
                 buttons_frame,
-                text="✅ ACTUALIZAR MATRÍCULA",
+                text="ACTUALIZAR MATRÍCULA",
                 width=200,
                 height=50,
                 command=update_matricula,
@@ -2191,7 +2179,7 @@ class DashboardPage:
             
             cancel_btn = ctk.CTkButton(
                 buttons_frame,
-                text="❌ CANCELAR",
+                text="CANCELAR",
                 width=200,
                 height=50,
                 command=dialog.destroy,
@@ -2258,7 +2246,7 @@ class DashboardPage:
             result = messagebox.askyesno(
                 "Confirmar Eliminación",
                 f"¿Está seguro de que desea eliminar la matrícula de '{estudiante_name}'?\n\n"
-                f"⚠️ ADVERTENCIA: Esta acción eliminará:\n"
+                f"ADVERTENCIA: Esta acción eliminará:\n"
                 f"• La inscripción del estudiante\n"
                 f"• Todos los pagos relacionados\n\n"
                 f"Esta acción NO se puede deshacer."
@@ -2349,7 +2337,7 @@ class DashboardPage:
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text=f"💰 PAGOS - {estudiante_name}",
+                text=f"PAGOS - {estudiante_name}",
                 font=ctk.CTkFont(size=20, weight="bold"),
                 text_color="#1f538d"
             )
@@ -2359,7 +2347,7 @@ class DashboardPage:
             info_frame = ctk.CTkFrame(dialog, fg_color="#e8f5e8", corner_radius=8)
             info_frame.pack(fill="x", padx=20, pady=(0, 20))
             
-            info_text = f"🏫 Aula: {aula_name} | 🎓 Ciclo: {inscription_data.get('cycle', 'N/A')} {inscription_data.get('year', 'N/A')}"
+            info_text = f"Aula: {aula_name} | Ciclo: {inscription_data.get('cycle', 'N/A')} {inscription_data.get('year', 'N/A')}"
             info_label = ctk.CTkLabel(
                 info_frame,
                 text=info_text,
@@ -2418,7 +2406,7 @@ class DashboardPage:
                         payment.get("method_payment", ""),
                         f"${monto}",
                         fecha_formateada,
-                        "✏️ 🗑️"
+                        "Editar | Eliminar"
                     ))
             else:
                 payments_tree.insert("", "end", values=(
@@ -2430,7 +2418,7 @@ class DashboardPage:
             summary_frame = ctk.CTkFrame(dialog, fg_color="#fff3cd", corner_radius=8)
             summary_frame.pack(fill="x", padx=20, pady=(0, 20))
             
-            summary_text = f"📊 Total de Pagos: {len(payments) if payments else 0} | 💰 Total Pagado: ${total_paid}"
+            summary_text = f"Total de Pagos: {len(payments) if payments else 0} | Total Pagado: ${total_paid}"
             summary_label = ctk.CTkLabel(
                 summary_frame,
                 text=summary_text,
@@ -2442,7 +2430,7 @@ class DashboardPage:
             # Botón cerrar
             close_btn = ctk.CTkButton(
                 dialog,
-                text="❌ Cerrar",
+                text="Cerrar",
                 width=100,
                 height=35,
                 command=dialog.destroy,
@@ -2479,7 +2467,7 @@ class DashboardPage:
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text=f"➕ NUEVA MATRÍCULA - {aula_name}",
+                text=f"NUEVA MATRÍCULA - {aula_name}",
                 font=ctk.CTkFont(size=20, weight="bold"),
                 text_color="#1f538d"
             )
@@ -2523,7 +2511,7 @@ class DashboardPage:
             matriculas_creadas = 0
             
             # Campo: Estudiante
-            ctk.CTkLabel(main_frame, text="👤 Estudiante:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Estudiante:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
             student_combo = ctk.CTkComboBox(
                 main_frame,
                 variable=selected_student,
@@ -2534,7 +2522,7 @@ class DashboardPage:
             student_combo.pack(fill="x", pady=(0, 10))
             
             # Campo: Red/Equipo
-            ctk.CTkLabel(main_frame, text="🌐 Red/Equipo:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Red/Equipo:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
             team_combo = ctk.CTkComboBox(
                 main_frame,
                 variable=selected_team,
@@ -2545,7 +2533,7 @@ class DashboardPage:
             team_combo.pack(fill="x", pady=(0, 10))
             
             # Campo: Año
-            ctk.CTkLabel(main_frame, text="📅 Año:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Año:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
             year_entry = ctk.CTkEntry(
                 main_frame,
                 textvariable=year_var,
@@ -2555,7 +2543,7 @@ class DashboardPage:
             year_entry.pack(fill="x", pady=(0, 10))
             
             # Campo: Ciclo
-            ctk.CTkLabel(main_frame, text="🔄 Ciclo:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Ciclo:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
             cycle_entry = ctk.CTkEntry(
                 main_frame,
                 textvariable=cycle_var,
@@ -2565,7 +2553,7 @@ class DashboardPage:
             cycle_entry.pack(fill="x", pady=(0, 10))
             
             # Campo: Tipo de Material
-            ctk.CTkLabel(main_frame, text="📚 Tipo de Material:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Tipo de Material:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
             material_combo = ctk.CTkComboBox(
                 main_frame,
                 variable=material_type,
@@ -2576,7 +2564,7 @@ class DashboardPage:
             material_combo.pack(fill="x", pady=(0, 10))
             
             # Campo: Método de Pago
-            ctk.CTkLabel(main_frame, text="💳 Método de Pago:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Método de Pago:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
             payment_combo = ctk.CTkComboBox(
                 main_frame,
                 variable=payment_method,
@@ -2587,7 +2575,7 @@ class DashboardPage:
             payment_combo.pack(fill="x", pady=(0, 10))
             
             # Campo: Monto
-            ctk.CTkLabel(main_frame, text="💰 Monto:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Monto:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
             amount_entry = ctk.CTkEntry(
                 main_frame,
                 textvariable=amount_var,
@@ -2602,7 +2590,7 @@ class DashboardPage:
             
             counter_label = ctk.CTkLabel(
                 counter_frame,
-                text="📊 Matrículas creadas en esta sesión: 0",
+                text="Matrículas creadas en esta sesión: 0",
                 font=ctk.CTkFont(size=14, weight="bold"),
                 text_color="#2e7d32"
             )
@@ -2695,7 +2683,7 @@ Puedes agregar más matrículas usando este formulario."""
             
             create_btn = ctk.CTkButton(
                 buttons_frame,
-                text="✅ CREAR MATRÍCULA",
+                text="CREAR MATRÍCULA",
                 width=180,
                 height=50,
                 command=create_matricula,
@@ -2707,7 +2695,7 @@ Puedes agregar más matrículas usando este formulario."""
             
             clear_btn = ctk.CTkButton(
                 buttons_frame,
-                text="🔄 LIMPIAR",
+                text="LIMPIAR",
                 width=150,
                 height=50,
                 command=lambda: [
@@ -2728,7 +2716,7 @@ Puedes agregar más matrículas usando este formulario."""
             
             close_btn = ctk.CTkButton(
                 buttons_frame,
-                text="❌ CERRAR",
+                text="CERRAR",
                 width=150,
                 height=50,
                 command=dialog.destroy,
@@ -2768,7 +2756,7 @@ Puedes agregar más matrículas usando este formulario."""
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text="➕ AGREGAR AULA",
+                text="AGREGAR AULA",
                 font=ctk.CTkFont(size=20, weight="bold"),
                 text_color="#1f538d"
             )
@@ -2911,7 +2899,7 @@ Puedes agregar más matrículas usando este formulario."""
             # Botones
             add_btn = ctk.CTkButton(
                 buttons_frame,
-                text="➕ AGREGAR AULA",
+                text="AGREGAR AULA",
                 width=200,
                 height=50,
                 command=add_aula,
@@ -2923,7 +2911,7 @@ Puedes agregar más matrículas usando este formulario."""
             
             cancel_btn = ctk.CTkButton(
                 buttons_frame,
-                text="❌ CANCELAR",
+                text="CANCELAR",
                 width=200,
                 height=50,
                 command=cancel,
@@ -2982,7 +2970,7 @@ Puedes agregar más matrículas usando este formulario."""
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text="📝 AGREGAR MATRÍCULA",
+                text="AGREGAR MATRÍCULA",
                 font=ctk.CTkFont(size=20, weight="bold"),
                 text_color="#1f538d"
             )
@@ -3054,7 +3042,7 @@ Puedes agregar más matrículas usando este formulario."""
             # Botones
             agregar_btn = ctk.CTkButton(
                 buttons_frame,
-                text="📝 AGREGAR MATRÍCULA",
+                text="AGREGAR MATRÍCULA",
                 width=200,
                 height=50,
                 command=agregar_matricula,
@@ -3066,7 +3054,7 @@ Puedes agregar más matrículas usando este formulario."""
             
             cancel_btn = ctk.CTkButton(
                 buttons_frame,
-                text="❌ CANCELAR",
+                text="CANCELAR",
                 width=200,
                 height=50,
                 command=cancelar,
@@ -3096,13 +3084,13 @@ Puedes agregar más matrículas usando este formulario."""
             
             # Editar aula
             context_menu.add_command(
-                label="✏️ Editar Aula", 
+                label="Editar Aula",
                 command=lambda: self.show_edit_aula_dialog(event, tree, ciclo_data)
             )
             
             # Eliminar aula
             context_menu.add_command(
-                label="🗑️ Eliminar Aula", 
+                label="Eliminar Aula",
                 command=lambda: self.delete_aula_from_context(values, tree, ciclo_data)
             )
             
@@ -3152,7 +3140,7 @@ Puedes agregar más matrículas usando este formulario."""
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text="✏️ EDITAR AULA",
+                text="EDITAR AULA",
                 font=ctk.CTkFont(size=20, weight="bold"),
                 text_color="#1f538d"
             )
@@ -3305,7 +3293,7 @@ Puedes agregar más matrículas usando este formulario."""
             # Botones
             update_btn = ctk.CTkButton(
                 buttons_frame,
-                text="💾 ACTUALIZAR AULA",
+                text="ACTUALIZAR AULA",
                 width=200,
                 height=50,
                 command=update_aula,
@@ -3317,7 +3305,7 @@ Puedes agregar más matrículas usando este formulario."""
             
             cancel_btn = ctk.CTkButton(
                 buttons_frame,
-                text="❌ CANCELAR",
+                text="CANCELAR",
                 width=200,
                 height=50,
                 command=cancel,
@@ -3350,7 +3338,7 @@ Puedes agregar más matrículas usando este formulario."""
             result = messagebox.askyesno(
                 "Confirmar Eliminación",
                 f"¿Está seguro de que desea eliminar el aula '{aula_name}'?\n\n"
-                f"⚠️ ADVERTENCIA: Esta acción eliminará:\n"
+                f"ADVERTENCIA: Esta acción eliminará:\n"
                 f"• Todas las inscripciones del aula\n"
                 f"• Todos los pagos relacionados\n\n"
                 f"Esta acción NO se puede deshacer."
@@ -3410,7 +3398,7 @@ Puedes agregar más matrículas usando este formulario."""
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text="✏️ EDITAR CICLO",
+                text="EDITAR CICLO",
                 font=ctk.CTkFont(size=18, weight="bold"),
                 text_color="#1f538d"
             )
@@ -3515,7 +3503,7 @@ Puedes agregar más matrículas usando este formulario."""
             # Botones
             update_btn = ctk.CTkButton(
                 buttons_frame,
-                text="💾 ACTUALIZAR CICLO",
+                text="ACTUALIZAR CICLO",
                 width=200,
                 height=50,
                 command=update_ciclo,
@@ -3527,7 +3515,7 @@ Puedes agregar más matrículas usando este formulario."""
             
             cancel_btn = ctk.CTkButton(
                 buttons_frame,
-                text="❌ CANCELAR",
+                text="CANCELAR",
                 width=200,
                 height=50,
                 command=cancel,
@@ -3659,7 +3647,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón Agregar Aula
         add_aula_btn = ctk.CTkButton(
             row2_frame,
-            text="➕ Agregar Aula",
+            text="Agregar Aula",
             width=150,
             height=35,
             command=self.add_aula,
@@ -3775,7 +3763,7 @@ Puedes agregar más matrículas usando este formulario."""
                 aula.get("teacher_name", ""),
                 str(aula.get("start_date", "")),
                 str(aula.get("end_date", "")),
-                "✏️ 🗑️"
+                "Editar | Eliminar"
             ))
     
     def add_aula(self):
@@ -3854,9 +3842,9 @@ Puedes agregar más matrículas usando este formulario."""
         # Título con información del ciclo activo
         if self.active_cicle:
             ciclo_info = f"{self.active_cicle.get('cicle')} - {self.active_cicle.get('date_start')[:4]}"
-            title_text = f"📝 MATRÍCULA - CICLO {ciclo_info}"
+            title_text = f"MATRÍCULA - CICLO {ciclo_info}"
         else:
-            title_text = "📝 MATRÍCULA"
+            title_text = "MATRÍCULA"
             
         title = ctk.CTkLabel(
             matricula_frame,
@@ -3871,7 +3859,7 @@ Puedes agregar más matrículas usando este formulario."""
             info_frame = ctk.CTkFrame(matricula_frame, fg_color="#e8f5e8", corner_radius=8)
             info_frame.pack(fill="x", pady=(0, 15))
             
-            info_text = f"🎓 Ciclo Activo: {self.active_cicle.get('cicle')} | 👨‍💼 Encargado: {self.active_cicle.get('manager')} | 📅 Período: {self.active_cicle.get('date_start')} - {self.active_cicle.get('date_end')}"
+            info_text = f"Ciclo Activo: {self.active_cicle.get('cicle')} | Encargado: {self.active_cicle.get('manager')} | Período: {self.active_cicle.get('date_start')} - {self.active_cicle.get('date_end')}"
             info_label = ctk.CTkLabel(
                 info_frame,
                 text=info_text,
@@ -3886,7 +3874,7 @@ Puedes agregar más matrículas usando este formulario."""
             
             warning_label = ctk.CTkLabel(
                 warning_frame,
-                text="⚠️ No hay un ciclo activo. Debe activar un ciclo antes de crear matrículas.",
+                text="No hay un ciclo activo. Debe activar un ciclo antes de crear matrículas.",
                 font=ctk.CTkFont(size=12),
                 text_color="#f57c00"
             )
@@ -3906,7 +3894,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de consulta
         consulta_title = ctk.CTkLabel(
             consulta_frame,
-            text="🔍 Consulta",
+            text="Consulta",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#1f538d"
         )
@@ -4034,7 +4022,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título del formulario
         form_title = ctk.CTkLabel(
             form_frame,
-            text="📝 Matrícula",
+            text="Matrícula",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#1f538d"
         )
@@ -4060,7 +4048,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de sección
         section_title = ctk.CTkLabel(
             estudiante_frame,
-            text="👤 Estudiante",
+            text="Estudiante",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#1f538d"
         )
@@ -4086,7 +4074,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botones de estudiante
         add_estudiante_btn = ctk.CTkButton(
             row1_frame,
-            text="➕ Agregar Estudiante",
+            text="Agregar Estudiante",
             width=150,
             height=30,
             command=self.show_add_estudiante_dialog,
@@ -4098,7 +4086,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         update_estudiante_btn = ctk.CTkButton(
             row1_frame,
-            text="✏️ Actualizar Estudiante",
+            text="Actualizar Estudiante",
             width=150,
             height=30,
             command=self.update_estudiante,
@@ -4110,7 +4098,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         clear_form_btn = ctk.CTkButton(
             row1_frame,
-            text="🗑️ Vaciar Formulario",
+            text="Vaciar Formulario",
             width=150,
             height=30,
             command=self.clear_matricula_form,
@@ -4218,7 +4206,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de sección
         section_title = ctk.CTkLabel(
             inscripcion_frame,
-            text="📚 Inscripción",
+            text="Inscripción",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#1f538d"
         )
@@ -4297,7 +4285,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de sección
         section_title = ctk.CTkLabel(
             pago_frame,
-            text="💰 Pago",
+            text="Pago",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#1f538d"
         )
@@ -4336,7 +4324,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón Agregar Pago
         add_pago_btn = ctk.CTkButton(
             row_frame,
-            text="➕ Agregar Pago",
+            text="Agregar Pago",
             width=150,
             height=30,
             command=self.add_pago,
@@ -4354,7 +4342,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón grande de Agregar Matrícula
         add_matricula_btn = ctk.CTkButton(
             button_frame,
-            text="➕ AGREGAR MATRÍCULA",
+            text="AGREGAR MATRÍCULA",
             width=300,
             height=50,
             command=self.add_matricula,
@@ -4432,10 +4420,10 @@ Puedes agregar más matrículas usando este formulario."""
             messagebox.showinfo(
                 "Éxito", 
                 f"Matrícula creada correctamente:\n\n"
-                f"👤 Estudiante: {nombres} {apellidos}\n"
-                f"🏫 Aula: {aula_name}\n"
-                f"📚 Curso: {curso}\n"
-                f"🎓 Ciclo: {ciclo_name}"
+                f"Estudiante: {nombres} {apellidos}\n"
+                f"Aula: {aula_name}\n"
+                f"Curso: {curso}\n"
+                f"Ciclo: {ciclo_name}"
             )
             
             # Limpiar formulario
@@ -4515,7 +4503,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         title = ctk.CTkLabel(
             title_frame,
-            text="👥 Gestión de Equipos",
+            text="Gestión de Equipos",
             font=ctk.CTkFont(size=28, weight="bold"),
             text_color="#1f538d"
         )
@@ -4524,7 +4512,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón para agregar equipo
         add_team_btn = ctk.CTkButton(
             title_frame,
-            text="➕ Agregar Equipo",
+            text="Agregar Equipo",
             width=200,
             height=50,
             font=ctk.CTkFont(size=16, weight="bold"),
@@ -4637,7 +4625,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         search_btn = ctk.CTkButton(
             filter_buttons_frame,
-            text="🔍 Buscar",
+            text="Buscar",
             width=100,
             height=35,
             command=self.filter_teams,
@@ -4648,7 +4636,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         clear_btn = ctk.CTkButton(
             filter_buttons_frame,
-            text="🗑️ Limpiar",
+            text="Limpiar",
             width=100,
             height=35,
             command=self.clear_team_filters,
@@ -4664,7 +4652,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de la tabla
         table_title = ctk.CTkLabel(
             table_frame,
-            text="👥 Lista de Equipos",
+            text="Lista de Equipos",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#1f538d"
         )
@@ -4684,7 +4672,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         title = ctk.CTkLabel(
             title_frame,
-            text="💻 Gestión de Cursos",
+            text="Gestión de Cursos",
             font=ctk.CTkFont(size=28, weight="bold"),
             text_color="#1f538d"
         )
@@ -4693,7 +4681,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón para agregar curso
         add_course_btn = ctk.CTkButton(
             title_frame,
-            text="➕ Nuevo Curso",
+            text="Nuevo Curso",
             width=200,
             height=50,
             font=ctk.CTkFont(size=16, weight="bold"),
@@ -4713,7 +4701,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de filtros
         filters_title = ctk.CTkLabel(
             filters_frame,
-            text="🔍 Filtros de Búsqueda",
+            text="Filtros de Búsqueda",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#1f538d"
         )
@@ -4767,7 +4755,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         search_btn = ctk.CTkButton(
             filter_buttons_frame,
-            text="🔍 Buscar",
+            text="Buscar",
             width=100,
             height=35,
             command=self.filter_courses,
@@ -4778,7 +4766,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         clear_btn = ctk.CTkButton(
             filter_buttons_frame,
-            text="🗑️ Limpiar",
+            text="Limpiar",
             width=100,
             height=35,
             command=self.clear_course_filters,
@@ -4794,7 +4782,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de la tabla
         table_title = ctk.CTkLabel(
             table_frame,
-            text="📚 Lista de Cursos",
+            text="Lista de Cursos",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#1f538d"
         )
@@ -4814,7 +4802,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         title = ctk.CTkLabel(
             title_frame,
-            text="👨‍🎓 Gestión de Estudiantes",
+            text="Gestión de Estudiantes",
             font=ctk.CTkFont(size=28, weight="bold"),
             text_color="#1f538d"
         )
@@ -4823,7 +4811,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón para agregar estudiante
         add_student_btn = ctk.CTkButton(
             title_frame,
-            text="➕ Nuevo Estudiante",
+            text="Nuevo Estudiante",
             width=200,
             height=50,
             font=ctk.CTkFont(size=16, weight="bold"),
@@ -4843,7 +4831,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de filtros
         filters_title = ctk.CTkLabel(
             filters_frame,
-            text="🔍 Filtros de Búsqueda",
+            text="Filtros de Búsqueda",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#1f538d"
         )
@@ -4917,7 +4905,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         search_btn = ctk.CTkButton(
             filter_buttons_frame,
-            text="🔍 Buscar",
+            text="Buscar",
             width=100,
             height=35,
             command=self.filter_students,
@@ -4928,7 +4916,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         clear_btn = ctk.CTkButton(
             filter_buttons_frame,
-            text="🗑️ Limpiar",
+            text="Limpiar",
             width=100,
             height=35,
             command=self.clear_student_filters,
@@ -4944,7 +4932,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de la tabla
         table_title = ctk.CTkLabel(
             table_frame,
-            text="👨‍🎓 Lista de Estudiantes",
+            text="Lista de Estudiantes",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#1f538d"
         )
@@ -4967,7 +4955,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         title = ctk.CTkLabel(
             title_frame,
-            text="👨‍🏫 Gestión de Docentes",
+            text="Gestión de Docentes",
             font=ctk.CTkFont(size=28, weight="bold"),
             text_color="#1f538d"
         )
@@ -4976,7 +4964,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón para agregar docente
         add_teacher_btn = ctk.CTkButton(
             title_frame,
-            text="➕ Nuevo Docente",
+            text="Nuevo Docente",
             width=200,
             height=50,
             font=ctk.CTkFont(size=16, weight="bold"),
@@ -4996,7 +4984,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de filtros
         filters_title = ctk.CTkLabel(
             filters_frame,
-            text="🔍 Filtros de Búsqueda",
+            text="Filtros de Búsqueda",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#1f538d"
         )
@@ -5070,7 +5058,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         search_btn = ctk.CTkButton(
             filter_buttons_frame,
-            text="🔍 Buscar",
+            text="Buscar",
             width=100,
             height=35,
             command=self.filter_teachers,
@@ -5081,7 +5069,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         clear_btn = ctk.CTkButton(
             filter_buttons_frame,
-            text="🗑️ Limpiar",
+            text="Limpiar",
             width=100,
             height=35,
             command=self.clear_teacher_filters,
@@ -5097,7 +5085,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de la tabla
         table_title = ctk.CTkLabel(
             table_frame,
-            text="👨‍🏫 Lista de Docentes",
+            text="Lista de Docentes",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#1f538d"
         )
@@ -5154,7 +5142,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título principal
         title = ctk.CTkLabel(
             self.content_frame,
-            text="⚙️ CONFIGURACIÓN",
+            text="CONFIGURACIÓN",
             font=ctk.CTkFont(size=28, weight="bold"),
             text_color="#1f538d"
         )
@@ -5172,7 +5160,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de la sección
         users_title = ctk.CTkLabel(
             self.content_frame,
-            text="👥 Usuarios",
+            text="Usuarios",
             font=ctk.CTkFont(size=20, weight="bold"),
             text_color="#1f538d"
         )
@@ -5225,7 +5213,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón agregar usuario
         self.add_user_btn = ctk.CTkButton(
             action_frame,
-            text="➕ Nuevo Usuario",
+            text="Nuevo Usuario",
             width=150,
             height=40,
             command=self.show_create_user_dialog,
@@ -5238,7 +5226,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón editar usuario
         self.edit_user_btn = ctk.CTkButton(
             action_frame,
-            text="✏️ Editar",
+            text="Editar",
             width=120,
             height=40,
             command=self.show_edit_user_dialog,
@@ -5251,7 +5239,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón eliminar usuario
         self.delete_user_btn = ctk.CTkButton(
             action_frame,
-            text="🗑️ Eliminar",
+            text="Eliminar",
             width=120,
             height=40,
             command=self.delete_selected_user,
@@ -5264,7 +5252,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón refrescar
         self.refresh_users_btn = ctk.CTkButton(
             action_frame,
-            text="🔄 Refrescar",
+            text="Refrescar",
             width=120,
             height=40,
             command=self.load_users,
@@ -5343,7 +5331,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título de la sección
         options_title = ctk.CTkLabel(
             self.content_frame,
-            text="🔧 Opciones Adicionales",
+            text="Opciones Adicionales",
             font=ctk.CTkFont(size=20, weight="bold"),
             text_color="#1f538d"
         )
@@ -5356,7 +5344,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón Importar BD
         import_btn = ctk.CTkButton(
             options_frame,
-            text="📥 Importar BD",
+            text="Importar BD",
             width=150,
             height=40,
             command=self.import_database,
@@ -5369,7 +5357,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón Exportar BD
         export_btn = ctk.CTkButton(
             options_frame,
-            text="📤 Exportar BD",
+            text="Exportar BD",
             width=150,
             height=40,
             command=self.export_database,
@@ -5382,7 +5370,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón Exportar JSON
         export_json_btn = ctk.CTkButton(
             options_frame,
-            text="📋 Exportar JSON",
+            text="Exportar JSON",
             width=150,
             height=40,
             command=self.export_json,
@@ -5457,11 +5445,7 @@ Puedes agregar más matrículas usando este formulario."""
                 role = user.get("role", "")
                 
                 # Insertar fila
-                item = self.users_tree.insert("", "end", values=(username, role, "✏️ 🗑️"))
-                
-                # Marcar usuario admin por defecto con icono
-                if username == "admin":
-                    self.users_tree.set(item, "Usuario", f"🔒 {username}")
+                self.users_tree.insert("", "end", values=(username, role, "Editar | Eliminar"))
             
         except Exception as e:
             messagebox.showerror("Error", f"Error al actualizar tabla: {e}")
@@ -5492,10 +5476,6 @@ Puedes agregar más matrículas usando este formulario."""
             item = selection[0]
             username = self.users_tree.item(item, "values")[0]  # Usuario está en la columna 0
             
-            # Limpiar icono si existe
-            if username.startswith("🔒 "):
-                username = username[2:]
-            
             # Verificar que no sea el usuario admin por defecto
             if username == "admin":
                 messagebox.showwarning("Advertencia", "No se puede editar el usuario administrador por defecto.")
@@ -5524,10 +5504,6 @@ Puedes agregar más matrículas usando este formulario."""
             
             item = selection[0]
             username = self.users_tree.item(item, "values")[0]  # Usuario está en la columna 0
-            
-            # Limpiar icono si existe
-            if username.startswith("🔒 "):
-                username = username[2:]
             
             # Verificar que no sea el usuario admin por defecto
             if username == "admin":
@@ -5640,7 +5616,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botones
         save_btn = ctk.CTkButton(
             buttons_frame,
-            text="💾 Guardar",
+            text="Guardar",
             width=120,
             height=35,
             command=save_password,
@@ -5652,7 +5628,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         cancel_btn = ctk.CTkButton(
             buttons_frame,
-            text="❌ Cancelar",
+            text="Cancelar",
             width=120,
             height=35,
             command=cancel,
@@ -5685,7 +5661,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título
         title = ctk.CTkLabel(
             dialog,
-            text="✏️ Editar Usuario",
+            text="Editar Usuario",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#1f538d"
         )
@@ -5823,7 +5799,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botones
         save_btn = ctk.CTkButton(
             buttons_frame,
-            text="💾 Guardar Cambios",
+            text="Guardar Cambios",
             width=150,
             height=35,
             command=save_changes,
@@ -5835,7 +5811,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         cancel_btn = ctk.CTkButton(
             buttons_frame,
-            text="❌ Cancelar",
+            text="Cancelar",
             width=150,
             height=35,
             command=cancel,
@@ -5860,15 +5836,11 @@ Puedes agregar más matrículas usando este formulario."""
             self.users_tree.selection_set(item)
             username = self.users_tree.item(item, "values")[0]  # Usuario está en la columna 0
             
-            # Limpiar icono si existe
-            if username.startswith("🔒 "):
-                username = username[2:]
-            
             # Crear menú contextual
             context_menu = tk.Menu(self.parent, tearoff=0)
-            context_menu.add_command(label="✏️ Editar Usuario", 
+            context_menu.add_command(label="Editar Usuario",
                                    command=self.show_edit_user_dialog)
-            context_menu.add_command(label="🗑️ Eliminar Usuario", 
+            context_menu.add_command(label="Eliminar Usuario",
                                    command=lambda: self.delete_user(username))
             
             # Mostrar menú
@@ -5897,7 +5869,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título
         title = ctk.CTkLabel(
             dialog,
-            text="➕ Crear Nuevo Usuario",
+            text="Crear Nuevo Usuario",
             font=ctk.CTkFont(size=18, weight="bold"),
             text_color="#1f538d"
         )
@@ -6014,7 +5986,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Botones
         create_btn = ctk.CTkButton(
             buttons_frame,
-            text="💾 CREAR USUARIO",
+            text="CREAR USUARIO",
             width=180,
             height=45,
             command=create_user,
@@ -6026,7 +5998,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         cancel_btn = ctk.CTkButton(
             buttons_frame,
-            text="❌ CANCELAR",
+            text="CANCELAR",
             width=180,
             height=45,
             command=cancel,
@@ -6137,7 +6109,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         self.teams_prev_page_btn = ctk.CTkButton(
             pagination_buttons_frame,
-            text="◀ Anterior",
+            text="Anterior",
             width=100,
             height=30,
             command=self.teams_prev_page,
@@ -6148,7 +6120,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         self.teams_next_page_btn = ctk.CTkButton(
             pagination_buttons_frame,
-            text="Siguiente ▶",
+            text="Siguiente",
             width=100,
             height=30,
             command=self.teams_next_page,
@@ -6260,20 +6232,22 @@ Puedes agregar más matrículas usando este formulario."""
         
         edit_btn = ctk.CTkButton(
             actions_frame,
-            text="✏️",
-            width=30,
-            height=30,
+            text="Editar",
+            width=56,
+            height=28,
+            font=ctk.CTkFont(size=11),
             command=lambda t=team: self.edit_team(t),
             fg_color="#ffc107",
             hover_color="#e0a800"
         )
-        edit_btn.pack(side="left", padx=(0, 5))
+        edit_btn.pack(side="left", padx=(0, 4))
         
         delete_btn = ctk.CTkButton(
             actions_frame,
-            text="🗑️",
-            width=30,
-            height=30,
+            text="Eliminar",
+            width=56,
+            height=28,
+            font=ctk.CTkFont(size=11),
             command=lambda t=team: self.delete_team(t),
             fg_color="#dc3545",
             hover_color="#c82333"
@@ -6343,7 +6317,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título
         title = ctk.CTkLabel(
             main_frame,
-            text="➕ Agregar Equipo" if not team else "✏️ Editar Equipo",
+            text="Agregar Equipo" if not team else "Editar Equipo",
             font=ctk.CTkFont(size=24, weight="bold"),
             text_color="#1f538d"
         )
@@ -6360,7 +6334,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Nombre del equipo
         name_label = ctk.CTkLabel(
             fields_frame,
-            text="📝 Nombre del Equipo:",
+            text="Nombre del Equipo:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -6383,7 +6357,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Edad de inicio
         age_start_label = ctk.CTkLabel(
             age_frame,
-            text="🔢 Edad de Inicio:",
+            text="Edad de Inicio:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -6402,7 +6376,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Edad de fin
         age_end_label = ctk.CTkLabel(
             age_frame,
-            text="🔢 Edad de Fin:",
+            text="Edad de Fin:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -6421,7 +6395,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Género
         gender_label = ctk.CTkLabel(
             fields_frame,
-            text="👥 Género:",
+            text="Género:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -6526,7 +6500,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         save_btn = ctk.CTkButton(
             buttons_frame,
-            text="💾 Guardar Equipo",
+            text="Guardar Equipo",
             width=180,
             height=50,
             command=save_team,
@@ -6541,7 +6515,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         cancel_btn = ctk.CTkButton(
             buttons_frame,
-            text="❌ Cancelar",
+            text="Cancelar",
             width=150,
             height=50,
             command=dialog.destroy,
@@ -6695,7 +6669,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         self.courses_prev_page_btn = ctk.CTkButton(
             pagination_buttons_frame,
-            text="◀ Anterior",
+            text="Anterior",
             width=100,
             height=30,
             command=self.courses_prev_page,
@@ -6706,7 +6680,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         self.courses_next_page_btn = ctk.CTkButton(
             pagination_buttons_frame,
-            text="Siguiente ▶",
+            text="Siguiente",
             width=100,
             height=30,
             command=self.courses_next_page,
@@ -6812,20 +6786,22 @@ Puedes agregar más matrículas usando este formulario."""
         
         edit_btn = ctk.CTkButton(
             actions_frame,
-            text="✏️",
-            width=30,
-            height=30,
+            text="Editar",
+            width=56,
+            height=28,
+            font=ctk.CTkFont(size=11),
             command=lambda c=course: self.edit_course(c),
             fg_color="#ffc107",
             hover_color="#e0a800"
         )
-        edit_btn.pack(side="left", padx=(0, 5))
+        edit_btn.pack(side="left", padx=(0, 4))
         
         delete_btn = ctk.CTkButton(
             actions_frame,
-            text="🗑️",
-            width=30,
-            height=30,
+            text="Eliminar",
+            width=56,
+            height=28,
+            font=ctk.CTkFont(size=11),
             command=lambda c=course: self.delete_course(c),
             fg_color="#dc3545",
             hover_color="#c82333"
@@ -6895,7 +6871,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título
         title = ctk.CTkLabel(
             main_frame,
-            text="📚 Agregar Curso" if not course else "✏️ Editar Curso",
+            text="Agregar Curso" if not course else "Editar Curso",
             font=ctk.CTkFont(size=24, weight="bold"),
             text_color="#1f538d"
         )
@@ -6912,7 +6888,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Nombre del curso
         name_label = ctk.CTkLabel(
             fields_frame,
-            text="📝 Nombre del Curso:",
+            text="Nombre del Curso:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -6931,7 +6907,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Nivel del curso
         level_label = ctk.CTkLabel(
             fields_frame,
-            text="🔢 Nivel del Curso:",
+            text="Nivel del Curso:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -7017,7 +6993,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         save_btn = ctk.CTkButton(
             buttons_frame,
-            text="💾 Guardar Curso",
+            text="Guardar Curso",
             width=180,
             height=50,
             command=save_course,
@@ -7032,7 +7008,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         cancel_btn = ctk.CTkButton(
             buttons_frame,
-            text="❌ Cancelar",
+            text="Cancelar",
             width=150,
             height=50,
             command=dialog.destroy,
@@ -7171,7 +7147,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         self.students_prev_page_btn = ctk.CTkButton(
             pagination_buttons_frame,
-            text="◀ Anterior",
+            text="Anterior",
             width=100,
             height=30,
             command=self.students_prev_page,
@@ -7182,7 +7158,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         self.students_next_page_btn = ctk.CTkButton(
             pagination_buttons_frame,
-            text="Siguiente ▶",
+            text="Siguiente",
             width=100,
             height=30,
             command=self.students_next_page,
@@ -7295,20 +7271,22 @@ Puedes agregar más matrículas usando este formulario."""
         
         edit_btn = ctk.CTkButton(
             actions_frame,
-            text="✏️",
-            width=30,
-            height=30,
+            text="Editar",
+            width=56,
+            height=28,
+            font=ctk.CTkFont(size=11),
             command=lambda s=student: self.edit_student(s),
             fg_color="#ffc107",
             hover_color="#e0a800"
         )
-        edit_btn.pack(side="left", padx=(0, 5))
+        edit_btn.pack(side="left", padx=(0, 4))
         
         delete_btn = ctk.CTkButton(
             actions_frame,
-            text="🗑️",
-            width=30,
-            height=30,
+            text="Eliminar",
+            width=56,
+            height=28,
+            font=ctk.CTkFont(size=11),
             command=lambda s=student: self.delete_student(s),
             fg_color="#dc3545",
             hover_color="#c82333"
@@ -7378,7 +7356,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título
         title = ctk.CTkLabel(
             main_frame,
-            text="👨‍🎓 Agregar Estudiante" if not student else "✏️ Editar Estudiante",
+            text="Agregar Estudiante" if not student else "Editar Estudiante",
             font=ctk.CTkFont(size=24, weight="bold"),
             text_color="#1f538d"
         )
@@ -7395,7 +7373,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Nombre del estudiante
         name_label = ctk.CTkLabel(
             fields_frame,
-            text="📝 Nombre:",
+            text="Nombre:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -7414,7 +7392,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Apellido del estudiante
         lastname_label = ctk.CTkLabel(
             fields_frame,
-            text="📝 Apellido:",
+            text="Apellido:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -7433,7 +7411,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Teléfono del estudiante
         phone_label = ctk.CTkLabel(
             fields_frame,
-            text="📞 Teléfono:",
+            text="Teléfono:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -7452,7 +7430,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Fecha de bautismo
         baptism_label = ctk.CTkLabel(
             fields_frame,
-            text="⛪ Fecha de Bautismo:",
+            text="Fecha de Bautismo:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -7471,7 +7449,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Fecha de nacimiento
         birth_label = ctk.CTkLabel(
             fields_frame,
-            text="🎂 Fecha de Nacimiento:",
+            text="Fecha de Nacimiento:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -7490,7 +7468,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Equipo (ComboBox con equipos disponibles)
         team_label = ctk.CTkLabel(
             fields_frame,
-            text="👥 Equipo:",
+            text="Equipo:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -7628,7 +7606,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         save_btn = ctk.CTkButton(
             buttons_frame,
-            text="💾 Guardar Estudiante",
+            text="Guardar Estudiante",
             width=200,
             height=50,
             command=save_student,
@@ -7643,7 +7621,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         cancel_btn = ctk.CTkButton(
             buttons_frame,
-            text="❌ Cancelar",
+            text="Cancelar",
             width=150,
             height=50,
             command=dialog.destroy,
@@ -7796,7 +7774,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         self.teachers_prev_page_btn = ctk.CTkButton(
             pagination_buttons_frame,
-            text="◀ Anterior",
+            text="Anterior",
             width=100,
             height=30,
             command=self.teachers_prev_page,
@@ -7807,7 +7785,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         self.teachers_next_page_btn = ctk.CTkButton(
             pagination_buttons_frame,
-            text="Siguiente ▶",
+            text="Siguiente",
             width=100,
             height=30,
             command=self.teachers_next_page,
@@ -7921,20 +7899,22 @@ Puedes agregar más matrículas usando este formulario."""
         
         edit_btn = ctk.CTkButton(
             actions_frame,
-            text="✏️",
-            width=30,
-            height=30,
+            text="Editar",
+            width=56,
+            height=28,
+            font=ctk.CTkFont(size=11),
             command=lambda t=teacher: self.edit_teacher(t),
             fg_color="#ffc107",
             hover_color="#e0a800"
         )
-        edit_btn.pack(side="left", padx=(0, 5))
+        edit_btn.pack(side="left", padx=(0, 4))
         
         delete_btn = ctk.CTkButton(
             actions_frame,
-            text="🗑️",
-            width=30,
-            height=30,
+            text="Eliminar",
+            width=56,
+            height=28,
+            font=ctk.CTkFont(size=11),
             command=lambda t=teacher: self.delete_teacher(t),
             fg_color="#dc3545",
             hover_color="#c82333"
@@ -8004,7 +7984,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Título
         title = ctk.CTkLabel(
             main_frame,
-            text="👨‍🏫 Agregar Docente" if not teacher else "✏️ Editar Docente",
+            text="Agregar Docente" if not teacher else "Editar Docente",
             font=ctk.CTkFont(size=24, weight="bold"),
             text_color="#1f538d"
         )
@@ -8021,7 +8001,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Nombre del docente
         name_label = ctk.CTkLabel(
             fields_frame,
-            text="📝 Nombre:",
+            text="Nombre:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -8040,7 +8020,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Apellido del docente
         lastname_label = ctk.CTkLabel(
             fields_frame,
-            text="📝 Apellido:",
+            text="Apellido:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -8059,7 +8039,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Teléfono del docente
         phone_label = ctk.CTkLabel(
             fields_frame,
-            text="📞 Teléfono:",
+            text="Teléfono:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -8078,7 +8058,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Fecha de bautismo
         baptism_label = ctk.CTkLabel(
             fields_frame,
-            text="⛪ Fecha de Bautismo:",
+            text="Fecha de Bautismo:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -8097,7 +8077,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Fecha de nacimiento
         birth_label = ctk.CTkLabel(
             fields_frame,
-            text="🎂 Fecha de Nacimiento:",
+            text="Fecha de Nacimiento:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -8116,7 +8096,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Equipo (ComboBox con equipos disponibles)
         team_label = ctk.CTkLabel(
             fields_frame,
-            text="👥 Equipo:",
+            text="Equipo:",
             font=ctk.CTkFont(size=16, weight="bold"),
             text_color="#333333"
         )
@@ -8254,7 +8234,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         save_btn = ctk.CTkButton(
             buttons_frame,
-            text="💾 Guardar Docente",
+            text="Guardar Docente",
             width=200,
             height=50,
             command=save_teacher,
@@ -8269,7 +8249,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         cancel_btn = ctk.CTkButton(
             buttons_frame,
-            text="❌ Cancelar",
+            text="Cancelar",
             width=150,
             height=50,
             command=dialog.destroy,
