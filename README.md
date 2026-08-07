@@ -92,9 +92,78 @@ de modo que la documentacion no se desincroniza del proyecto.
 
 ![Flujo de la aplicacion](diagrams/rendered/flujo.svg)
 
-### Modelo de ramas
+### Flujo de trabajo con Git
 
-![Gitflow](diagrams/rendered/gitflow.svg)
+El repositorio sigue Git Flow: `main` siempre desplegable, `develop` como
+integracion, y una rama por cambio. Los merges son `--no-ff` para que cada
+funcionalidad quede como un bloque legible en el historial, y cada version
+llega a `main` etiquetada.
+
+Este es el historial real del repositorio, no un ejemplo:
+
+```mermaid
+gitGraph
+   commit id: "Initial commit"
+   commit id: "+2 commits mas"
+   commit id: "Subbmit Dashboard Finished"
+   branch develop
+   branch fix/security-and-cleanup
+   commit id: "fix: remove hardcoded admin/admin ba..."
+   commit id: "chore: remove dead code (unused page..."
+   commit id: "+2 commits mas (2)"
+   checkout develop
+   merge fix/security-and-cleanup
+   branch feature/project-tooling
+   commit id: "chore: add requirements.txt and requ..."
+   commit id: "ci: add GitHub Actions workflow to r..."
+   checkout develop
+   merge feature/project-tooling
+   branch fix/update-tests-to-repository-api
+   commit id: "test: update repository tests to cur..."
+   checkout develop
+   merge fix/update-tests-to-repository-api
+   branch docs/readme-and-license
+   commit id: "docs: add proprietary license"
+   commit id: "docs: add app screenshots"
+   commit id: "+1 commits mas"
+   checkout develop
+   merge docs/readme-and-license
+   checkout main
+   merge develop tag: "portfolio release"
+   checkout develop
+   branch chore/remove-emojis
+   commit id: "chore: remove all emojis from UI, sc..."
+   checkout develop
+   merge chore/remove-emojis
+   branch feature/ui-polish
+   commit id: "feat: unify visual design with a sha..."
+   checkout develop
+   merge feature/ui-polish
+   branch docs/readme
+   commit id: "docs: rewrite README in a profession..."
+   checkout develop
+   merge docs/readme
+   branch fix/ui-details
+   commit id: "fix: keep table action buttons and c..."
+   checkout develop
+   merge fix/ui-details
+   checkout main
+   merge develop tag: "portfolio release"
+   checkout develop
+   branch chore/harden-gitignore
+   commit id: "chore: harden gitignore against comm..."
+   checkout develop
+   merge chore/harden-gitignore
+   checkout main
+   merge develop tag: "gitignore hardening"
+   checkout develop
+   branch docs/diagrams
+   commit id: "docs: add generated architecture and..."
+   checkout develop
+   merge docs/diagrams
+   checkout main
+   merge develop tag: "diagrams"
+```
 
 Regenerar despues de editar la especificacion:
 
