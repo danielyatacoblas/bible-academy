@@ -19,6 +19,7 @@ from control.inscription_repository import InscriptionRepository
 from control.payment_repository import PaymentRepository
 from tkinter import ttk
 from view.components.chart import ChartGenerator, create_matplotlib_widget
+from view import theme
 
 class DashboardPage:
     def __init__(self, parent, current_user=None):
@@ -56,6 +57,9 @@ class DashboardPage:
         ctk.set_appearance_mode("light")
         ctk.set_default_color_theme("blue")
         
+        # Estilo compartido de tablas
+        theme.apply_treeview_style()
+
         # Frame principal del dashboard
         self.main_frame = ctk.CTkFrame(self.parent, fg_color="transparent")
         self.main_frame.pack(fill="both", expand=True)
@@ -75,7 +79,7 @@ class DashboardPage:
         self.sidebar = ctk.CTkFrame(
             self.main_frame,
             width=250,
-            fg_color="#1f538d",
+            fg_color=theme.PRIMARY,
             corner_radius=0
         )
         self.sidebar.pack(side="left", fill="y")
@@ -104,7 +108,7 @@ class DashboardPage:
             self.user_frame,
             width=60,
             height=60,
-            fg_color="white",
+            fg_color=theme.SURFACE,
             corner_radius=8
         )
         self.logo_frame.pack(pady=(0, 10))
@@ -135,8 +139,8 @@ class DashboardPage:
                 self.logo_text = ctk.CTkLabel(
                     self.logo_frame,
                     text="AB",
-                    font=ctk.CTkFont(size=25, weight="bold"),
-                    text_color="#1f538d"
+                    font=theme.font(theme.SIZE_TITLE, "bold"),
+                    text_color=theme.PRIMARY
                 )
                 self.logo_text.pack(expand=True)
         except ImportError:
@@ -144,8 +148,8 @@ class DashboardPage:
             self.logo_text = ctk.CTkLabel(
                 self.logo_frame,
                 text="AB",
-                font=ctk.CTkFont(size=25, weight="bold"),
-                text_color="#1f538d"
+                font=theme.font(theme.SIZE_TITLE, "bold"),
+                text_color=theme.PRIMARY
             )
             self.logo_text.pack(expand=True)
         
@@ -153,8 +157,8 @@ class DashboardPage:
         self.user_name_label = ctk.CTkLabel(
             self.user_frame,
             text=self.current_user.get("user", "Usuario"),
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="white"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.SURFACE
         )
         self.user_name_label.pack()
         
@@ -162,8 +166,8 @@ class DashboardPage:
         self.user_role_label = ctk.CTkLabel(
             self.user_frame,
             text=self.current_user.get("role", "Usuario"),
-            font=ctk.CTkFont(size=12),
-            text_color="#b3d9ff"
+            font=theme.font(theme.SIZE_SMALL),
+            text_color=theme.TEXT_ON_PRIMARY_MUTED
         )
         self.user_role_label.pack()
         
@@ -190,16 +194,17 @@ class DashboardPage:
             btn = ctk.CTkButton(
                 self.menu_frame,
                 text=text,
-            width=200,
-            height=40,
-            font=ctk.CTkFont(size=14),
+                width=200,
+                height=42,
+                corner_radius=theme.RADIUS_SM,
+                font=theme.font(theme.SIZE_BODY),
                 command=lambda s=section: self.navigate_to_section(s),
                 fg_color="transparent",
-                hover_color="#0d47a1",
-                text_color="white",
+                hover_color=theme.PRIMARY_DARK,
+                text_color=theme.SURFACE,
                 anchor="w"
             )
-            btn.pack(fill="x", pady=2)
+            btn.pack(fill="x", pady=theme.SPACE_XS // 2)
             self.menu_buttons[section] = btn
             
     def create_config_section(self):
@@ -214,11 +219,11 @@ class DashboardPage:
             text="Configuración",
             width=200,
             height=40,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             command=lambda: self.navigate_to_section("configuracion"),
             fg_color="transparent",
-            hover_color="#0d47a1",
-            text_color="white",
+            hover_color=theme.PRIMARY_DARK,
+            text_color=theme.SURFACE,
             anchor="w"
         )
         self.config_btn.pack(fill="x", pady=2)
@@ -229,11 +234,11 @@ class DashboardPage:
             text="Cerrar Sesión",
             width=200,
             height=40,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             command=self.logout,
-            fg_color="#dc3545",
-            hover_color="#c82333",
-            text_color="white",
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK,
+            text_color=theme.SURFACE,
             anchor="w"
         )
         self.logout_btn.pack(fill="x", pady=2)
@@ -243,7 +248,7 @@ class DashboardPage:
         # Frame del contenido
         self.content_frame = ctk.CTkFrame(
             self.main_frame,
-            fg_color="transparent",
+            fg_color=theme.BACKGROUND,
             corner_radius=0
         )
         self.content_frame.pack(side="right", fill="both", expand=True)
@@ -253,7 +258,7 @@ class DashboardPage:
         # Actualizar botones del menú
         for btn_section, btn in self.menu_buttons.items():
             if btn_section == section:
-                btn.configure(fg_color="#0d47a1")
+                btn.configure(fg_color=theme.PRIMARY_DARK)
             else:
                 btn.configure(fg_color="transparent")
         
@@ -282,18 +287,32 @@ class DashboardPage:
             
     def show_dashboard_content(self):
         """Mostrar contenido del dashboard con indicadores y gráficos"""
-        # Título
+        # Cabecera
+        header = ctk.CTkFrame(self.content_frame, fg_color="transparent")
+        header.pack(fill="x", padx=theme.SPACE_XL, pady=(theme.SPACE_LG, theme.SPACE_SM))
+
         title = ctk.CTkLabel(
-            self.content_frame,
-            text="Dashboard - Academia Bíblica",
-            font=ctk.CTkFont(size=28, weight="bold"),
-            text_color="#1f538d"
+            header,
+            text="Dashboard",
+            font=theme.font(theme.SIZE_DISPLAY, "bold"),
+            text_color=theme.PRIMARY,
+            anchor="w"
         )
-        title.pack(pady=(20, 10))
-        
+        title.pack(anchor="w")
+
+        subtitle = ctk.CTkLabel(
+            header,
+            text="Resumen general de la Academia Bíblica",
+            font=theme.font(theme.SIZE_BODY),
+            text_color=theme.TEXT_MUTED,
+            anchor="w"
+        )
+        subtitle.pack(anchor="w", pady=(2, 0))
+
         # Frame principal con scroll
         main_frame = ctk.CTkScrollableFrame(self.content_frame, fg_color="transparent")
-        main_frame.pack(fill="both", expand=True, padx=20, pady=(0, 20))
+        main_frame.pack(fill="both", expand=True,
+                        padx=theme.SPACE_LG, pady=(theme.SPACE_SM, theme.SPACE_LG))
         
         # Crear indicadores
         self.create_dashboard_indicators(main_frame)
@@ -307,14 +326,14 @@ class DashboardPage:
         indicators_title = ctk.CTkLabel(
             parent,
             text="Indicadores Principales",
-            font=ctk.CTkFont(size=20, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
-        indicators_title.pack(pady=(10, 15), anchor="w")
-        
+        indicators_title.pack(pady=(theme.SPACE_SM, theme.SPACE_MD), anchor="w")
+
         # Frame para los indicadores
         indicators_frame = ctk.CTkFrame(parent, fg_color="transparent")
-        indicators_frame.pack(fill="x", pady=(0, 20))
+        indicators_frame.pack(fill="x", pady=(0, theme.SPACE_LG))
         
         # Obtener estadísticas
         stats = self.get_dashboard_statistics()
@@ -324,7 +343,7 @@ class DashboardPage:
             indicators_frame,
             title="Total Estudiantes",
             value=str(stats["total_students"]),
-            color="#28a745",
+            color=theme.SUCCESS,
             row=0,
             column=0
         )
@@ -334,7 +353,7 @@ class DashboardPage:
             indicators_frame,
             title="Aulas Activas",
             value=str(stats["active_classrooms"]),
-            color="#007bff",
+            color=theme.INFO,
             row=0,
             column=1
         )
@@ -344,7 +363,7 @@ class DashboardPage:
             indicators_frame,
             title="Matrículas del Mes",
             value=str(stats["monthly_inscriptions"]),
-            color="#ffc107",
+            color=theme.WARNING,
             row=0,
             column=2
         )
@@ -354,36 +373,42 @@ class DashboardPage:
         # Frame de la tarjeta
         card = ctk.CTkFrame(
             parent,
-            width=200,
-            height=120,
-            corner_radius=15,
-            fg_color="white",
-            border_width=2,
-            border_color=color
+            width=220,
+            height=118,
+            corner_radius=theme.RADIUS_LG,
+            fg_color=theme.SURFACE,
+            border_width=1,
+            border_color=theme.BORDER
         )
-        card.grid(row=row, column=column, padx=10, pady=5, sticky="ew")
+        card.grid(row=row, column=column,
+                  padx=(0 if column == 0 else theme.SPACE_SM, theme.SPACE_SM),
+                  pady=theme.SPACE_XS, sticky="ew")
         card.grid_propagate(False)
-        
+
         # Configurar peso de columna
         parent.grid_columnconfigure(column, weight=1)
-        
+
+        # Franja de acento superior
+        accent = ctk.CTkFrame(card, height=4, corner_radius=2, fg_color=color)
+        accent.pack(fill="x", padx=theme.SPACE_MD, pady=(theme.SPACE_MD, 0))
+
         # Valor
         value_label = ctk.CTkLabel(
             card,
             text=value,
-            font=ctk.CTkFont(size=32, weight="bold"),
-            text_color=color
+            font=theme.font(theme.SIZE_METRIC, "bold"),
+            text_color=theme.TEXT
         )
-        value_label.pack(pady=(28, 5))
-        
+        value_label.pack(pady=(theme.SPACE_SM, 0))
+
         # Título
         title_label = ctk.CTkLabel(
             card,
-            text=title,
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#666666"
+            text=title.upper(),
+            font=theme.font(theme.SIZE_CAPTION, "bold"),
+            text_color=theme.TEXT_MUTED
         )
-        title_label.pack(pady=(0, 15))
+        title_label.pack(pady=(theme.SPACE_XS, theme.SPACE_MD))
     
     def get_dashboard_statistics(self):
         """Obtener estadísticas para el dashboard"""
@@ -415,11 +440,11 @@ class DashboardPage:
         # Título de gráficos
         charts_title = ctk.CTkLabel(
             parent,
-            text="Gráficos y Estadísticas Avanzadas",
-            font=ctk.CTkFont(size=20, weight="bold"),
-            text_color="#1f538d"
+            text="Gráficos y Estadísticas",
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
-        charts_title.pack(pady=(20, 15), anchor="w")
+        charts_title.pack(pady=(theme.SPACE_MD, theme.SPACE_MD), anchor="w")
         
         # Frame principal para los gráficos
         charts_main_frame = ctk.CTkFrame(parent, fg_color="transparent")
@@ -427,7 +452,7 @@ class DashboardPage:
         
         # Primera fila de gráficos (3 gráficos)
         first_row_frame = ctk.CTkFrame(charts_main_frame, fg_color="transparent")
-        first_row_frame.pack(fill="x", pady=(0, 10))
+        first_row_frame.pack(fill="x", pady=(0, theme.SPACE_SM))
         first_row_frame.grid_columnconfigure(0, weight=1)
         first_row_frame.grid_columnconfigure(1, weight=1)
         first_row_frame.grid_columnconfigure(2, weight=1)
@@ -443,7 +468,7 @@ class DashboardPage:
         
         # Segunda fila de gráficos (2 gráficos nuevos)
         second_row_frame = ctk.CTkFrame(charts_main_frame, fg_color="transparent")
-        second_row_frame.pack(fill="x", pady=(10, 0))
+        second_row_frame.pack(fill="x", pady=(theme.SPACE_SM, 0))
         second_row_frame.grid_columnconfigure(0, weight=1)
         second_row_frame.grid_columnconfigure(1, weight=1)
         
@@ -460,11 +485,15 @@ class DashboardPage:
             chart_frame = ctk.CTkFrame(
                 parent,
                 width=350,
-                height=280,
-                corner_radius=15,
-                fg_color="white"
+                height=320,
+                corner_radius=theme.RADIUS_LG,
+                fg_color=theme.SURFACE,
+                border_width=1,
+                border_color=theme.BORDER
             )
-            chart_frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+            chart_frame.grid(row=row, column=column,
+                             padx=(0 if column == 0 else theme.SPACE_SM, theme.SPACE_SM),
+                             pady=theme.SPACE_SM, sticky="nsew")
             chart_frame.pack_propagate(False)
             
             # Obtener datos para el gráfico de línea
@@ -482,7 +511,8 @@ class DashboardPage:
             
             # Crear widget de matplotlib
             canvas = create_matplotlib_widget(fig, chart_frame)
-            canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
+            canvas.get_tk_widget().pack(fill="both", expand=True,
+                                        padx=theme.SPACE_SM, pady=theme.SPACE_SM)
             
         except Exception as e:
             print(f"Error creando gráfico de línea: {e}")
@@ -490,8 +520,8 @@ class DashboardPage:
             error_label = ctk.CTkLabel(
                 chart_frame,
                 text="Error al cargar gráfico de línea",
-                font=ctk.CTkFont(size=12),
-                text_color="#dc3545"
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.DANGER
             )
             error_label.pack(expand=True)
     
@@ -502,11 +532,15 @@ class DashboardPage:
             chart_frame = ctk.CTkFrame(
                 parent,
                 width=350,
-                height=280,
-                corner_radius=15,
-                fg_color="white"
+                height=320,
+                corner_radius=theme.RADIUS_LG,
+                fg_color=theme.SURFACE,
+                border_width=1,
+                border_color=theme.BORDER
             )
-            chart_frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+            chart_frame.grid(row=row, column=column,
+                             padx=(0 if column == 0 else theme.SPACE_SM, theme.SPACE_SM),
+                             pady=theme.SPACE_SM, sticky="nsew")
             chart_frame.pack_propagate(False)
             
             # Obtener datos para el gráfico de pastel
@@ -525,7 +559,8 @@ class DashboardPage:
             
             # Crear widget de matplotlib
             canvas = create_matplotlib_widget(fig, chart_frame)
-            canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
+            canvas.get_tk_widget().pack(fill="both", expand=True,
+                                        padx=theme.SPACE_SM, pady=theme.SPACE_SM)
             
         except Exception as e:
             print(f"Error creando gráfico de pastel: {e}")
@@ -533,8 +568,8 @@ class DashboardPage:
             error_label = ctk.CTkLabel(
                 chart_frame,
                 text="Error al cargar gráfico de pastel",
-                font=ctk.CTkFont(size=12),
-                text_color="#dc3545"
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.DANGER
             )
             error_label.pack(expand=True)
     
@@ -545,11 +580,15 @@ class DashboardPage:
             chart_frame = ctk.CTkFrame(
                 parent,
                 width=350,
-                height=280,
-                corner_radius=15,
-                fg_color="white"
+                height=320,
+                corner_radius=theme.RADIUS_LG,
+                fg_color=theme.SURFACE,
+                border_width=1,
+                border_color=theme.BORDER
             )
-            chart_frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+            chart_frame.grid(row=row, column=column,
+                             padx=(0 if column == 0 else theme.SPACE_SM, theme.SPACE_SM),
+                             pady=theme.SPACE_SM, sticky="nsew")
             chart_frame.pack_propagate(False)
             
             # Obtener datos para el gráfico de barras
@@ -568,7 +607,8 @@ class DashboardPage:
             
             # Crear widget de matplotlib
             canvas = create_matplotlib_widget(fig, chart_frame)
-            canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
+            canvas.get_tk_widget().pack(fill="both", expand=True,
+                                        padx=theme.SPACE_SM, pady=theme.SPACE_SM)
             
         except Exception as e:
             print(f"Error creando gráfico de barras: {e}")
@@ -576,8 +616,8 @@ class DashboardPage:
             error_label = ctk.CTkLabel(
                 chart_frame,
                 text="Error al cargar gráfico de barras",
-                font=ctk.CTkFont(size=12),
-                text_color="#dc3545"
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.DANGER
             )
             error_label.pack(expand=True)
     
@@ -588,11 +628,15 @@ class DashboardPage:
             chart_frame = ctk.CTkFrame(
                 parent,
                 width=350,
-                height=280,
-                corner_radius=15,
-                fg_color="white"
+                height=320,
+                corner_radius=theme.RADIUS_LG,
+                fg_color=theme.SURFACE,
+                border_width=1,
+                border_color=theme.BORDER
             )
-            chart_frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+            chart_frame.grid(row=row, column=column,
+                             padx=(0 if column == 0 else theme.SPACE_SM, theme.SPACE_SM),
+                             pady=theme.SPACE_SM, sticky="nsew")
             chart_frame.pack_propagate(False)
             
             # Obtener datos para el histograma
@@ -611,7 +655,8 @@ class DashboardPage:
             
             # Crear widget de matplotlib
             canvas = create_matplotlib_widget(fig, chart_frame)
-            canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
+            canvas.get_tk_widget().pack(fill="both", expand=True,
+                                        padx=theme.SPACE_SM, pady=theme.SPACE_SM)
             
         except Exception as e:
             print(f"Error creando histograma: {e}")
@@ -619,8 +664,8 @@ class DashboardPage:
             error_label = ctk.CTkLabel(
                 chart_frame,
                 text="Error al cargar histograma",
-                font=ctk.CTkFont(size=12),
-                text_color="#dc3545"
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.DANGER
             )
             error_label.pack(expand=True)
     
@@ -631,11 +676,15 @@ class DashboardPage:
             chart_frame = ctk.CTkFrame(
                 parent,
                 width=350,
-                height=280,
-                corner_radius=15,
-                fg_color="white"
+                height=320,
+                corner_radius=theme.RADIUS_LG,
+                fg_color=theme.SURFACE,
+                border_width=1,
+                border_color=theme.BORDER
             )
-            chart_frame.grid(row=row, column=column, padx=10, pady=10, sticky="nsew")
+            chart_frame.grid(row=row, column=column,
+                             padx=(0 if column == 0 else theme.SPACE_SM, theme.SPACE_SM),
+                             pady=theme.SPACE_SM, sticky="nsew")
             chart_frame.pack_propagate(False)
             
             # Obtener datos para el gráfico de dispersión
@@ -656,7 +705,8 @@ class DashboardPage:
             
             # Crear widget de matplotlib
             canvas = create_matplotlib_widget(fig, chart_frame)
-            canvas.get_tk_widget().pack(fill="both", expand=True, padx=10, pady=10)
+            canvas.get_tk_widget().pack(fill="both", expand=True,
+                                        padx=theme.SPACE_SM, pady=theme.SPACE_SM)
             
         except Exception as e:
             print(f"Error creando gráfico de dispersión: {e}")
@@ -664,14 +714,14 @@ class DashboardPage:
             error_label = ctk.CTkLabel(
                 chart_frame,
                 text="Error al cargar gráfico de dispersión",
-                font=ctk.CTkFont(size=12),
-                text_color="#dc3545"
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.DANGER
             )
             error_label.pack(expand=True)
     
     def get_chart_color(self, index):
         """Obtener color para gráficos basado en índice"""
-        colors = ["#28a745", "#007bff", "#ffc107", "#dc3545", "#6f42c1", "#20c997"]
+        colors = [theme.SUCCESS, theme.INFO, theme.WARNING, theme.DANGER, theme.ACCENT, theme.SUCCESS]
         return colors[index % len(colors)]
         
     def show_academia_content(self):
@@ -728,7 +778,8 @@ class DashboardPage:
         """Mostrar contenido de gestión de Ciclos"""
         # Frame principal para Ciclo
         ciclo_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        ciclo_frame.pack(fill="both", expand=True, padx=20, pady=(0, 0))
+        ciclo_frame.pack(fill="both", expand=True, padx=theme.SPACE_XL,
+                         pady=(theme.SPACE_LG, 0))
         
         # Header con título y botones de acción
         header_frame = ctk.CTkFrame(ciclo_frame, fg_color="transparent")
@@ -737,9 +788,9 @@ class DashboardPage:
         # Título principal
         title_label = ctk.CTkLabel(
             header_frame,
-            text="CICLOS",
-            font=ctk.CTkFont(size=36, weight="bold"),
-            text_color="#1f538d"
+            text="Ciclos",
+            font=theme.font(theme.SIZE_DISPLAY, "bold"),
+            text_color=theme.PRIMARY
         )
         title_label.pack(side="left", pady=(0, 5))
         
@@ -754,9 +805,9 @@ class DashboardPage:
             width=160,
             height=42,
             command=self.finalizar_ciclo_activo,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=13, weight="bold")
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         finalizar_btn.pack(side="right", padx=(8, 0))
         
@@ -767,9 +818,9 @@ class DashboardPage:
             width=160,
             height=42,
             command=self.export_ciclos_excel,
-            fg_color="#17a2b8",
-            hover_color="#138496",
-            font=ctk.CTkFont(size=13, weight="bold")
+            fg_color=theme.INFO,
+            hover_color=theme.INFO_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         export_btn.pack(side="right", padx=(8, 0))
         
@@ -780,9 +831,9 @@ class DashboardPage:
             width=160,
             height=42,
             command=self.show_add_ciclo_dialog,
-            fg_color="#007bff",
-            hover_color="#0056b3",
-            font=ctk.CTkFont(size=13, weight="bold")
+            fg_color=theme.INFO,
+            hover_color=theme.PRIMARY_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         add_ciclo_btn.pack(side="right", padx=(8, 0))
         
@@ -800,15 +851,15 @@ class DashboardPage:
     
     def create_ciclo_filters(self, parent):
         """Crear filtros para la tabla de ciclos"""
-        filters_frame = ctk.CTkFrame(parent, fg_color="white", corner_radius=15)
+        filters_frame = ctk.CTkFrame(parent, fg_color=theme.SURFACE, corner_radius=15)
         filters_frame.pack(fill="x", pady=(0, 12))
         
         # Título de filtros
         filters_title = ctk.CTkLabel(
             filters_frame,
-            text="FILTROS DE BÚSQUEDA",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#1f538d"
+            text="Filtros de Búsqueda",
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         filters_title.pack(pady=(12, 8))
         
@@ -820,7 +871,7 @@ class DashboardPage:
         encargado_frame = ctk.CTkFrame(filters_row1, fg_color="transparent")
         encargado_frame.pack(side="left", padx=(0, 25))
         
-        encargado_label = ctk.CTkLabel(encargado_frame, text="Encargado:", font=ctk.CTkFont(size=13, weight="bold"))
+        encargado_label = ctk.CTkLabel(encargado_frame, text="Encargado:", font=theme.font(theme.SIZE_BODY, "bold"))
         encargado_label.pack(anchor="w")
         
         self.ciclo_encargado_var = ctk.StringVar()
@@ -838,7 +889,7 @@ class DashboardPage:
         año_frame = ctk.CTkFrame(filters_row1, fg_color="transparent")
         año_frame.pack(side="left", padx=(0, 25))
         
-        año_label = ctk.CTkLabel(año_frame, text="Año:", font=ctk.CTkFont(size=13, weight="bold"))
+        año_label = ctk.CTkLabel(año_frame, text="Año:", font=theme.font(theme.SIZE_BODY, "bold"))
         año_label.pack(anchor="w")
         
         self.ciclo_año_var = ctk.StringVar()
@@ -857,7 +908,7 @@ class DashboardPage:
         ciclo_frame = ctk.CTkFrame(filters_row1, fg_color="transparent")
         ciclo_frame.pack(side="left", padx=(0, 25))
         
-        ciclo_label = ctk.CTkLabel(ciclo_frame, text="Ciclo:", font=ctk.CTkFont(size=13, weight="bold"))
+        ciclo_label = ctk.CTkLabel(ciclo_frame, text="Ciclo:", font=theme.font(theme.SIZE_BODY, "bold"))
         ciclo_label.pack(anchor="w")
         
         self.ciclo_numero_var = ctk.StringVar()
@@ -880,7 +931,7 @@ class DashboardPage:
         fecha_inicio_frame = ctk.CTkFrame(filters_row2, fg_color="transparent")
         fecha_inicio_frame.pack(side="left", padx=(0, 25))
         
-        fecha_inicio_label = ctk.CTkLabel(fecha_inicio_frame, text="Fecha Inicio:", font=ctk.CTkFont(size=13, weight="bold"))
+        fecha_inicio_label = ctk.CTkLabel(fecha_inicio_frame, text="Fecha Inicio:", font=theme.font(theme.SIZE_BODY, "bold"))
         fecha_inicio_label.pack(anchor="w")
         
         self.ciclo_fecha_inicio_var = ctk.StringVar()
@@ -898,7 +949,7 @@ class DashboardPage:
         fecha_cierre_frame = ctk.CTkFrame(filters_row2, fg_color="transparent")
         fecha_cierre_frame.pack(side="left", padx=(0, 25))
         
-        fecha_cierre_label = ctk.CTkLabel(fecha_cierre_frame, text="Fecha Cierre:", font=ctk.CTkFont(size=13, weight="bold"))
+        fecha_cierre_label = ctk.CTkLabel(fecha_cierre_frame, text="Fecha Cierre:", font=theme.font(theme.SIZE_BODY, "bold"))
         fecha_cierre_label.pack(anchor="w")
         
         self.ciclo_fecha_cierre_var = ctk.StringVar()
@@ -919,9 +970,9 @@ class DashboardPage:
             width=140,
             height=32,
             command=self.clear_ciclo_filters,
-            fg_color="#6c757d",
-            hover_color="#5a6268",
-            font=ctk.CTkFont(size=12)
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SMALL)
         )
         clear_filters_btn.pack(side="right", pady=(25, 0))
     
@@ -930,39 +981,23 @@ class DashboardPage:
         # Título de la tabla
         table_title = ctk.CTkLabel(
             parent,
-            text="LISTADO DE CICLOS",
-            font=ctk.CTkFont(size=20, weight="bold"),
-            text_color="#1f538d"
+            text="Listado de Ciclos",
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         table_title.pack(pady=(0, 8), anchor="w")
         
         # Frame principal de la tabla
-        table_frame = ctk.CTkFrame(parent, fg_color="white", corner_radius=15)
+        table_frame = ctk.CTkFrame(parent, fg_color=theme.SURFACE, corner_radius=15)
         table_frame.pack(fill="both", expand=True, pady=(0, 10))
         
-        # Configurar estilo de la tabla
-        style = ttk.Style()
-        style.theme_use("clam")
-        style.configure("Treeview",
-                       background="white",
-                       foreground="black",
-                       rowheight=40,
-                       fieldbackground="white",
-                       font=("Arial", 11))
-        style.configure("Treeview.Heading",
-                       background="#1f538d",
-                       foreground="white",
-                       font=("Arial", 12, "bold"))
-        style.map("Treeview.Heading",
-                 background=[("active", "#0056b3")])
-        
-        # Configurar tags para filas
-        style.configure("activo.Treeview", background="#e8f5e8")
-        style.configure("inactivo.Treeview", background="#f8f9fa")
-        
+        # El estilo de tabla se define una sola vez en view/theme.py
+        theme.apply_treeview_style()
+
         columns = ("Estado", "Año", "Ciclo", "Fecha Inicio", "Fecha Fin", "Encargado", "Acciones")
         self.ciclo_tree = ttk.Treeview(table_frame, columns=columns, show="headings", height=12)
-        
+        theme.tag_treeview_rows(self.ciclo_tree)
+
         # Configurar encabezados
         self.ciclo_tree.heading("Estado", text="ESTADO")
         self.ciclo_tree.heading("Año", text="AÑO")
@@ -998,7 +1033,7 @@ class DashboardPage:
     
     def create_ciclo_pagination(self, parent):
         """Crear controles de paginación para ciclos"""
-        pagination_frame = ctk.CTkFrame(parent, fg_color="white", corner_radius=12)
+        pagination_frame = ctk.CTkFrame(parent, fg_color=theme.SURFACE, corner_radius=12)
         pagination_frame.pack(fill="x", pady=(0, 10))
         
         # Frame para información de paginación
@@ -1008,8 +1043,8 @@ class DashboardPage:
         self.ciclo_pagination_label = ctk.CTkLabel(
             info_frame,
             text="1/1 Páginas",
-            font=ctk.CTkFont(size=13, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_BODY, "bold"),
+            text_color=theme.PRIMARY
         )
         self.ciclo_pagination_label.pack()
         
@@ -1023,9 +1058,9 @@ class DashboardPage:
             width=110,
             height=32,
             command=self.previous_ciclo_page,
-            fg_color="#6c757d",
-            hover_color="#5a6268",
-            font=ctk.CTkFont(size=11, weight="bold")
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_CAPTION, "bold")
         )
         prev_btn.pack(side="left", padx=(0, 8))
         
@@ -1035,9 +1070,9 @@ class DashboardPage:
             width=110,
             height=32,
             command=self.next_ciclo_page,
-            fg_color="#007bff",
-            hover_color="#0056b3",
-            font=ctk.CTkFont(size=11, weight="bold")
+            fg_color=theme.INFO,
+            hover_color=theme.PRIMARY_DARK,
+            font=theme.font(theme.SIZE_CAPTION, "bold")
         )
         next_btn.pack(side="left")
     
@@ -1257,9 +1292,9 @@ class DashboardPage:
         # Título
         title = ctk.CTkLabel(
             dialog,
-            text="AGREGAR CICLO",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            text_color="#1f538d"
+            text="Agregar Ciclo",
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=20)
         
@@ -1268,7 +1303,7 @@ class DashboardPage:
         fields_frame.pack(fill="x", padx=20, pady=(0, 20))
         
         # Ciclo
-        ciclo_label = ctk.CTkLabel(fields_frame, text="Ciclo:", font=ctk.CTkFont(size=14))
+        ciclo_label = ctk.CTkLabel(fields_frame, text="Ciclo:", font=theme.font(theme.SIZE_BODY))
         ciclo_label.pack(pady=(0, 5), anchor="w")
         
         ciclo_var = ctk.StringVar()
@@ -1282,7 +1317,7 @@ class DashboardPage:
         ciclo_combo.pack(pady=(0, 15))
         
         # Encargado
-        encargado_label = ctk.CTkLabel(fields_frame, text="Encargado:", font=ctk.CTkFont(size=14))
+        encargado_label = ctk.CTkLabel(fields_frame, text="Encargado:", font=theme.font(theme.SIZE_BODY))
         encargado_label.pack(pady=(0, 5), anchor="w")
         
         encargado_entry = ctk.CTkEntry(
@@ -1294,7 +1329,7 @@ class DashboardPage:
         encargado_entry.pack(pady=(0, 15))
         
         # Fecha Inicio
-        fecha_inicio_label = ctk.CTkLabel(fields_frame, text="Fecha Inicio:", font=ctk.CTkFont(size=14))
+        fecha_inicio_label = ctk.CTkLabel(fields_frame, text="Fecha Inicio:", font=theme.font(theme.SIZE_BODY))
         fecha_inicio_label.pack(pady=(0, 5), anchor="w")
         
         fecha_inicio_entry = ctk.CTkEntry(
@@ -1306,7 +1341,7 @@ class DashboardPage:
         fecha_inicio_entry.pack(pady=(0, 15))
         
         # Fecha Fin
-        fecha_fin_label = ctk.CTkLabel(fields_frame, text="Fecha Fin:", font=ctk.CTkFont(size=14))
+        fecha_fin_label = ctk.CTkLabel(fields_frame, text="Fecha Fin:", font=theme.font(theme.SIZE_BODY))
         fecha_fin_label.pack(pady=(0, 5), anchor="w")
         
         fecha_fin_entry = ctk.CTkEntry(
@@ -1356,25 +1391,25 @@ class DashboardPage:
         # Botones (más grandes y centrados)
         add_btn = ctk.CTkButton(
             buttons_frame,
-            text="AGREGAR CICLO",
+            text="Agregar Ciclo",
             width=200,
             height=50,
             command=add_ciclo,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=18, weight="bold")
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_SECTION, "bold")
         )
         add_btn.pack(side="left", padx=(0, 20))
         
         cancel_btn = ctk.CTkButton(
             buttons_frame,
-            text="CANCELAR",
+            text="Cancelar",
             width=200,
             height=50,
             command=cancel,
-            fg_color="#dc3545",
-            hover_color="#c82333",
-            font=ctk.CTkFont(size=18, weight="bold")
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK,
+            font=theme.font(theme.SIZE_SECTION, "bold")
         )
         cancel_btn.pack(side="left")
         
@@ -1581,22 +1616,22 @@ class DashboardPage:
         # Título
         title = ctk.CTkLabel(
             dialog,
-            text=f"AULAS - CICLO {ciclo_data.get('cicle')} {ciclo_data.get('date_start')[:4]}",
-            font=ctk.CTkFont(size=20, weight="bold"),
-            text_color="#1f538d"
+            text=f"Aulas - Ciclo {ciclo_data.get('cicle')} {ciclo_data.get('date_start')[:4]}",
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=20)
         
         # Información del ciclo
-        info_frame = ctk.CTkFrame(dialog, fg_color="#e3f2fd", corner_radius=8)
+        info_frame = ctk.CTkFrame(dialog, fg_color=theme.PRIMARY_SOFT, corner_radius=8)
         info_frame.pack(fill="x", padx=20, pady=(0, 20))
         
         info_text = f"Período: {ciclo_data.get('date_start')} - {ciclo_data.get('date_end')} | Encargado: {ciclo_data.get('manager')}"
         info_label = ctk.CTkLabel(
             info_frame,
             text=info_text,
-            font=ctk.CTkFont(size=12),
-            text_color="#1565c0"
+            font=theme.font(theme.SIZE_SMALL),
+            text_color=theme.PRIMARY_LIGHT
         )
         info_label.pack(pady=10)
         
@@ -1611,9 +1646,9 @@ class DashboardPage:
             width=150,
             height=40,
             command=lambda: self.show_add_aula_dialog(ciclo_data.get('id'), aulas_tree),
-            fg_color="#007bff",
-            hover_color="#0056b3",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.INFO,
+            hover_color=theme.PRIMARY_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         add_aula_btn.pack(side="right", padx=(10, 0))
         
@@ -1624,9 +1659,9 @@ class DashboardPage:
             width=150,
             height=40,
             command=lambda: self.show_matricula_from_aulas(ciclo_data),
-            fg_color="#6f42c1",
-            hover_color="#5a32a3",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.ACCENT,
+            hover_color=theme.ACCENT_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         matricula_btn.pack(side="right")
         
@@ -1671,9 +1706,9 @@ class DashboardPage:
             width=100,
             height=35,
             command=dialog.destroy,
-            fg_color="#6c757d",
-            hover_color="#5a6268",
-            font=ctk.CTkFont(size=12)
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SMALL)
         )
         close_btn.pack(pady=(0, 20))
     
@@ -1755,22 +1790,22 @@ class DashboardPage:
         # Título
         title = ctk.CTkLabel(
             dialog,
-            text=f"MATRICULADOS - {aula_name}",
-            font=ctk.CTkFont(size=20, weight="bold"),
-            text_color="#1f538d"
+            text=f"Matriculados - {aula_name}",
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=20)
         
         # Información del aula y ciclo
-        info_frame = ctk.CTkFrame(dialog, fg_color="#e8f5e8", corner_radius=8)
+        info_frame = ctk.CTkFrame(dialog, fg_color=theme.SUCCESS_SOFT, corner_radius=8)
         info_frame.pack(fill="x", padx=20, pady=(0, 20))
         
         info_text = f"Aula: {aula_name} | Ciclo: {ciclo_data.get('cicle')} {ciclo_data.get('date_start')[:4]} | Encargado: {ciclo_data.get('manager')}"
         info_label = ctk.CTkLabel(
             info_frame,
             text=info_text,
-            font=ctk.CTkFont(size=12),
-            text_color="#2e7d32"
+            font=theme.font(theme.SIZE_SMALL),
+            text_color=theme.SUCCESS_DARK
         )
         info_label.pack(pady=10)
         
@@ -1781,9 +1816,9 @@ class DashboardPage:
             width=180,
             height=40,
             command=lambda: self.show_add_matricula_dialog(aula_name, ciclo_data),
-            fg_color="#6f42c1",
-            hover_color="#5a32a3",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.ACCENT,
+            hover_color=theme.ACCENT_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         add_matricula_btn.pack(pady=(0, 20), padx=20, anchor="e")
         
@@ -1834,9 +1869,9 @@ class DashboardPage:
             width=100,
             height=35,
             command=dialog.destroy,
-            fg_color="#6c757d",
-            hover_color="#5a6268",
-            font=ctk.CTkFont(size=12)
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SMALL)
         )
         close_btn.pack(pady=(0, 20))
     
@@ -2062,9 +2097,9 @@ class DashboardPage:
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text=f"EDITAR MATRÍCULA - {estudiante_name}",
-                font=ctk.CTkFont(size=20, weight="bold"),
-                text_color="#1f538d"
+                text=f"Editar Matrícula - {estudiante_name}",
+                font=theme.font(theme.SIZE_TITLE, "bold"),
+                text_color=theme.PRIMARY
             )
             title.pack(pady=20)
             
@@ -2080,7 +2115,7 @@ class DashboardPage:
             material_status_var = ctk.BooleanVar(value=bool(inscription_data.get('status_material', True)))
             
             # Campo: Año
-            ctk.CTkLabel(main_frame, text="Año:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Año:", font=theme.font(theme.SIZE_BODY, "bold")).pack(anchor="w", pady=(10, 5))
             year_entry = ctk.CTkEntry(
                 main_frame,
                 textvariable=year_var,
@@ -2090,7 +2125,7 @@ class DashboardPage:
             year_entry.pack(fill="x", pady=(0, 10))
             
             # Campo: Ciclo
-            ctk.CTkLabel(main_frame, text="Ciclo:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Ciclo:", font=theme.font(theme.SIZE_BODY, "bold")).pack(anchor="w", pady=(10, 5))
             cycle_entry = ctk.CTkEntry(
                 main_frame,
                 textvariable=cycle_var,
@@ -2100,7 +2135,7 @@ class DashboardPage:
             cycle_entry.pack(fill="x", pady=(0, 10))
             
             # Campo: Tipo de Material
-            ctk.CTkLabel(main_frame, text="Tipo de Material:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Tipo de Material:", font=theme.font(theme.SIZE_BODY, "bold")).pack(anchor="w", pady=(10, 5))
             material_combo = ctk.CTkComboBox(
                 main_frame,
                 variable=material_type,
@@ -2115,7 +2150,7 @@ class DashboardPage:
                 main_frame,
                 text="Matrícula Activa",
                 variable=status_var,
-                font=ctk.CTkFont(size=14, weight="bold")
+                font=theme.font(theme.SIZE_BODY, "bold")
             )
             status_checkbox.pack(anchor="w", pady=(10, 5))
             
@@ -2124,7 +2159,7 @@ class DashboardPage:
                 main_frame,
                 text="Material Entregado",
                 variable=material_status_var,
-                font=ctk.CTkFont(size=14, weight="bold")
+                font=theme.font(theme.SIZE_BODY, "bold")
             )
             material_checkbox.pack(anchor="w", pady=(10, 20))
             
@@ -2167,25 +2202,25 @@ class DashboardPage:
             
             update_btn = ctk.CTkButton(
                 buttons_frame,
-                text="ACTUALIZAR MATRÍCULA",
+                text="Actualizar Matrícula",
                 width=200,
                 height=50,
                 command=update_matricula,
-                fg_color="#28a745",
-                hover_color="#218838",
-                font=ctk.CTkFont(size=16, weight="bold")
+                fg_color=theme.SUCCESS,
+                hover_color=theme.SUCCESS_DARK,
+                font=theme.font(theme.SIZE_SUBTITLE, "bold")
             )
             update_btn.pack(side="left", padx=(0, 20))
             
             cancel_btn = ctk.CTkButton(
                 buttons_frame,
-                text="CANCELAR",
+                text="Cancelar",
                 width=200,
                 height=50,
                 command=dialog.destroy,
-                fg_color="#dc3545",
-                hover_color="#c82333",
-                font=ctk.CTkFont(size=16, weight="bold")
+                fg_color=theme.DANGER,
+                hover_color=theme.DANGER_DARK,
+                font=theme.font(theme.SIZE_SUBTITLE, "bold")
             )
             cancel_btn.pack(side="left")
             
@@ -2337,22 +2372,22 @@ class DashboardPage:
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text=f"PAGOS - {estudiante_name}",
-                font=ctk.CTkFont(size=20, weight="bold"),
-                text_color="#1f538d"
+                text=f"Pagos - {estudiante_name}",
+                font=theme.font(theme.SIZE_TITLE, "bold"),
+                text_color=theme.PRIMARY
             )
             title.pack(pady=20)
             
             # Información de la matrícula
-            info_frame = ctk.CTkFrame(dialog, fg_color="#e8f5e8", corner_radius=8)
+            info_frame = ctk.CTkFrame(dialog, fg_color=theme.SUCCESS_SOFT, corner_radius=8)
             info_frame.pack(fill="x", padx=20, pady=(0, 20))
             
             info_text = f"Aula: {aula_name} | Ciclo: {inscription_data.get('cycle', 'N/A')} {inscription_data.get('year', 'N/A')}"
             info_label = ctk.CTkLabel(
                 info_frame,
                 text=info_text,
-                font=ctk.CTkFont(size=12),
-                text_color="#2e7d32"
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.SUCCESS_DARK
             )
             info_label.pack(pady=10)
             
@@ -2415,15 +2450,15 @@ class DashboardPage:
                 ))
             
             # Resumen de pagos
-            summary_frame = ctk.CTkFrame(dialog, fg_color="#fff3cd", corner_radius=8)
+            summary_frame = ctk.CTkFrame(dialog, fg_color=theme.WARNING_SOFT, corner_radius=8)
             summary_frame.pack(fill="x", padx=20, pady=(0, 20))
             
             summary_text = f"Total de Pagos: {len(payments) if payments else 0} | Total Pagado: ${total_paid}"
             summary_label = ctk.CTkLabel(
                 summary_frame,
                 text=summary_text,
-                font=ctk.CTkFont(size=14, weight="bold"),
-                text_color="#856404"
+                font=theme.font(theme.SIZE_BODY, "bold"),
+                text_color=theme.WARNING_DARK
             )
             summary_label.pack(pady=10)
             
@@ -2434,9 +2469,9 @@ class DashboardPage:
                 width=100,
                 height=35,
                 command=dialog.destroy,
-                fg_color="#6c757d",
-                hover_color="#5a6268",
-                font=ctk.CTkFont(size=12)
+                fg_color=theme.NEUTRAL,
+                hover_color=theme.NEUTRAL_DARK,
+                font=theme.font(theme.SIZE_SMALL)
             )
             close_btn.pack(pady=(0, 20))
             
@@ -2467,9 +2502,9 @@ class DashboardPage:
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text=f"NUEVA MATRÍCULA - {aula_name}",
-                font=ctk.CTkFont(size=20, weight="bold"),
-                text_color="#1f538d"
+                text=f"Nueva Matrícula - {aula_name}",
+                font=theme.font(theme.SIZE_TITLE, "bold"),
+                text_color=theme.PRIMARY
             )
             title.pack(pady=20)
             
@@ -2511,7 +2546,7 @@ class DashboardPage:
             matriculas_creadas = 0
             
             # Campo: Estudiante
-            ctk.CTkLabel(main_frame, text="Estudiante:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Estudiante:", font=theme.font(theme.SIZE_BODY, "bold")).pack(anchor="w", pady=(10, 5))
             student_combo = ctk.CTkComboBox(
                 main_frame,
                 variable=selected_student,
@@ -2522,7 +2557,7 @@ class DashboardPage:
             student_combo.pack(fill="x", pady=(0, 10))
             
             # Campo: Red/Equipo
-            ctk.CTkLabel(main_frame, text="Red/Equipo:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Red/Equipo:", font=theme.font(theme.SIZE_BODY, "bold")).pack(anchor="w", pady=(10, 5))
             team_combo = ctk.CTkComboBox(
                 main_frame,
                 variable=selected_team,
@@ -2533,7 +2568,7 @@ class DashboardPage:
             team_combo.pack(fill="x", pady=(0, 10))
             
             # Campo: Año
-            ctk.CTkLabel(main_frame, text="Año:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Año:", font=theme.font(theme.SIZE_BODY, "bold")).pack(anchor="w", pady=(10, 5))
             year_entry = ctk.CTkEntry(
                 main_frame,
                 textvariable=year_var,
@@ -2543,7 +2578,7 @@ class DashboardPage:
             year_entry.pack(fill="x", pady=(0, 10))
             
             # Campo: Ciclo
-            ctk.CTkLabel(main_frame, text="Ciclo:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Ciclo:", font=theme.font(theme.SIZE_BODY, "bold")).pack(anchor="w", pady=(10, 5))
             cycle_entry = ctk.CTkEntry(
                 main_frame,
                 textvariable=cycle_var,
@@ -2553,7 +2588,7 @@ class DashboardPage:
             cycle_entry.pack(fill="x", pady=(0, 10))
             
             # Campo: Tipo de Material
-            ctk.CTkLabel(main_frame, text="Tipo de Material:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Tipo de Material:", font=theme.font(theme.SIZE_BODY, "bold")).pack(anchor="w", pady=(10, 5))
             material_combo = ctk.CTkComboBox(
                 main_frame,
                 variable=material_type,
@@ -2564,7 +2599,7 @@ class DashboardPage:
             material_combo.pack(fill="x", pady=(0, 10))
             
             # Campo: Método de Pago
-            ctk.CTkLabel(main_frame, text="Método de Pago:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Método de Pago:", font=theme.font(theme.SIZE_BODY, "bold")).pack(anchor="w", pady=(10, 5))
             payment_combo = ctk.CTkComboBox(
                 main_frame,
                 variable=payment_method,
@@ -2575,7 +2610,7 @@ class DashboardPage:
             payment_combo.pack(fill="x", pady=(0, 10))
             
             # Campo: Monto
-            ctk.CTkLabel(main_frame, text="Monto:", font=ctk.CTkFont(size=14, weight="bold")).pack(anchor="w", pady=(10, 5))
+            ctk.CTkLabel(main_frame, text="Monto:", font=theme.font(theme.SIZE_BODY, "bold")).pack(anchor="w", pady=(10, 5))
             amount_entry = ctk.CTkEntry(
                 main_frame,
                 textvariable=amount_var,
@@ -2585,14 +2620,14 @@ class DashboardPage:
             amount_entry.pack(fill="x", pady=(0, 20))
             
             # Contador de matrículas
-            counter_frame = ctk.CTkFrame(main_frame, fg_color="#e8f5e8", corner_radius=8)
+            counter_frame = ctk.CTkFrame(main_frame, fg_color=theme.SUCCESS_SOFT, corner_radius=8)
             counter_frame.pack(fill="x", pady=(0, 10))
             
             counter_label = ctk.CTkLabel(
                 counter_frame,
                 text="Matrículas creadas en esta sesión: 0",
-                font=ctk.CTkFont(size=14, weight="bold"),
-                text_color="#2e7d32"
+                font=theme.font(theme.SIZE_BODY, "bold"),
+                text_color=theme.SUCCESS_DARK
             )
             counter_label.pack(pady=10)
             
@@ -2666,8 +2701,8 @@ Puedes agregar más matrículas usando este formulario."""
                         counter_label.configure(text=f"Matrículas creadas en esta sesión: {matriculas_creadas}")
                         
                         # Cambiar temporalmente el color del botón para indicar éxito
-                        create_btn.configure(fg_color="#155724", text="¡AGREGADA!")
-                        dialog.after(2000, lambda: create_btn.configure(fg_color="#28a745", text="CREAR MATRÍCULA"))
+                        create_btn.configure(fg_color=theme.SUCCESS_DARK, text="¡AGREGADA!")
+                        dialog.after(2000, lambda: create_btn.configure(fg_color=theme.SUCCESS, text="Crear Matrícula"))
                         
                     else:
                         messagebox.showerror("Error", f"Error al crear matrícula:\n{result['error']}")
@@ -2683,19 +2718,19 @@ Puedes agregar más matrículas usando este formulario."""
             
             create_btn = ctk.CTkButton(
                 buttons_frame,
-                text="CREAR MATRÍCULA",
+                text="Crear Matrícula",
                 width=180,
                 height=50,
                 command=create_matricula,
-                fg_color="#28a745",
-                hover_color="#218838",
-                font=ctk.CTkFont(size=16, weight="bold")
+                fg_color=theme.SUCCESS,
+                hover_color=theme.SUCCESS_DARK,
+                font=theme.font(theme.SIZE_SUBTITLE, "bold")
             )
             create_btn.pack(side="left", padx=(0, 15))
             
             clear_btn = ctk.CTkButton(
                 buttons_frame,
-                text="LIMPIAR",
+                text="Limpiar",
                 width=150,
                 height=50,
                 command=lambda: [
@@ -2708,21 +2743,21 @@ Puedes agregar más matrículas usando este formulario."""
                     amount_var.set("150"),
                     student_combo.focus()
                 ],
-                fg_color="#ffc107",
-                hover_color="#e0a800",
-                font=ctk.CTkFont(size=16, weight="bold")
+                fg_color=theme.WARNING,
+                hover_color=theme.WARNING_DARK,
+                font=theme.font(theme.SIZE_SUBTITLE, "bold")
             )
             clear_btn.pack(side="left", padx=(0, 15))
             
             close_btn = ctk.CTkButton(
                 buttons_frame,
-                text="CERRAR",
+                text="Cerrar",
                 width=150,
                 height=50,
                 command=dialog.destroy,
-                fg_color="#dc3545",
-                hover_color="#c82333",
-                font=ctk.CTkFont(size=16, weight="bold")
+                fg_color=theme.DANGER,
+                hover_color=theme.DANGER_DARK,
+                font=theme.font(theme.SIZE_SUBTITLE, "bold")
             )
             close_btn.pack(side="left")
             
@@ -2756,9 +2791,9 @@ Puedes agregar más matrículas usando este formulario."""
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text="AGREGAR AULA",
-                font=ctk.CTkFont(size=20, weight="bold"),
-                text_color="#1f538d"
+                text="Agregar Aula",
+                font=theme.font(theme.SIZE_TITLE, "bold"),
+                text_color=theme.PRIMARY
             )
             title.pack(pady=20)
             
@@ -2767,7 +2802,7 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame.pack(fill="x", padx=20, pady=(0, 20))
             
             # Nombre del Aula
-            name_label = ctk.CTkLabel(fields_frame, text="Nombre del Aula:", font=ctk.CTkFont(size=14))
+            name_label = ctk.CTkLabel(fields_frame, text="Nombre del Aula:", font=theme.font(theme.SIZE_BODY))
             name_label.pack(pady=(0, 5), anchor="w")
             
             name_entry = ctk.CTkEntry(
@@ -2779,7 +2814,7 @@ Puedes agregar más matrículas usando este formulario."""
             name_entry.pack(pady=(0, 15))
             
             # Fecha Inicio
-            start_date_label = ctk.CTkLabel(fields_frame, text="Fecha Inicio:", font=ctk.CTkFont(size=14))
+            start_date_label = ctk.CTkLabel(fields_frame, text="Fecha Inicio:", font=theme.font(theme.SIZE_BODY))
             start_date_label.pack(pady=(0, 5), anchor="w")
             
             start_date_entry = ctk.CTkEntry(
@@ -2791,7 +2826,7 @@ Puedes agregar más matrículas usando este formulario."""
             start_date_entry.pack(pady=(0, 15))
             
             # Fecha Fin
-            end_date_label = ctk.CTkLabel(fields_frame, text="Fecha Fin:", font=ctk.CTkFont(size=14))
+            end_date_label = ctk.CTkLabel(fields_frame, text="Fecha Fin:", font=theme.font(theme.SIZE_BODY))
             end_date_label.pack(pady=(0, 5), anchor="w")
             
             end_date_entry = ctk.CTkEntry(
@@ -2803,7 +2838,7 @@ Puedes agregar más matrículas usando este formulario."""
             end_date_entry.pack(pady=(0, 15))
             
             # Docente
-            teacher_label = ctk.CTkLabel(fields_frame, text="Docente:", font=ctk.CTkFont(size=14))
+            teacher_label = ctk.CTkLabel(fields_frame, text="Docente:", font=theme.font(theme.SIZE_BODY))
             teacher_label.pack(pady=(0, 5), anchor="w")
             
             # Obtener docentes disponibles
@@ -2819,7 +2854,7 @@ Puedes agregar más matrículas usando este formulario."""
             teacher_combo.pack(pady=(0, 15))
             
             # Curso
-            course_label = ctk.CTkLabel(fields_frame, text="Curso:", font=ctk.CTkFont(size=14))
+            course_label = ctk.CTkLabel(fields_frame, text="Curso:", font=theme.font(theme.SIZE_BODY))
             course_label.pack(pady=(0, 5), anchor="w")
             
             # Obtener cursos disponibles
@@ -2899,25 +2934,25 @@ Puedes agregar más matrículas usando este formulario."""
             # Botones
             add_btn = ctk.CTkButton(
                 buttons_frame,
-                text="AGREGAR AULA",
+                text="Agregar Aula",
                 width=200,
                 height=50,
                 command=add_aula,
-                fg_color="#28a745",
-                hover_color="#218838",
-                font=ctk.CTkFont(size=18, weight="bold")
+                fg_color=theme.SUCCESS,
+                hover_color=theme.SUCCESS_DARK,
+                font=theme.font(theme.SIZE_SECTION, "bold")
             )
             add_btn.pack(side="left", padx=(0, 20))
             
             cancel_btn = ctk.CTkButton(
                 buttons_frame,
-                text="CANCELAR",
+                text="Cancelar",
                 width=200,
                 height=50,
                 command=cancel,
-                fg_color="#dc3545",
-                hover_color="#c82333",
-                font=ctk.CTkFont(size=18, weight="bold")
+                fg_color=theme.DANGER,
+                hover_color=theme.DANGER_DARK,
+                font=theme.font(theme.SIZE_SECTION, "bold")
             )
             cancel_btn.pack(side="left")
             
@@ -2970,9 +3005,9 @@ Puedes agregar más matrículas usando este formulario."""
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text="AGREGAR MATRÍCULA",
-                font=ctk.CTkFont(size=20, weight="bold"),
-                text_color="#1f538d"
+                text="Agregar Matrícula",
+                font=theme.font(theme.SIZE_TITLE, "bold"),
+                text_color=theme.PRIMARY
             )
             title.pack(pady=20)
             
@@ -2980,8 +3015,8 @@ Puedes agregar más matrículas usando este formulario."""
             ciclo_info = ctk.CTkLabel(
                 dialog,
                 text=f"Ciclo: {ciclo_data.get('cicle', '')} - {ciclo_data.get('year', '')}",
-                font=ctk.CTkFont(size=14),
-                text_color="#1565c0"
+                font=theme.font(theme.SIZE_BODY),
+                text_color=theme.PRIMARY_LIGHT
             )
             ciclo_info.pack(pady=(0, 20))
             
@@ -2990,7 +3025,7 @@ Puedes agregar más matrículas usando este formulario."""
             selection_frame.pack(fill="x", padx=20, pady=(0, 20))
             
             # Label para seleccionar aula
-            aula_label = ctk.CTkLabel(selection_frame, text="Seleccionar Aula:", font=ctk.CTkFont(size=14))
+            aula_label = ctk.CTkLabel(selection_frame, text="Seleccionar Aula:", font=theme.font(theme.SIZE_BODY))
             aula_label.pack(pady=(0, 10), anchor="w")
             
             # Crear lista de aulas
@@ -3042,25 +3077,25 @@ Puedes agregar más matrículas usando este formulario."""
             # Botones
             agregar_btn = ctk.CTkButton(
                 buttons_frame,
-                text="AGREGAR MATRÍCULA",
+                text="Agregar Matrícula",
                 width=200,
                 height=50,
                 command=agregar_matricula,
-                fg_color="#6f42c1",
-                hover_color="#5a32a3",
-                font=ctk.CTkFont(size=16, weight="bold")
+                fg_color=theme.ACCENT,
+                hover_color=theme.ACCENT_DARK,
+                font=theme.font(theme.SIZE_SUBTITLE, "bold")
             )
             agregar_btn.pack(side="left", padx=(0, 20))
             
             cancel_btn = ctk.CTkButton(
                 buttons_frame,
-                text="CANCELAR",
+                text="Cancelar",
                 width=200,
                 height=50,
                 command=cancelar,
-                fg_color="#dc3545",
-                hover_color="#c82333",
-                font=ctk.CTkFont(size=16, weight="bold")
+                fg_color=theme.DANGER,
+                hover_color=theme.DANGER_DARK,
+                font=theme.font(theme.SIZE_SUBTITLE, "bold")
             )
             cancel_btn.pack(side="left")
             
@@ -3140,9 +3175,9 @@ Puedes agregar más matrículas usando este formulario."""
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text="EDITAR AULA",
-                font=ctk.CTkFont(size=20, weight="bold"),
-                text_color="#1f538d"
+                text="Editar Aula",
+                font=theme.font(theme.SIZE_TITLE, "bold"),
+                text_color=theme.PRIMARY
             )
             title.pack(pady=20)
             
@@ -3151,7 +3186,7 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame.pack(fill="x", padx=20, pady=(0, 20))
             
             # Nombre del Aula
-            name_label = ctk.CTkLabel(fields_frame, text="Nombre del Aula:", font=ctk.CTkFont(size=14))
+            name_label = ctk.CTkLabel(fields_frame, text="Nombre del Aula:", font=theme.font(theme.SIZE_BODY))
             name_label.pack(pady=(0, 5), anchor="w")
             
             name_entry = ctk.CTkEntry(
@@ -3164,7 +3199,7 @@ Puedes agregar más matrículas usando este formulario."""
             name_entry.pack(pady=(0, 15))
             
             # Fecha Inicio
-            start_date_label = ctk.CTkLabel(fields_frame, text="Fecha Inicio:", font=ctk.CTkFont(size=14))
+            start_date_label = ctk.CTkLabel(fields_frame, text="Fecha Inicio:", font=theme.font(theme.SIZE_BODY))
             start_date_label.pack(pady=(0, 5), anchor="w")
             
             start_date_entry = ctk.CTkEntry(
@@ -3177,7 +3212,7 @@ Puedes agregar más matrículas usando este formulario."""
             start_date_entry.pack(pady=(0, 15))
             
             # Fecha Fin
-            end_date_label = ctk.CTkLabel(fields_frame, text="Fecha Fin:", font=ctk.CTkFont(size=14))
+            end_date_label = ctk.CTkLabel(fields_frame, text="Fecha Fin:", font=theme.font(theme.SIZE_BODY))
             end_date_label.pack(pady=(0, 5), anchor="w")
             
             end_date_entry = ctk.CTkEntry(
@@ -3190,7 +3225,7 @@ Puedes agregar más matrículas usando este formulario."""
             end_date_entry.pack(pady=(0, 15))
             
             # Docente
-            teacher_label = ctk.CTkLabel(fields_frame, text="Docente:", font=ctk.CTkFont(size=14))
+            teacher_label = ctk.CTkLabel(fields_frame, text="Docente:", font=theme.font(theme.SIZE_BODY))
             teacher_label.pack(pady=(0, 5), anchor="w")
             
             # Obtener docentes disponibles
@@ -3211,7 +3246,7 @@ Puedes agregar más matrículas usando este formulario."""
             teacher_combo.pack(pady=(0, 15))
             
             # Curso
-            course_label = ctk.CTkLabel(fields_frame, text="Curso:", font=ctk.CTkFont(size=14))
+            course_label = ctk.CTkLabel(fields_frame, text="Curso:", font=theme.font(theme.SIZE_BODY))
             course_label.pack(pady=(0, 5), anchor="w")
             
             # Obtener cursos disponibles
@@ -3293,25 +3328,25 @@ Puedes agregar más matrículas usando este formulario."""
             # Botones
             update_btn = ctk.CTkButton(
                 buttons_frame,
-                text="ACTUALIZAR AULA",
+                text="Actualizar Aula",
                 width=200,
                 height=50,
                 command=update_aula,
-                fg_color="#28a745",
-                hover_color="#218838",
-                font=ctk.CTkFont(size=18, weight="bold")
+                fg_color=theme.SUCCESS,
+                hover_color=theme.SUCCESS_DARK,
+                font=theme.font(theme.SIZE_SECTION, "bold")
             )
             update_btn.pack(side="left", padx=(0, 20))
             
             cancel_btn = ctk.CTkButton(
                 buttons_frame,
-                text="CANCELAR",
+                text="Cancelar",
                 width=200,
                 height=50,
                 command=cancel,
-                fg_color="#dc3545",
-                hover_color="#c82333",
-                font=ctk.CTkFont(size=18, weight="bold")
+                fg_color=theme.DANGER,
+                hover_color=theme.DANGER_DARK,
+                font=theme.font(theme.SIZE_SECTION, "bold")
             )
             cancel_btn.pack(side="left")
             
@@ -3398,9 +3433,9 @@ Puedes agregar más matrículas usando este formulario."""
             # Título
             title = ctk.CTkLabel(
                 dialog,
-                text="EDITAR CICLO",
-                font=ctk.CTkFont(size=18, weight="bold"),
-                text_color="#1f538d"
+                text="Editar Ciclo",
+                font=theme.font(theme.SIZE_SECTION, "bold"),
+                text_color=theme.PRIMARY
             )
             title.pack(pady=20)
             
@@ -3409,7 +3444,7 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame.pack(fill="x", padx=20, pady=(0, 20))
             
             # Ciclo
-            ciclo_label = ctk.CTkLabel(fields_frame, text="Ciclo:", font=ctk.CTkFont(size=14))
+            ciclo_label = ctk.CTkLabel(fields_frame, text="Ciclo:", font=theme.font(theme.SIZE_BODY))
             ciclo_label.pack(pady=(0, 5), anchor="w")
             
             ciclo_var = ctk.StringVar(value=ciclo_data.get("cicle", ""))
@@ -3423,7 +3458,7 @@ Puedes agregar más matrículas usando este formulario."""
             ciclo_combo.pack(pady=(0, 15))
             
             # Encargado
-            encargado_label = ctk.CTkLabel(fields_frame, text="Encargado:", font=ctk.CTkFont(size=14))
+            encargado_label = ctk.CTkLabel(fields_frame, text="Encargado:", font=theme.font(theme.SIZE_BODY))
             encargado_label.pack(pady=(0, 5), anchor="w")
             
             encargado_entry = ctk.CTkEntry(
@@ -3436,7 +3471,7 @@ Puedes agregar más matrículas usando este formulario."""
             encargado_entry.pack(pady=(0, 15))
             
             # Fecha Inicio
-            fecha_inicio_label = ctk.CTkLabel(fields_frame, text="Fecha Inicio:", font=ctk.CTkFont(size=14))
+            fecha_inicio_label = ctk.CTkLabel(fields_frame, text="Fecha Inicio:", font=theme.font(theme.SIZE_BODY))
             fecha_inicio_label.pack(pady=(0, 5), anchor="w")
             
             fecha_inicio_entry = ctk.CTkEntry(
@@ -3449,7 +3484,7 @@ Puedes agregar más matrículas usando este formulario."""
             fecha_inicio_entry.pack(pady=(0, 15))
             
             # Fecha Fin
-            fecha_fin_label = ctk.CTkLabel(fields_frame, text="Fecha Fin:", font=ctk.CTkFont(size=14))
+            fecha_fin_label = ctk.CTkLabel(fields_frame, text="Fecha Fin:", font=theme.font(theme.SIZE_BODY))
             fecha_fin_label.pack(pady=(0, 5), anchor="w")
             
             fecha_fin_entry = ctk.CTkEntry(
@@ -3503,25 +3538,25 @@ Puedes agregar más matrículas usando este formulario."""
             # Botones
             update_btn = ctk.CTkButton(
                 buttons_frame,
-                text="ACTUALIZAR CICLO",
+                text="Actualizar Ciclo",
                 width=200,
                 height=50,
                 command=update_ciclo,
-                fg_color="#28a745",
-                hover_color="#218838",
-                font=ctk.CTkFont(size=18, weight="bold")
+                fg_color=theme.SUCCESS,
+                hover_color=theme.SUCCESS_DARK,
+                font=theme.font(theme.SIZE_SECTION, "bold")
             )
             update_btn.pack(side="left", padx=(0, 20))
             
             cancel_btn = ctk.CTkButton(
                 buttons_frame,
-                text="CANCELAR",
+                text="Cancelar",
                 width=200,
                 height=50,
                 command=cancel,
-                fg_color="#dc3545",
-                hover_color="#c82333",
-                font=ctk.CTkFont(size=18, weight="bold")
+                fg_color=theme.DANGER,
+                hover_color=theme.DANGER_DARK,
+                font=theme.font(theme.SIZE_SECTION, "bold")
             )
             cancel_btn.pack(side="left")
             
@@ -3536,21 +3571,21 @@ Puedes agregar más matrículas usando este formulario."""
         """Mostrar contenido de gestión de Aulas"""
         # Frame principal para Aulas
         aulas_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        aulas_frame.pack(fill="both", expand=True, padx=30)
+        aulas_frame.pack(fill="both", expand=True, padx=theme.SPACE_XL, pady=(theme.SPACE_LG, 0))
         
         # Título con información del ciclo activo
         
         # Información del ciclo activo
         if self.active_cicle:
-            info_frame = ctk.CTkFrame(aulas_frame, fg_color="#e3f2fd", corner_radius=8)
+            info_frame = ctk.CTkFrame(aulas_frame, fg_color=theme.PRIMARY_SOFT, corner_radius=8)
             info_frame.pack(fill="x", pady=(0, 15))
             
             info_text = f"Ciclo Activo: {self.active_cicle.get('cicle')} | Encargado: {self.active_cicle.get('manager')} | Período: {self.active_cicle.get('date_start')} - {self.active_cicle.get('date_end')}"
             info_label = ctk.CTkLabel(
                 info_frame,
                 text=info_text,
-                font=ctk.CTkFont(size=12),
-                text_color="#1565c0"
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.PRIMARY_LIGHT
             )
             info_label.pack(pady=10)
         
@@ -3568,7 +3603,7 @@ Puedes agregar más matrículas usando este formulario."""
     
     def create_aulas_form(self, parent):
         """Crear formulario para agregar aulas"""
-        form_frame = ctk.CTkFrame(parent, fg_color="white", corner_radius=10)
+        form_frame = ctk.CTkFrame(parent, fg_color=theme.SURFACE, corner_radius=10)
         form_frame.pack(fill="x", pady=(0, 20))
         
         # Primera fila
@@ -3576,7 +3611,7 @@ Puedes agregar más matrículas usando este formulario."""
         row1_frame.pack(fill="x", padx=20, pady=15)
         
         # Fecha Inicio
-        fecha_inicio_label = ctk.CTkLabel(row1_frame, text="Fecha Inicio:", font=ctk.CTkFont(size=14))
+        fecha_inicio_label = ctk.CTkLabel(row1_frame, text="Fecha Inicio:", font=theme.font(theme.SIZE_BODY))
         fecha_inicio_label.pack(side="left", padx=(0, 10))
         
         self.aula_fecha_inicio_var = ctk.StringVar()
@@ -3589,7 +3624,7 @@ Puedes agregar más matrículas usando este formulario."""
         fecha_inicio_entry.pack(side="left", padx=(0, 20))
         
         # Fecha Fin
-        fecha_fin_label = ctk.CTkLabel(row1_frame, text="Fecha Fin:", font=ctk.CTkFont(size=14))
+        fecha_fin_label = ctk.CTkLabel(row1_frame, text="Fecha Fin:", font=theme.font(theme.SIZE_BODY))
         fecha_fin_label.pack(side="left", padx=(0, 10))
         
         self.aula_fecha_fin_var = ctk.StringVar()
@@ -3602,7 +3637,7 @@ Puedes agregar más matrículas usando este formulario."""
         fecha_fin_entry.pack(side="left", padx=(0, 20))
         
         # Curso
-        curso_label = ctk.CTkLabel(row1_frame, text="Curso:", font=ctk.CTkFont(size=14))
+        curso_label = ctk.CTkLabel(row1_frame, text="Curso:", font=theme.font(theme.SIZE_BODY))
         curso_label.pack(side="left", padx=(0, 10))
         
         self.aula_curso_var = ctk.StringVar()
@@ -3619,7 +3654,7 @@ Puedes agregar más matrículas usando este formulario."""
         row2_frame.pack(fill="x", padx=20, pady=(0, 15))
         
         # Aula
-        aula_label = ctk.CTkLabel(row2_frame, text="Aula:", font=ctk.CTkFont(size=14))
+        aula_label = ctk.CTkLabel(row2_frame, text="Aula:", font=theme.font(theme.SIZE_BODY))
         aula_label.pack(side="left", padx=(0, 10))
         
         self.aula_nombre_var = ctk.StringVar()
@@ -3632,7 +3667,7 @@ Puedes agregar más matrículas usando este formulario."""
         aula_entry.pack(side="left", padx=(0, 20))
         
         # Docente
-        docente_label = ctk.CTkLabel(row2_frame, text="Docente:", font=ctk.CTkFont(size=14))
+        docente_label = ctk.CTkLabel(row2_frame, text="Docente:", font=theme.font(theme.SIZE_BODY))
         docente_label.pack(side="left", padx=(0, 10))
         
         self.aula_docente_var = ctk.StringVar()
@@ -3651,9 +3686,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=35,
             command=self.add_aula,
-            fg_color="#007bff",
-            hover_color="#0056b3",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.INFO,
+            hover_color=theme.PRIMARY_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         add_aula_btn.pack(side="left")
     
@@ -3696,29 +3731,33 @@ Puedes agregar más matrículas usando este formulario."""
         self.aulas_pagination_label = ctk.CTkLabel(
             pagination_frame,
             text="1/10 Páginas",
-            font=ctk.CTkFont(size=12)
+            font=theme.font(theme.SIZE_SMALL)
         )
         self.aulas_pagination_label.pack(side="left")
-        
-        prev_btn = ctk.CTkButton(
-            pagination_frame,
-            text="Anterior",
-            width=80,
-            height=30,
-            command=self.previous_aulas_page,
-            font=ctk.CTkFont(size=12)
-        )
-        prev_btn.pack(side="right", padx=(5, 0))
         
         next_btn = ctk.CTkButton(
             pagination_frame,
             text="Siguiente",
-            width=80,
-            height=30,
+            width=90,
+            height=32,
             command=self.next_aulas_page,
-            font=ctk.CTkFont(size=12)
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SMALL)
         )
         next_btn.pack(side="right")
+
+        prev_btn = ctk.CTkButton(
+            pagination_frame,
+            text="Anterior",
+            width=90,
+            height=32,
+            command=self.previous_aulas_page,
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SMALL)
+        )
+        prev_btn.pack(side="right", padx=(0, theme.SPACE_SM))
     
     def load_aulas(self):
         """Cargar aulas desde la base de datos del ciclo activo"""
@@ -3837,46 +3876,46 @@ Puedes agregar más matrículas usando este formulario."""
         """Mostrar contenido del formulario de matrícula"""
         # Frame principal para Matrícula
         matricula_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        matricula_frame.pack(fill="both", expand=True, padx=30)
+        matricula_frame.pack(fill="both", expand=True, padx=theme.SPACE_XL, pady=(theme.SPACE_LG, 0))
         
         # Título con información del ciclo activo
         if self.active_cicle:
             ciclo_info = f"{self.active_cicle.get('cicle')} - {self.active_cicle.get('date_start')[:4]}"
-            title_text = f"MATRÍCULA - CICLO {ciclo_info}"
+            title_text = f"Matrícula - CICLO {ciclo_info}"
         else:
-            title_text = "MATRÍCULA"
+            title_text = "Matrícula"
             
         title = ctk.CTkLabel(
             matricula_frame,
             text=title_text,
-            font=ctk.CTkFont(size=24, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=(0, 20))
         
         # Información del ciclo activo
         if self.active_cicle:
-            info_frame = ctk.CTkFrame(matricula_frame, fg_color="#e8f5e8", corner_radius=8)
+            info_frame = ctk.CTkFrame(matricula_frame, fg_color=theme.SUCCESS_SOFT, corner_radius=8)
             info_frame.pack(fill="x", pady=(0, 15))
             
             info_text = f"Ciclo Activo: {self.active_cicle.get('cicle')} | Encargado: {self.active_cicle.get('manager')} | Período: {self.active_cicle.get('date_start')} - {self.active_cicle.get('date_end')}"
             info_label = ctk.CTkLabel(
                 info_frame,
                 text=info_text,
-                font=ctk.CTkFont(size=12),
-                text_color="#2e7d32"
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.SUCCESS_DARK
             )
             info_label.pack(pady=10)
         else:
             # Mensaje de advertencia si no hay ciclo activo
-            warning_frame = ctk.CTkFrame(matricula_frame, fg_color="#fff3e0", corner_radius=8)
+            warning_frame = ctk.CTkFrame(matricula_frame, fg_color=theme.WARNING_SOFT, corner_radius=8)
             warning_frame.pack(fill="x", pady=(0, 15))
             
             warning_label = ctk.CTkLabel(
                 warning_frame,
                 text="No hay un ciclo activo. Debe activar un ciclo antes de crear matrículas.",
-                font=ctk.CTkFont(size=12),
-                text_color="#f57c00"
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.WARNING_DARK
             )
             warning_label.pack(pady=10)
         
@@ -3888,15 +3927,15 @@ Puedes agregar más matrículas usando este formulario."""
     
     def create_matricula_consulta_section(self, parent):
         """Crear sección de consulta de matrículas"""
-        consulta_frame = ctk.CTkFrame(parent, fg_color="white", corner_radius=10)
+        consulta_frame = ctk.CTkFrame(parent, fg_color=theme.SURFACE, corner_radius=10)
         consulta_frame.pack(fill="x", pady=(0, 20))
         
         # Título de consulta
         consulta_title = ctk.CTkLabel(
             consulta_frame,
             text="Consulta",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
         consulta_title.pack(pady=(15, 10))
         
@@ -3905,7 +3944,7 @@ Puedes agregar más matrículas usando este formulario."""
         filters_frame.pack(fill="x", padx=20, pady=(0, 15))
         
         # Buscar Estudiante
-        estudiante_label = ctk.CTkLabel(filters_frame, text="Buscar Estudiante:", font=ctk.CTkFont(size=14))
+        estudiante_label = ctk.CTkLabel(filters_frame, text="Buscar Estudiante:", font=theme.font(theme.SIZE_BODY))
         estudiante_label.grid(row=0, column=0, padx=(0, 10), pady=10, sticky="w")
         
         self.matricula_estudiante_var = ctk.StringVar()
@@ -3918,7 +3957,7 @@ Puedes agregar más matrículas usando este formulario."""
         estudiante_entry.grid(row=0, column=1, padx=(0, 20), pady=10)
         
         # Buscar Curso
-        curso_label = ctk.CTkLabel(filters_frame, text="Buscar Curso:", font=ctk.CTkFont(size=14))
+        curso_label = ctk.CTkLabel(filters_frame, text="Buscar Curso:", font=theme.font(theme.SIZE_BODY))
         curso_label.grid(row=0, column=2, padx=(0, 10), pady=10, sticky="w")
         
         self.matricula_curso_var = ctk.StringVar()
@@ -3931,7 +3970,7 @@ Puedes agregar más matrículas usando este formulario."""
         curso_entry.grid(row=0, column=3, padx=(0, 20), pady=10)
         
         # Año
-        año_label = ctk.CTkLabel(filters_frame, text="Año:", font=ctk.CTkFont(size=14))
+        año_label = ctk.CTkLabel(filters_frame, text="Año:", font=theme.font(theme.SIZE_BODY))
         año_label.grid(row=1, column=0, padx=(0, 10), pady=10, sticky="w")
         
         self.matricula_año_var = ctk.StringVar()
@@ -3944,7 +3983,7 @@ Puedes agregar más matrículas usando este formulario."""
         año_entry.grid(row=1, column=1, padx=(0, 20), pady=10)
         
         # Fecha Llevada
-        fecha_label = ctk.CTkLabel(filters_frame, text="Fecha Llevada:", font=ctk.CTkFont(size=14))
+        fecha_label = ctk.CTkLabel(filters_frame, text="Fecha Llevada:", font=theme.font(theme.SIZE_BODY))
         fecha_label.grid(row=1, column=2, padx=(0, 10), pady=10, sticky="w")
         
         self.matricula_fecha_var = ctk.StringVar()
@@ -3990,41 +4029,45 @@ Puedes agregar más matrículas usando este formulario."""
         self.consulta_pagination_label = ctk.CTkLabel(
             pagination_frame,
             text="1/10 Páginas",
-            font=ctk.CTkFont(size=12)
+            font=theme.font(theme.SIZE_SMALL)
         )
         self.consulta_pagination_label.pack(side="left")
-        
-        prev_btn = ctk.CTkButton(
-            pagination_frame,
-            text="Anterior",
-            width=80,
-            height=30,
-            command=self.previous_consulta_page,
-            font=ctk.CTkFont(size=12)
-        )
-        prev_btn.pack(side="right", padx=(5, 0))
         
         next_btn = ctk.CTkButton(
             pagination_frame,
             text="Siguiente",
-            width=80,
-            height=30,
+            width=90,
+            height=32,
             command=self.next_consulta_page,
-            font=ctk.CTkFont(size=12)
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SMALL)
         )
         next_btn.pack(side="right")
+
+        prev_btn = ctk.CTkButton(
+            pagination_frame,
+            text="Anterior",
+            width=90,
+            height=32,
+            command=self.previous_consulta_page,
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SMALL)
+        )
+        prev_btn.pack(side="right", padx=(0, theme.SPACE_SM))
     
     def create_matricula_form_section(self, parent):
         """Crear sección del formulario de matrícula"""
-        form_frame = ctk.CTkFrame(parent, fg_color="white", corner_radius=10)
+        form_frame = ctk.CTkFrame(parent, fg_color=theme.SURFACE, corner_radius=10)
         form_frame.pack(fill="both", expand=True)
         
         # Título del formulario
         form_title = ctk.CTkLabel(
             form_frame,
             text="Matrícula",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
         form_title.pack(pady=(15, 20))
         
@@ -4042,15 +4085,15 @@ Puedes agregar más matrículas usando este formulario."""
     
     def create_estudiante_section(self, parent):
         """Crear sección de información del estudiante"""
-        estudiante_frame = ctk.CTkFrame(parent, fg_color="#f8f9fa", corner_radius=8)
+        estudiante_frame = ctk.CTkFrame(parent, fg_color=theme.SURFACE_ALT, corner_radius=8)
         estudiante_frame.pack(fill="x", padx=20, pady=(0, 15))
         
         # Título de sección
         section_title = ctk.CTkLabel(
             estudiante_frame,
             text="Estudiante",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         section_title.pack(pady=(15, 10))
         
@@ -4059,7 +4102,7 @@ Puedes agregar más matrículas usando este formulario."""
         row1_frame.pack(fill="x", padx=15, pady=(0, 10))
         
         # Estudiante
-        estudiante_label = ctk.CTkLabel(row1_frame, text="Estudiante:", font=ctk.CTkFont(size=14))
+        estudiante_label = ctk.CTkLabel(row1_frame, text="Estudiante:", font=theme.font(theme.SIZE_BODY))
         estudiante_label.pack(side="left", padx=(0, 10))
         
         self.matricula_estudiante_select_var = ctk.StringVar()
@@ -4078,9 +4121,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=30,
             command=self.show_add_estudiante_dialog,
-            fg_color="#17a2b8",
-            hover_color="#138496",
-            font=ctk.CTkFont(size=12)
+            fg_color=theme.INFO,
+            hover_color=theme.INFO_DARK,
+            font=theme.font(theme.SIZE_SMALL)
         )
         add_estudiante_btn.pack(side="left", padx=(0, 10))
         
@@ -4090,9 +4133,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=30,
             command=self.update_estudiante,
-            fg_color="#ffc107",
-            hover_color="#e0a800",
-            font=ctk.CTkFont(size=12)
+            fg_color=theme.WARNING,
+            hover_color=theme.WARNING_DARK,
+            font=theme.font(theme.SIZE_SMALL)
         )
         update_estudiante_btn.pack(side="left", padx=(0, 10))
         
@@ -4102,9 +4145,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=30,
             command=self.clear_matricula_form,
-            fg_color="#dc3545",
-            hover_color="#c82333",
-            font=ctk.CTkFont(size=12)
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK,
+            font=theme.font(theme.SIZE_SMALL)
         )
         clear_form_btn.pack(side="left")
         
@@ -4113,7 +4156,7 @@ Puedes agregar más matrículas usando este formulario."""
         row2_frame.pack(fill="x", padx=15, pady=(0, 10))
         
         # Nombres
-        nombres_label = ctk.CTkLabel(row2_frame, text="Nombres:", font=ctk.CTkFont(size=14))
+        nombres_label = ctk.CTkLabel(row2_frame, text="Nombres:", font=theme.font(theme.SIZE_BODY))
         nombres_label.grid(row=0, column=0, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_nombres_var = ctk.StringVar()
@@ -4126,7 +4169,7 @@ Puedes agregar más matrículas usando este formulario."""
         nombres_entry.grid(row=0, column=1, padx=(0, 20), pady=5)
         
         # Apellidos
-        apellidos_label = ctk.CTkLabel(row2_frame, text="Apellidos:", font=ctk.CTkFont(size=14))
+        apellidos_label = ctk.CTkLabel(row2_frame, text="Apellidos:", font=theme.font(theme.SIZE_BODY))
         apellidos_label.grid(row=0, column=2, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_apellidos_var = ctk.StringVar()
@@ -4143,7 +4186,7 @@ Puedes agregar más matrículas usando este formulario."""
         row3_frame.pack(fill="x", padx=15, pady=(0, 15))
         
         # Fecha Bautismo
-        bautismo_label = ctk.CTkLabel(row3_frame, text="Fecha Bautismo:", font=ctk.CTkFont(size=14))
+        bautismo_label = ctk.CTkLabel(row3_frame, text="Fecha Bautismo:", font=theme.font(theme.SIZE_BODY))
         bautismo_label.grid(row=0, column=0, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_bautismo_var = ctk.StringVar()
@@ -4156,7 +4199,7 @@ Puedes agregar más matrículas usando este formulario."""
         bautismo_entry.grid(row=0, column=1, padx=(0, 20), pady=5)
         
         # Fecha Nacimiento
-        nacimiento_label = ctk.CTkLabel(row3_frame, text="Fecha Nacimiento:", font=ctk.CTkFont(size=14))
+        nacimiento_label = ctk.CTkLabel(row3_frame, text="Fecha Nacimiento:", font=theme.font(theme.SIZE_BODY))
         nacimiento_label.grid(row=0, column=2, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_nacimiento_var = ctk.StringVar()
@@ -4173,7 +4216,7 @@ Puedes agregar más matrículas usando este formulario."""
         row4_frame.pack(fill="x", padx=15, pady=(0, 15))
         
         # Teléfono
-        telefono_label = ctk.CTkLabel(row4_frame, text="Teléfono:", font=ctk.CTkFont(size=14))
+        telefono_label = ctk.CTkLabel(row4_frame, text="Teléfono:", font=theme.font(theme.SIZE_BODY))
         telefono_label.grid(row=0, column=0, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_telefono_var = ctk.StringVar()
@@ -4186,7 +4229,7 @@ Puedes agregar más matrículas usando este formulario."""
         telefono_entry.grid(row=0, column=1, padx=(0, 20), pady=5)
         
         # Red
-        red_label = ctk.CTkLabel(row4_frame, text="Red:", font=ctk.CTkFont(size=14))
+        red_label = ctk.CTkLabel(row4_frame, text="Red:", font=theme.font(theme.SIZE_BODY))
         red_label.grid(row=0, column=2, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_red_var = ctk.StringVar()
@@ -4200,15 +4243,15 @@ Puedes agregar más matrículas usando este formulario."""
     
     def create_inscripcion_section(self, parent):
         """Crear sección de inscripción"""
-        inscripcion_frame = ctk.CTkFrame(parent, fg_color="#f8f9fa", corner_radius=8)
+        inscripcion_frame = ctk.CTkFrame(parent, fg_color=theme.SURFACE_ALT, corner_radius=8)
         inscripcion_frame.pack(fill="x", padx=20, pady=(0, 15))
         
         # Título de sección
         section_title = ctk.CTkLabel(
             inscripcion_frame,
             text="Inscripción",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         section_title.pack(pady=(15, 10))
         
@@ -4217,7 +4260,7 @@ Puedes agregar más matrículas usando este formulario."""
         row1_frame.pack(fill="x", padx=15, pady=(0, 10))
         
         # Seleccionar Aula
-        aula_label = ctk.CTkLabel(row1_frame, text="Seleccionar Aula:", font=ctk.CTkFont(size=14))
+        aula_label = ctk.CTkLabel(row1_frame, text="Seleccionar Aula:", font=theme.font(theme.SIZE_BODY))
         aula_label.grid(row=0, column=0, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_aula_select_var = ctk.StringVar()
@@ -4231,7 +4274,7 @@ Puedes agregar más matrículas usando este formulario."""
         self.matricula_aula_combo.grid(row=0, column=1, padx=(0, 20), pady=5)
         
         # Buscar Curso (se llena automáticamente según el aula)
-        curso_label = ctk.CTkLabel(row1_frame, text="Curso:", font=ctk.CTkFont(size=14))
+        curso_label = ctk.CTkLabel(row1_frame, text="Curso:", font=theme.font(theme.SIZE_BODY))
         curso_label.grid(row=0, column=2, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_curso_select_var = ctk.StringVar()
@@ -4249,7 +4292,7 @@ Puedes agregar más matrículas usando este formulario."""
         row2_frame.pack(fill="x", padx=15, pady=(0, 15))
         
         # Material
-        material_label = ctk.CTkLabel(row2_frame, text="Material:", font=ctk.CTkFont(size=14))
+        material_label = ctk.CTkLabel(row2_frame, text="Material:", font=theme.font(theme.SIZE_BODY))
         material_label.grid(row=0, column=0, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_material_var = ctk.StringVar()
@@ -4262,7 +4305,7 @@ Puedes agregar más matrículas usando este formulario."""
         material_combo.grid(row=0, column=1, padx=(0, 20), pady=5)
         
         # Tipo Material
-        tipo_material_label = ctk.CTkLabel(row2_frame, text="Tipo Material:", font=ctk.CTkFont(size=14))
+        tipo_material_label = ctk.CTkLabel(row2_frame, text="Tipo Material:", font=theme.font(theme.SIZE_BODY))
         tipo_material_label.grid(row=0, column=2, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_tipo_material_var = ctk.StringVar()
@@ -4279,15 +4322,15 @@ Puedes agregar más matrículas usando este formulario."""
     
     def create_pago_section(self, parent):
         """Crear sección de pago"""
-        pago_frame = ctk.CTkFrame(parent, fg_color="#f8f9fa", corner_radius=8)
+        pago_frame = ctk.CTkFrame(parent, fg_color=theme.SURFACE_ALT, corner_radius=8)
         pago_frame.pack(fill="x", padx=20, pady=(0, 15))
         
         # Título de sección
         section_title = ctk.CTkLabel(
             pago_frame,
             text="Pago",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         section_title.pack(pady=(15, 10))
         
@@ -4296,7 +4339,7 @@ Puedes agregar más matrículas usando este formulario."""
         row_frame.pack(fill="x", padx=15, pady=(0, 15))
         
         # Pago
-        pago_label = ctk.CTkLabel(row_frame, text="Pago:", font=ctk.CTkFont(size=14))
+        pago_label = ctk.CTkLabel(row_frame, text="Pago:", font=theme.font(theme.SIZE_BODY))
         pago_label.grid(row=0, column=0, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_pago_var = ctk.StringVar()
@@ -4309,7 +4352,7 @@ Puedes agregar más matrículas usando este formulario."""
         pago_entry.grid(row=0, column=1, padx=(0, 20), pady=5)
         
         # Método de Pago
-        metodo_label = ctk.CTkLabel(row_frame, text="Método de Pago:", font=ctk.CTkFont(size=14))
+        metodo_label = ctk.CTkLabel(row_frame, text="Método de Pago:", font=theme.font(theme.SIZE_BODY))
         metodo_label.grid(row=0, column=2, padx=(0, 10), pady=5, sticky="w")
         
         self.matricula_metodo_pago_var = ctk.StringVar()
@@ -4328,9 +4371,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=30,
             command=self.add_pago,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=12)
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_SMALL)
         )
         add_pago_btn.grid(row=0, column=4, padx=(0, 20), pady=5)
     
@@ -4342,13 +4385,13 @@ Puedes agregar más matrículas usando este formulario."""
         # Botón grande de Agregar Matrícula
         add_matricula_btn = ctk.CTkButton(
             button_frame,
-            text="AGREGAR MATRÍCULA",
+            text="Agregar Matrícula",
             width=300,
             height=50,
             command=self.add_matricula,
-            fg_color="#007bff",
-            hover_color="#0056b3",
-            font=ctk.CTkFont(size=18, weight="bold")
+            fg_color=theme.INFO,
+            hover_color=theme.PRIMARY_DARK,
+            font=theme.font(theme.SIZE_SECTION, "bold")
         )
         add_matricula_btn.pack(pady=20)
     
@@ -4499,13 +4542,14 @@ Puedes agregar más matrículas usando este formulario."""
         """Mostrar contenido de Red (Gestión de Equipos)"""
         # Título principal
         title_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        title_frame.pack(fill="x", padx=30, pady=(30, 20))
+        title_frame.pack(fill="x", padx=theme.SPACE_XL,
+                         pady=(theme.SPACE_LG, theme.SPACE_MD))
         
         title = ctk.CTkLabel(
             title_frame,
             text="Gestión de Equipos",
-            font=ctk.CTkFont(size=28, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_DISPLAY, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(side="left")
         
@@ -4515,26 +4559,26 @@ Puedes agregar más matrículas usando este formulario."""
             text="Agregar Equipo",
             width=200,
             height=50,
-            font=ctk.CTkFont(size=16, weight="bold"),
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             command=self.show_add_team_dialog,
-            fg_color="#28a745",
-            hover_color="#218838",
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
             corner_radius=10,
             border_width=2,
-            border_color="#1e7e34"
+            border_color=theme.SUCCESS_DARK
         )
         add_team_btn.pack(side="right", padx=(0, 10), pady=5)
         
         # Frame para filtros
-        filters_frame = ctk.CTkFrame(self.content_frame, fg_color="white", corner_radius=10)
-        filters_frame.pack(fill="x", padx=30, pady=(0, 20))
+        filters_frame = ctk.CTkFrame(self.content_frame, fg_color=theme.SURFACE, corner_radius=10)
+        filters_frame.pack(fill="x", padx=theme.SPACE_XL, pady=(0, theme.SPACE_MD))
         
         # Título de filtros
         filters_title = ctk.CTkLabel(
             filters_frame,
             text="Filtros de Búsqueda",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         filters_title.pack(pady=(20, 15))
         
@@ -4549,8 +4593,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             name_filter_frame,
             text="Nombre del Equipo:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.team_name_filter = ctk.CTkEntry(
@@ -4568,8 +4612,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             gender_filter_frame,
             text="Género:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.team_gender_filter = ctk.CTkComboBox(
@@ -4588,8 +4632,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             min_age_filter_frame,
             text="Edad Mínima:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.team_min_age_filter = ctk.CTkEntry(
@@ -4607,8 +4651,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             max_age_filter_frame,
             text="Edad Máxima:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.team_max_age_filter = ctk.CTkEntry(
@@ -4629,8 +4673,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=35,
             command=self.filter_teams,
-            fg_color="#1f538d",
-            hover_color="#0d47a1"
+            fg_color=theme.PRIMARY,
+            hover_color=theme.PRIMARY_DARK
         )
         search_btn.pack(side="left", padx=(0, 10))
         
@@ -4640,21 +4684,21 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=35,
             command=self.clear_team_filters,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         clear_btn.pack(side="left")
         
         # Frame para la tabla de equipos
-        table_frame = ctk.CTkFrame(self.content_frame, fg_color="white", corner_radius=10)
-        table_frame.pack(fill="both", expand=True, padx=30, pady=(0, 30))
+        table_frame = ctk.CTkFrame(self.content_frame, fg_color=theme.SURFACE, corner_radius=10)
+        table_frame.pack(fill="both", expand=True, padx=theme.SPACE_XL, pady=(0, theme.SPACE_LG))
         
         # Título de la tabla
         table_title = ctk.CTkLabel(
             table_frame,
             text="Lista de Equipos",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
         table_title.pack(pady=(20, 15))
         
@@ -4668,13 +4712,14 @@ Puedes agregar más matrículas usando este formulario."""
         """Mostrar contenido de Cursos"""
         # Título principal
         title_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        title_frame.pack(fill="x", padx=30, pady=(30, 20))
+        title_frame.pack(fill="x", padx=theme.SPACE_XL,
+                         pady=(theme.SPACE_LG, theme.SPACE_MD))
         
         title = ctk.CTkLabel(
             title_frame,
             text="Gestión de Cursos",
-            font=ctk.CTkFont(size=28, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_DISPLAY, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(side="left")
         
@@ -4684,26 +4729,26 @@ Puedes agregar más matrículas usando este formulario."""
             text="Nuevo Curso",
             width=200,
             height=50,
-            font=ctk.CTkFont(size=16, weight="bold"),
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             command=self.show_add_course_dialog,
-            fg_color="#28a745",
-            hover_color="#218838",
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
             corner_radius=10,
             border_width=2,
-            border_color="#1e7e34"
+            border_color=theme.SUCCESS_DARK
         )
         add_course_btn.pack(side="right", padx=(0, 10), pady=5)
         
         # Frame para filtros
-        filters_frame = ctk.CTkFrame(self.content_frame, fg_color="white", corner_radius=10)
-        filters_frame.pack(fill="x", padx=30, pady=(0, 20))
+        filters_frame = ctk.CTkFrame(self.content_frame, fg_color=theme.SURFACE, corner_radius=10)
+        filters_frame.pack(fill="x", padx=theme.SPACE_XL, pady=(0, theme.SPACE_MD))
         
         # Título de filtros
         filters_title = ctk.CTkLabel(
             filters_frame,
             text="Filtros de Búsqueda",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         filters_title.pack(pady=(20, 15))
         
@@ -4718,8 +4763,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             name_filter_frame,
             text="Nombre del Curso:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.course_name_filter = ctk.CTkEntry(
@@ -4737,8 +4782,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             level_filter_frame,
             text="Nivel:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.course_level_filter = ctk.CTkEntry(
@@ -4759,8 +4804,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=35,
             command=self.filter_courses,
-            fg_color="#1f538d",
-            hover_color="#0d47a1"
+            fg_color=theme.PRIMARY,
+            hover_color=theme.PRIMARY_DARK
         )
         search_btn.pack(side="left", padx=(0, 10))
         
@@ -4770,21 +4815,21 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=35,
             command=self.clear_course_filters,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         clear_btn.pack(side="left")
         
         # Frame para la tabla de cursos
-        table_frame = ctk.CTkFrame(self.content_frame, fg_color="white", corner_radius=10)
-        table_frame.pack(fill="both", expand=True, padx=30, pady=(0, 30))
+        table_frame = ctk.CTkFrame(self.content_frame, fg_color=theme.SURFACE, corner_radius=10)
+        table_frame.pack(fill="both", expand=True, padx=theme.SPACE_XL, pady=(0, theme.SPACE_LG))
         
         # Título de la tabla
         table_title = ctk.CTkLabel(
             table_frame,
             text="Lista de Cursos",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
         table_title.pack(pady=(20, 15))
         
@@ -4798,13 +4843,14 @@ Puedes agregar más matrículas usando este formulario."""
         """Mostrar contenido de Estudiantes"""
         # Título principal
         title_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        title_frame.pack(fill="x", padx=30, pady=(30, 20))
+        title_frame.pack(fill="x", padx=theme.SPACE_XL,
+                         pady=(theme.SPACE_LG, theme.SPACE_MD))
         
         title = ctk.CTkLabel(
             title_frame,
             text="Gestión de Estudiantes",
-            font=ctk.CTkFont(size=28, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_DISPLAY, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(side="left")
         
@@ -4814,26 +4860,26 @@ Puedes agregar más matrículas usando este formulario."""
             text="Nuevo Estudiante",
             width=200,
             height=50,
-            font=ctk.CTkFont(size=16, weight="bold"),
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             command=self.show_add_student_dialog,
-            fg_color="#28a745",
-            hover_color="#218838",
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
             corner_radius=10,
             border_width=2,
-            border_color="#1e7e34"
+            border_color=theme.SUCCESS_DARK
         )
         add_student_btn.pack(side="right", padx=(0, 10), pady=5)
         
         # Frame para filtros
-        filters_frame = ctk.CTkFrame(self.content_frame, fg_color="white", corner_radius=10)
-        filters_frame.pack(fill="x", padx=30, pady=(0, 20))
+        filters_frame = ctk.CTkFrame(self.content_frame, fg_color=theme.SURFACE, corner_radius=10)
+        filters_frame.pack(fill="x", padx=theme.SPACE_XL, pady=(0, theme.SPACE_MD))
         
         # Título de filtros
         filters_title = ctk.CTkLabel(
             filters_frame,
             text="Filtros de Búsqueda",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         filters_title.pack(pady=(20, 15))
         
@@ -4848,8 +4894,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             name_filter_frame,
             text="Nombre:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.student_name_filter = ctk.CTkEntry(
@@ -4867,8 +4913,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             phone_filter_frame,
             text="Teléfono:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.student_phone_filter = ctk.CTkEntry(
@@ -4886,8 +4932,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             team_filter_frame,
             text="Equipo:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.student_team_filter = ctk.CTkComboBox(
@@ -4909,8 +4955,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=35,
             command=self.filter_students,
-            fg_color="#1f538d",
-            hover_color="#0d47a1"
+            fg_color=theme.PRIMARY,
+            hover_color=theme.PRIMARY_DARK
         )
         search_btn.pack(side="left", padx=(0, 10))
         
@@ -4920,21 +4966,21 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=35,
             command=self.clear_student_filters,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         clear_btn.pack(side="left")
         
         # Frame para la tabla de estudiantes
-        table_frame = ctk.CTkFrame(self.content_frame, fg_color="white", corner_radius=10)
-        table_frame.pack(fill="both", expand=True, padx=30, pady=(0, 30))
+        table_frame = ctk.CTkFrame(self.content_frame, fg_color=theme.SURFACE, corner_radius=10)
+        table_frame.pack(fill="both", expand=True, padx=theme.SPACE_XL, pady=(0, theme.SPACE_LG))
         
         # Título de la tabla
         table_title = ctk.CTkLabel(
             table_frame,
             text="Lista de Estudiantes",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
         table_title.pack(pady=(20, 15))
         
@@ -4951,13 +4997,14 @@ Puedes agregar más matrículas usando este formulario."""
         """Mostrar contenido de Docentes"""
         # Título principal
         title_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        title_frame.pack(fill="x", padx=30, pady=(30, 20))
+        title_frame.pack(fill="x", padx=theme.SPACE_XL,
+                         pady=(theme.SPACE_LG, theme.SPACE_MD))
         
         title = ctk.CTkLabel(
             title_frame,
             text="Gestión de Docentes",
-            font=ctk.CTkFont(size=28, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_DISPLAY, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(side="left")
         
@@ -4967,26 +5014,26 @@ Puedes agregar más matrículas usando este formulario."""
             text="Nuevo Docente",
             width=200,
             height=50,
-            font=ctk.CTkFont(size=16, weight="bold"),
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             command=self.show_add_teacher_dialog,
-            fg_color="#28a745",
-            hover_color="#218838",
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
             corner_radius=10,
             border_width=2,
-            border_color="#1e7e34"
+            border_color=theme.SUCCESS_DARK
         )
         add_teacher_btn.pack(side="right", padx=(0, 10), pady=5)
         
         # Frame para filtros
-        filters_frame = ctk.CTkFrame(self.content_frame, fg_color="white", corner_radius=10)
-        filters_frame.pack(fill="x", padx=30, pady=(0, 20))
+        filters_frame = ctk.CTkFrame(self.content_frame, fg_color=theme.SURFACE, corner_radius=10)
+        filters_frame.pack(fill="x", padx=theme.SPACE_XL, pady=(0, theme.SPACE_MD))
         
         # Título de filtros
         filters_title = ctk.CTkLabel(
             filters_frame,
             text="Filtros de Búsqueda",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         filters_title.pack(pady=(20, 15))
         
@@ -5001,8 +5048,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             name_filter_frame,
             text="Nombre:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.teacher_name_filter = ctk.CTkEntry(
@@ -5020,8 +5067,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             phone_filter_frame,
             text="Teléfono:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.teacher_phone_filter = ctk.CTkEntry(
@@ -5039,8 +5086,8 @@ Puedes agregar más matrículas usando este formulario."""
         ctk.CTkLabel(
             team_filter_frame,
             text="Equipo:",
-            font=ctk.CTkFont(size=12, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SMALL, "bold"),
+            text_color=theme.TEXT
         ).pack(anchor="w")
         
         self.teacher_team_filter = ctk.CTkComboBox(
@@ -5062,8 +5109,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=35,
             command=self.filter_teachers,
-            fg_color="#1f538d",
-            hover_color="#0d47a1"
+            fg_color=theme.PRIMARY,
+            hover_color=theme.PRIMARY_DARK
         )
         search_btn.pack(side="left", padx=(0, 10))
         
@@ -5073,21 +5120,21 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=35,
             command=self.clear_teacher_filters,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         clear_btn.pack(side="left")
         
         # Frame para la tabla de docentes
-        table_frame = ctk.CTkFrame(self.content_frame, fg_color="white", corner_radius=10)
-        table_frame.pack(fill="both", expand=True, padx=30, pady=(0, 30))
+        table_frame = ctk.CTkFrame(self.content_frame, fg_color=theme.SURFACE, corner_radius=10)
+        table_frame.pack(fill="both", expand=True, padx=theme.SPACE_XL, pady=(0, theme.SPACE_LG))
         
         # Título de la tabla
         table_title = ctk.CTkLabel(
             table_frame,
             text="Lista de Docentes",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
         table_title.pack(pady=(20, 15))
         
@@ -5140,13 +5187,18 @@ Puedes agregar más matrículas usando este formulario."""
     def setup_users_page(self):
         """Configurar la interfaz de gestión de usuarios (como en la imagen)"""
         # Título principal
+        header = ctk.CTkFrame(self.content_frame, fg_color="transparent")
+        header.pack(fill="x", padx=theme.SPACE_XL,
+                    pady=(theme.SPACE_LG, theme.SPACE_MD))
+
         title = ctk.CTkLabel(
-            self.content_frame,
-            text="CONFIGURACIÓN",
-            font=ctk.CTkFont(size=28, weight="bold"),
-            text_color="#1f538d"
+            header,
+            text="Configuración",
+            font=theme.font(theme.SIZE_DISPLAY, "bold"),
+            text_color=theme.PRIMARY,
+            anchor="w"
         )
-        title.pack(pady=(20, 30))
+        title.pack(anchor="w")
         
         # Sección de usuarios
         self.create_users_section()
@@ -5161,17 +5213,17 @@ Puedes agregar más matrículas usando este formulario."""
         users_title = ctk.CTkLabel(
             self.content_frame,
             text="Usuarios",
-            font=ctk.CTkFont(size=20, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
-        users_title.pack(pady=(0, 15), anchor="w")
-        
+        users_title.pack(padx=theme.SPACE_XL, pady=(0, theme.SPACE_SM), anchor="w")
+
         # Frame para filtros
         filters_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        filters_frame.pack(fill="x", pady=(0, 15))
+        filters_frame.pack(fill="x", padx=theme.SPACE_XL, pady=(0, theme.SPACE_MD))
         
         # Campo de búsqueda por usuario
-        user_label = ctk.CTkLabel(filters_frame, text="Usuario:", font=ctk.CTkFont(size=14))
+        user_label = ctk.CTkLabel(filters_frame, text="Usuario:", font=theme.font(theme.SIZE_BODY))
         user_label.pack(side="left", padx=(0, 10))
         
         self.user_search_var = ctk.StringVar()
@@ -5185,7 +5237,7 @@ Puedes agregar más matrículas usando este formulario."""
         user_entry.pack(side="left", padx=(0, 20))
         
         # Filtro por rol
-        role_label = ctk.CTkLabel(filters_frame, text="Rol:", font=ctk.CTkFont(size=14))
+        role_label = ctk.CTkLabel(filters_frame, text="Rol:", font=theme.font(theme.SIZE_BODY))
         role_label.pack(side="left", padx=(0, 10))
         
         self.role_filter_var = ctk.StringVar()
@@ -5200,15 +5252,23 @@ Puedes agregar más matrículas usando este formulario."""
         role_combo.pack(side="left")
         
         # Frame para la tabla de usuarios
-        table_frame = ctk.CTkFrame(self.content_frame)
-        table_frame.pack(fill="both", expand=True, pady=(0, 15))
+        table_frame = ctk.CTkFrame(
+            self.content_frame,
+            fg_color=theme.SURFACE,
+            corner_radius=theme.RADIUS_LG,
+            border_width=1,
+            border_color=theme.BORDER
+        )
+        table_frame.pack(fill="both", expand=True,
+                         padx=theme.SPACE_XL, pady=(0, theme.SPACE_MD))
         
         # Crear tabla de usuarios
         self.create_users_table(table_frame)
         
         # Frame para botones de acción
         action_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        action_frame.pack(fill="x", pady=(10, 15))
+        action_frame.pack(fill="x", padx=theme.SPACE_XL,
+                          pady=(theme.SPACE_SM, theme.SPACE_MD))
         
         # Botón agregar usuario
         self.add_user_btn = ctk.CTkButton(
@@ -5217,9 +5277,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=40,
             command=self.show_create_user_dialog,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         self.add_user_btn.pack(side="left", padx=(0, 10))
         
@@ -5230,9 +5290,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=120,
             height=40,
             command=self.show_edit_user_dialog,
-            fg_color="#ffc107",
-            hover_color="#e0a800",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.WARNING,
+            hover_color=theme.WARNING_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         self.edit_user_btn.pack(side="left", padx=(0, 10))
         
@@ -5243,9 +5303,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=120,
             height=40,
             command=self.delete_selected_user,
-            fg_color="#dc3545",
-            hover_color="#c82333",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         self.delete_user_btn.pack(side="left", padx=(0, 10))
         
@@ -5256,44 +5316,48 @@ Puedes agregar más matrículas usando este formulario."""
             width=120,
             height=40,
             command=self.load_users,
-            fg_color="#17a2b8",
-            hover_color="#138496",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.INFO,
+            hover_color=theme.INFO_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         self.refresh_users_btn.pack(side="right")
         
         # Frame para paginación
         pagination_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        pagination_frame.pack(fill="x", pady=(0, 15))
+        pagination_frame.pack(fill="x", padx=theme.SPACE_XL, pady=(0, theme.SPACE_MD))
         
         # Información de paginación
         self.pagination_label = ctk.CTkLabel(
             pagination_frame,
             text="1/10 Páginas",
-            font=ctk.CTkFont(size=12)
+            font=theme.font(theme.SIZE_SMALL)
         )
         self.pagination_label.pack(side="left")
         
         # Botones de paginación
-        prev_btn = ctk.CTkButton(
-            pagination_frame,
-            text="Anterior",
-            width=80,
-            height=30,
-            command=self.previous_users_page,
-            font=ctk.CTkFont(size=12)
-        )
-        prev_btn.pack(side="right", padx=(5, 0))
-        
         next_btn = ctk.CTkButton(
             pagination_frame,
             text="Siguiente",
-            width=80,
-            height=30,
+            width=90,
+            height=32,
             command=self.next_users_page,
-            font=ctk.CTkFont(size=12)
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SMALL)
         )
         next_btn.pack(side="right")
+
+        prev_btn = ctk.CTkButton(
+            pagination_frame,
+            text="Anterior",
+            width=90,
+            height=32,
+            command=self.previous_users_page,
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SMALL)
+        )
+        prev_btn.pack(side="right", padx=(0, theme.SPACE_SM))
         
         # Cargar usuarios
         self.load_users()
@@ -5319,8 +5383,10 @@ Puedes agregar más matrículas usando este formulario."""
         self.users_tree.configure(yscrollcommand=scrollbar.set)
         
         # Empaquetar tabla y scrollbar
-        self.users_tree.pack(side="left", fill="both", expand=True)
-        scrollbar.pack(side="right", fill="y")
+        self.users_tree.pack(side="left", fill="both", expand=True,
+                             padx=(theme.SPACE_SM, 0), pady=theme.SPACE_SM)
+        scrollbar.pack(side="right", fill="y", padx=(0, theme.SPACE_SM),
+                       pady=theme.SPACE_SM)
         
         # Configurar eventos
         self.users_tree.bind("<Double-1>", self.show_edit_user_dialog)
@@ -5332,14 +5398,16 @@ Puedes agregar más matrículas usando este formulario."""
         options_title = ctk.CTkLabel(
             self.content_frame,
             text="Opciones Adicionales",
-            font=ctk.CTkFont(size=20, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
-        options_title.pack(pady=(20, 15), anchor="w")
-        
+        options_title.pack(padx=theme.SPACE_XL,
+                           pady=(theme.SPACE_MD, theme.SPACE_SM), anchor="w")
+
         # Frame para botones de opciones
         options_frame = ctk.CTkFrame(self.content_frame, fg_color="transparent")
-        options_frame.pack(fill="x")
+        options_frame.pack(fill="x", padx=theme.SPACE_XL,
+                           pady=(0, theme.SPACE_LG))
         
         # Botón Importar BD
         import_btn = ctk.CTkButton(
@@ -5348,9 +5416,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=40,
             command=self.import_database,
-            fg_color="#17a2b8",
-            hover_color="#138496",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.INFO,
+            hover_color=theme.INFO_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         import_btn.pack(side="left", padx=(0, 10))
         
@@ -5361,9 +5429,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=40,
             command=self.export_database,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         export_btn.pack(side="left", padx=(0, 10))
         
@@ -5374,9 +5442,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=40,
             command=self.export_json,
-            fg_color="#ffc107",
-            hover_color="#e0a800",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.WARNING,
+            hover_color=theme.WARNING_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         export_json_btn.pack(side="left")
     
@@ -5542,8 +5610,8 @@ Puedes agregar más matrículas usando este formulario."""
         title = ctk.CTkLabel(
             dialog,
             text=f"Cambiar Contraseña de {username}",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=20)
         
@@ -5552,7 +5620,7 @@ Puedes agregar más matrículas usando este formulario."""
         fields_frame.pack(fill="both", expand=True, padx=20)
         
         # Nueva contraseña
-        new_pass_label = ctk.CTkLabel(fields_frame, text="Nueva Contraseña:", font=ctk.CTkFont(size=14))
+        new_pass_label = ctk.CTkLabel(fields_frame, text="Nueva Contraseña:", font=theme.font(theme.SIZE_BODY))
         new_pass_label.pack(pady=(0, 5), anchor="w")
         
         new_pass_entry = ctk.CTkEntry(
@@ -5565,7 +5633,7 @@ Puedes agregar más matrículas usando este formulario."""
         new_pass_entry.pack(pady=(0, 15))
         
         # Confirmar contraseña
-        confirm_pass_label = ctk.CTkLabel(fields_frame, text="Confirmar Contraseña:", font=ctk.CTkFont(size=14))
+        confirm_pass_label = ctk.CTkLabel(fields_frame, text="Confirmar Contraseña:", font=theme.font(theme.SIZE_BODY))
         confirm_pass_label.pack(pady=(0, 5), anchor="w")
         
         confirm_pass_entry = ctk.CTkEntry(
@@ -5620,9 +5688,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=120,
             height=35,
             command=save_password,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         save_btn.pack(side="left", padx=(0, 10))
         
@@ -5632,9 +5700,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=120,
             height=35,
             command=cancel,
-            fg_color="#dc3545",
-            hover_color="#c82333",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         cancel_btn.pack(side="left")
         
@@ -5662,8 +5730,8 @@ Puedes agregar más matrículas usando este formulario."""
         title = ctk.CTkLabel(
             dialog,
             text="Editar Usuario",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=20)
         
@@ -5672,7 +5740,7 @@ Puedes agregar más matrículas usando este formulario."""
         fields_frame.pack(fill="both", expand=True, padx=20)
         
         # Nombre de usuario
-        user_label = ctk.CTkLabel(fields_frame, text="Nombre de Usuario:", font=ctk.CTkFont(size=14))
+        user_label = ctk.CTkLabel(fields_frame, text="Nombre de Usuario:", font=theme.font(theme.SIZE_BODY))
         user_label.pack(pady=(0, 5), anchor="w")
         
         user_entry = ctk.CTkEntry(
@@ -5685,7 +5753,7 @@ Puedes agregar más matrículas usando este formulario."""
         user_entry.pack(pady=(0, 15))
         
         # Rol
-        role_label = ctk.CTkLabel(fields_frame, text="Rol:", font=ctk.CTkFont(size=14))
+        role_label = ctk.CTkLabel(fields_frame, text="Rol:", font=theme.font(theme.SIZE_BODY))
         role_label.pack(pady=(0, 5), anchor="w")
         
         role_var = ctk.StringVar()
@@ -5700,20 +5768,20 @@ Puedes agregar más matrículas usando este formulario."""
         role_combo.pack(pady=(0, 15))
         
         # Separador
-        separator = ctk.CTkFrame(fields_frame, height=2, fg_color="#cccccc")
+        separator = ctk.CTkFrame(fields_frame, height=2, fg_color=theme.BORDER)
         separator.pack(fill="x", pady=10)
         
         # Título para cambio de contraseña
         pass_title = ctk.CTkLabel(
             fields_frame,
             text="Cambiar Contraseña (opcional):",
-            font=ctk.CTkFont(size=14, weight="bold"),
-            text_color="#666666"
+            font=theme.font(theme.SIZE_BODY, "bold"),
+            text_color=theme.TEXT_MUTED
         )
         pass_title.pack(pady=(10, 5), anchor="w")
         
         # Nueva contraseña
-        new_pass_label = ctk.CTkLabel(fields_frame, text="Nueva Contraseña:", font=ctk.CTkFont(size=12))
+        new_pass_label = ctk.CTkLabel(fields_frame, text="Nueva Contraseña:", font=theme.font(theme.SIZE_SMALL))
         new_pass_label.pack(pady=(0, 5), anchor="w")
         
         new_pass_entry = ctk.CTkEntry(
@@ -5726,7 +5794,7 @@ Puedes agregar más matrículas usando este formulario."""
         new_pass_entry.pack(pady=(0, 10))
         
         # Confirmar contraseña
-        confirm_pass_label = ctk.CTkLabel(fields_frame, text="Confirmar Contraseña:", font=ctk.CTkFont(size=12))
+        confirm_pass_label = ctk.CTkLabel(fields_frame, text="Confirmar Contraseña:", font=theme.font(theme.SIZE_SMALL))
         confirm_pass_label.pack(pady=(0, 5), anchor="w")
         
         confirm_pass_entry = ctk.CTkEntry(
@@ -5803,9 +5871,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=35,
             command=save_changes,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         save_btn.pack(side="left", padx=(0, 10))
         
@@ -5815,9 +5883,9 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=35,
             command=cancel,
-            fg_color="#dc3545",
-            hover_color="#c82333",
-            font=ctk.CTkFont(size=14, weight="bold")
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK,
+            font=theme.font(theme.SIZE_BODY, "bold")
         )
         cancel_btn.pack(side="left")
         
@@ -5870,8 +5938,8 @@ Puedes agregar más matrículas usando este formulario."""
         title = ctk.CTkLabel(
             dialog,
             text="Crear Nuevo Usuario",
-            font=ctk.CTkFont(size=18, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_SECTION, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=20)
         
@@ -5880,7 +5948,7 @@ Puedes agregar más matrículas usando este formulario."""
         fields_frame.pack(fill="both", expand=True, padx=20)
         
         # Nombre de usuario
-        user_label = ctk.CTkLabel(fields_frame, text="Nombre de Usuario:", font=ctk.CTkFont(size=14))
+        user_label = ctk.CTkLabel(fields_frame, text="Nombre de Usuario:", font=theme.font(theme.SIZE_BODY))
         user_label.pack(pady=(0, 5), anchor="w")
         
         user_entry = ctk.CTkEntry(
@@ -5892,7 +5960,7 @@ Puedes agregar más matrículas usando este formulario."""
         user_entry.pack(pady=(0, 15))
         
         # Rol
-        role_label = ctk.CTkLabel(fields_frame, text="Rol:", font=ctk.CTkFont(size=14))
+        role_label = ctk.CTkLabel(fields_frame, text="Rol:", font=theme.font(theme.SIZE_BODY))
         role_label.pack(pady=(0, 5), anchor="w")
         
         role_var = ctk.StringVar()
@@ -5907,7 +5975,7 @@ Puedes agregar más matrículas usando este formulario."""
         role_combo.pack(pady=(0, 15))
         
         # Contraseña
-        pass_label = ctk.CTkLabel(fields_frame, text="Contraseña:", font=ctk.CTkFont(size=14))
+        pass_label = ctk.CTkLabel(fields_frame, text="Contraseña:", font=theme.font(theme.SIZE_BODY))
         pass_label.pack(pady=(0, 5), anchor="w")
         
         pass_entry = ctk.CTkEntry(
@@ -5920,7 +5988,7 @@ Puedes agregar más matrículas usando este formulario."""
         pass_entry.pack(pady=(0, 15))
         
         # Confirmar contraseña
-        confirm_label = ctk.CTkLabel(fields_frame, text="Confirmar Contraseña:", font=ctk.CTkFont(size=14))
+        confirm_label = ctk.CTkLabel(fields_frame, text="Confirmar Contraseña:", font=theme.font(theme.SIZE_BODY))
         confirm_label.pack(pady=(0, 5), anchor="w")
         
         confirm_entry = ctk.CTkEntry(
@@ -5986,25 +6054,25 @@ Puedes agregar más matrículas usando este formulario."""
         # Botones
         create_btn = ctk.CTkButton(
             buttons_frame,
-            text="CREAR USUARIO",
+            text="Crear Usuario",
             width=180,
             height=45,
             command=create_user,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=16, weight="bold")
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_SUBTITLE, "bold")
         )
         create_btn.pack(side="left", padx=(0, 15))
         
         cancel_btn = ctk.CTkButton(
             buttons_frame,
-            text="CANCELAR",
+            text="Cancelar",
             width=180,
             height=45,
             command=cancel,
-            fg_color="#dc3545",
-            hover_color="#c82333",
-            font=ctk.CTkFont(size=16, weight="bold")
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK,
+            font=theme.font(theme.SIZE_SUBTITLE, "bold")
         )
         cancel_btn.pack(side="left")
         
@@ -6064,7 +6132,7 @@ Puedes agregar más matrículas usando este formulario."""
         self.teams_table_container.pack(fill="both", expand=True, padx=20, pady=(0, 20))
         
         # Headers de la tabla
-        headers_frame = ctk.CTkFrame(self.teams_table_container, fg_color="#1f538d", height=50)
+        headers_frame = ctk.CTkFrame(self.teams_table_container, fg_color=theme.PRIMARY, height=50)
         headers_frame.pack(fill="x", pady=(0, 5))
         headers_frame.pack_propagate(False)
         
@@ -6076,8 +6144,8 @@ Puedes agregar más matrículas usando este formulario."""
             header_label = ctk.CTkLabel(
                 headers_frame,
                 text=header,
-                font=ctk.CTkFont(size=12, weight="bold"),
-                text_color="white",
+                font=theme.font(theme.SIZE_SMALL, "bold"),
+                text_color=theme.SURFACE,
                 width=width
             )
             header_label.place(x=sum(header_widths[:i]) + i*5, y=15)
@@ -6085,7 +6153,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Frame para las filas de datos
         self.teams_rows_frame = ctk.CTkScrollableFrame(
             self.teams_table_container,
-            fg_color="#f8f9fa",
+            fg_color=theme.SURFACE_ALT,
             height=450
         )
         self.teams_rows_frame.pack(fill="both", expand=True)
@@ -6098,8 +6166,8 @@ Puedes agregar más matrículas usando este formulario."""
         self.teams_pagination_info = ctk.CTkLabel(
             pagination_frame,
             text="Mostrando 0 de 0 equipos",
-            font=ctk.CTkFont(size=12),
-            text_color="#666666"
+            font=theme.font(theme.SIZE_SMALL),
+            text_color=theme.TEXT_MUTED
         )
         self.teams_pagination_info.pack(side="left")
         
@@ -6113,8 +6181,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=30,
             command=self.teams_prev_page,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         self.teams_prev_page_btn.pack(side="left", padx=(0, 5))
         
@@ -6124,8 +6192,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=30,
             command=self.teams_next_page,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         self.teams_next_page_btn.pack(side="left")
         
@@ -6201,7 +6269,7 @@ Puedes agregar más matrículas usando este formulario."""
         
     def create_team_row(self, team):
         """Crear fila de equipo en la tabla"""
-        row_frame = ctk.CTkFrame(self.teams_rows_frame, fg_color="white", height=40)
+        row_frame = ctk.CTkFrame(self.teams_rows_frame, fg_color=theme.SURFACE, height=40)
         row_frame.pack(fill="x", pady=2)
         row_frame.pack_propagate(False)
         
@@ -6220,8 +6288,8 @@ Puedes agregar más matrículas usando este formulario."""
             data_label = ctk.CTkLabel(
                 row_frame,
                 text=data,
-                font=ctk.CTkFont(size=12),
-                text_color="#333333",
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.TEXT,
                 width=50 if i == 0 else 200 if i == 1 else 100 if i == 2 else 100 if i == 3 else 100 if i == 4 else 80
             )
             data_label.place(x=sum([50, 200, 100, 100, 100, 80][:i]) + i*5, y=10)
@@ -6235,10 +6303,10 @@ Puedes agregar más matrículas usando este formulario."""
             text="Editar",
             width=56,
             height=28,
-            font=ctk.CTkFont(size=11),
+            font=theme.font(theme.SIZE_CAPTION),
             command=lambda t=team: self.edit_team(t),
-            fg_color="#ffc107",
-            hover_color="#e0a800"
+            fg_color=theme.WARNING,
+            hover_color=theme.WARNING_DARK
         )
         edit_btn.pack(side="left", padx=(0, 4))
         
@@ -6247,10 +6315,10 @@ Puedes agregar más matrículas usando este formulario."""
             text="Eliminar",
             width=56,
             height=28,
-            font=ctk.CTkFont(size=11),
+            font=theme.font(theme.SIZE_CAPTION),
             command=lambda t=team: self.delete_team(t),
-            fg_color="#dc3545",
-            hover_color="#c82333"
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK
         )
         delete_btn.pack(side="left")
         
@@ -6318,13 +6386,13 @@ Puedes agregar más matrículas usando este formulario."""
         title = ctk.CTkLabel(
             main_frame,
             text="Agregar Equipo" if not team else "Editar Equipo",
-            font=ctk.CTkFont(size=24, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=(0, 20))
         
         # Formulario
-        form_frame = ctk.CTkFrame(main_frame, fg_color="white", corner_radius=10)
+        form_frame = ctk.CTkFrame(main_frame, fg_color=theme.SURFACE, corner_radius=10)
         form_frame.pack(fill="x", pady=(0, 20))
         
         # Campos del formulario
@@ -6335,8 +6403,8 @@ Puedes agregar más matrículas usando este formulario."""
         name_label = ctk.CTkLabel(
             fields_frame,
             text="Nombre del Equipo:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         name_label.pack(anchor="w", pady=(0, 8))
         
@@ -6344,9 +6412,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="Ingrese el nombre del equipo (ej: Jóvenes de Cristo)",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         name_entry.pack(fill="x", pady=(0, 25))
         
@@ -6358,8 +6426,8 @@ Puedes agregar más matrículas usando este formulario."""
         age_start_label = ctk.CTkLabel(
             age_frame,
             text="Edad de Inicio:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         age_start_label.pack(anchor="w", pady=(0, 8))
         
@@ -6367,9 +6435,9 @@ Puedes agregar más matrículas usando este formulario."""
             age_frame,
             placeholder_text="Ej: 15",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         age_start_entry.pack(fill="x", pady=(0, 20))
         
@@ -6377,8 +6445,8 @@ Puedes agregar más matrículas usando este formulario."""
         age_end_label = ctk.CTkLabel(
             age_frame,
             text="Edad de Fin:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         age_end_label.pack(anchor="w", pady=(0, 8))
         
@@ -6386,9 +6454,9 @@ Puedes agregar más matrículas usando este formulario."""
             age_frame,
             placeholder_text="Ej: 25",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         age_end_entry.pack(fill="x", pady=(0, 25))
         
@@ -6396,8 +6464,8 @@ Puedes agregar más matrículas usando este formulario."""
         gender_label = ctk.CTkLabel(
             fields_frame,
             text="Género:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         gender_label.pack(anchor="w", pady=(0, 8))
         
@@ -6406,11 +6474,11 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             values=["Mixto", "Masculino", "Femenino"],
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             variable=gender_var,
             border_width=2,
-            border_color="#1f538d",
-            button_color="#1f538d"
+            border_color=theme.PRIMARY,
+            button_color=theme.PRIMARY
         )
         gender_combo.pack(fill="x", pady=(0, 30))
         
@@ -6504,12 +6572,12 @@ Puedes agregar más matrículas usando este formulario."""
             width=180,
             height=50,
             command=save_team,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             corner_radius=10,
             border_width=2,
-            border_color="#1e7e34"
+            border_color=theme.SUCCESS_DARK
         )
         save_btn.pack(side="right", padx=(15, 0))
         
@@ -6519,12 +6587,12 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=50,
             command=dialog.destroy,
-            fg_color="#6c757d",
-            hover_color="#5a6268",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             corner_radius=10,
             border_width=2,
-            border_color="#5a6268"
+            border_color=theme.NEUTRAL_DARK
         )
         cancel_btn.pack(side="right")
         
@@ -6624,7 +6692,7 @@ Puedes agregar más matrículas usando este formulario."""
         self.courses_table_container.pack(fill="both", expand=True, padx=20, pady=(0, 20))
         
         # Headers de la tabla
-        headers_frame = ctk.CTkFrame(self.courses_table_container, fg_color="#1f538d", height=50)
+        headers_frame = ctk.CTkFrame(self.courses_table_container, fg_color=theme.PRIMARY, height=50)
         headers_frame.pack(fill="x", pady=(0, 5))
         headers_frame.pack_propagate(False)
         
@@ -6636,8 +6704,8 @@ Puedes agregar más matrículas usando este formulario."""
             header_label = ctk.CTkLabel(
                 headers_frame,
                 text=header,
-                font=ctk.CTkFont(size=12, weight="bold"),
-                text_color="white",
+                font=theme.font(theme.SIZE_SMALL, "bold"),
+                text_color=theme.SURFACE,
                 width=width
             )
             header_label.place(x=sum(header_widths[:i]) + i*5, y=15)
@@ -6645,7 +6713,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Frame para las filas de datos
         self.courses_rows_frame = ctk.CTkScrollableFrame(
             self.courses_table_container,
-            fg_color="#f8f9fa",
+            fg_color=theme.SURFACE_ALT,
             height=450
         )
         self.courses_rows_frame.pack(fill="both", expand=True)
@@ -6658,8 +6726,8 @@ Puedes agregar más matrículas usando este formulario."""
         self.courses_pagination_info = ctk.CTkLabel(
             pagination_frame,
             text="Mostrando 0 de 0 cursos",
-            font=ctk.CTkFont(size=12),
-            text_color="#666666"
+            font=theme.font(theme.SIZE_SMALL),
+            text_color=theme.TEXT_MUTED
         )
         self.courses_pagination_info.pack(side="left")
         
@@ -6673,8 +6741,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=30,
             command=self.courses_prev_page,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         self.courses_prev_page_btn.pack(side="left", padx=(0, 5))
         
@@ -6684,8 +6752,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=30,
             command=self.courses_next_page,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         self.courses_next_page_btn.pack(side="left")
         
@@ -6758,7 +6826,7 @@ Puedes agregar más matrículas usando este formulario."""
         
     def create_course_row(self, course):
         """Crear fila de curso en la tabla"""
-        row_frame = ctk.CTkFrame(self.courses_rows_frame, fg_color="white", height=40)
+        row_frame = ctk.CTkFrame(self.courses_rows_frame, fg_color=theme.SURFACE, height=40)
         row_frame.pack(fill="x", pady=2)
         row_frame.pack_propagate(False)
         
@@ -6774,8 +6842,8 @@ Puedes agregar más matrículas usando este formulario."""
             data_label = ctk.CTkLabel(
                 row_frame,
                 text=data,
-                font=ctk.CTkFont(size=12),
-                text_color="#333333",
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.TEXT,
                 width=50 if i == 0 else 300 if i == 1 else 100
             )
             data_label.place(x=sum([50, 300, 100][:i]) + i*5, y=10)
@@ -6789,10 +6857,10 @@ Puedes agregar más matrículas usando este formulario."""
             text="Editar",
             width=56,
             height=28,
-            font=ctk.CTkFont(size=11),
+            font=theme.font(theme.SIZE_CAPTION),
             command=lambda c=course: self.edit_course(c),
-            fg_color="#ffc107",
-            hover_color="#e0a800"
+            fg_color=theme.WARNING,
+            hover_color=theme.WARNING_DARK
         )
         edit_btn.pack(side="left", padx=(0, 4))
         
@@ -6801,10 +6869,10 @@ Puedes agregar más matrículas usando este formulario."""
             text="Eliminar",
             width=56,
             height=28,
-            font=ctk.CTkFont(size=11),
+            font=theme.font(theme.SIZE_CAPTION),
             command=lambda c=course: self.delete_course(c),
-            fg_color="#dc3545",
-            hover_color="#c82333"
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK
         )
         delete_btn.pack(side="left")
         
@@ -6872,13 +6940,13 @@ Puedes agregar más matrículas usando este formulario."""
         title = ctk.CTkLabel(
             main_frame,
             text="Agregar Curso" if not course else "Editar Curso",
-            font=ctk.CTkFont(size=24, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=(0, 20))
         
         # Formulario
-        form_frame = ctk.CTkFrame(main_frame, fg_color="white", corner_radius=10)
+        form_frame = ctk.CTkFrame(main_frame, fg_color=theme.SURFACE, corner_radius=10)
         form_frame.pack(fill="both", expand=True, pady=(0, 20))
         
         # Campos del formulario
@@ -6889,8 +6957,8 @@ Puedes agregar más matrículas usando este formulario."""
         name_label = ctk.CTkLabel(
             fields_frame,
             text="Nombre del Curso:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         name_label.pack(anchor="w", pady=(0, 8))
         
@@ -6898,9 +6966,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="Ingrese el nombre del curso (ej: Teología Sistemática)",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         name_entry.pack(fill="x", pady=(0, 25))
         
@@ -6908,8 +6976,8 @@ Puedes agregar más matrículas usando este formulario."""
         level_label = ctk.CTkLabel(
             fields_frame,
             text="Nivel del Curso:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         level_label.pack(anchor="w", pady=(0, 8))
         
@@ -6917,9 +6985,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="Ej: 1 (Nivel básico), 2 (Intermedio), 3 (Avanzado)",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         level_entry.pack(fill="x", pady=(0, 30))
         
@@ -6997,12 +7065,12 @@ Puedes agregar más matrículas usando este formulario."""
             width=180,
             height=50,
             command=save_course,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             corner_radius=10,
             border_width=2,
-            border_color="#1e7e34"
+            border_color=theme.SUCCESS_DARK
         )
         save_btn.pack(side="right", padx=(15, 0))
         
@@ -7012,12 +7080,12 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=50,
             command=dialog.destroy,
-            fg_color="#6c757d",
-            hover_color="#5a6268",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             corner_radius=10,
             border_width=2,
-            border_color="#5a6268"
+            border_color=theme.NEUTRAL_DARK
         )
         cancel_btn.pack(side="right")
         
@@ -7102,7 +7170,7 @@ Puedes agregar más matrículas usando este formulario."""
         self.students_table_container.pack(fill="both", expand=True, padx=20, pady=(0, 20))
         
         # Headers de la tabla
-        headers_frame = ctk.CTkFrame(self.students_table_container, fg_color="#1f538d", height=50)
+        headers_frame = ctk.CTkFrame(self.students_table_container, fg_color=theme.PRIMARY, height=50)
         headers_frame.pack(fill="x", pady=(0, 5))
         headers_frame.pack_propagate(False)
         
@@ -7114,8 +7182,8 @@ Puedes agregar más matrículas usando este formulario."""
             header_label = ctk.CTkLabel(
                 headers_frame,
                 text=header,
-                font=ctk.CTkFont(size=12, weight="bold"),
-                text_color="white",
+                font=theme.font(theme.SIZE_SMALL, "bold"),
+                text_color=theme.SURFACE,
                 width=width
             )
             header_label.place(x=sum(header_widths[:i]) + i*5, y=15)
@@ -7123,7 +7191,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Frame para las filas de datos
         self.students_rows_frame = ctk.CTkScrollableFrame(
             self.students_table_container,
-            fg_color="#f8f9fa",
+            fg_color=theme.SURFACE_ALT,
             height=450
         )
         self.students_rows_frame.pack(fill="both", expand=True)
@@ -7136,8 +7204,8 @@ Puedes agregar más matrículas usando este formulario."""
         self.students_pagination_info = ctk.CTkLabel(
             pagination_frame,
             text="Mostrando 0 de 0 estudiantes",
-            font=ctk.CTkFont(size=12),
-            text_color="#666666"
+            font=theme.font(theme.SIZE_SMALL),
+            text_color=theme.TEXT_MUTED
         )
         self.students_pagination_info.pack(side="left")
         
@@ -7151,8 +7219,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=30,
             command=self.students_prev_page,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         self.students_prev_page_btn.pack(side="left", padx=(0, 5))
         
@@ -7162,8 +7230,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=30,
             command=self.students_next_page,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         self.students_next_page_btn.pack(side="left")
         
@@ -7239,7 +7307,7 @@ Puedes agregar más matrículas usando este formulario."""
         
     def create_student_row(self, student):
         """Crear fila de estudiante en la tabla"""
-        row_frame = ctk.CTkFrame(self.students_rows_frame, fg_color="white", height=40)
+        row_frame = ctk.CTkFrame(self.students_rows_frame, fg_color=theme.SURFACE, height=40)
         row_frame.pack(fill="x", pady=2)
         row_frame.pack_propagate(False)
         
@@ -7259,8 +7327,8 @@ Puedes agregar más matrículas usando este formulario."""
             data_label = ctk.CTkLabel(
                 row_frame,
                 text=data,
-                font=ctk.CTkFont(size=12),
-                text_color="#333333",
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.TEXT,
                 width=50 if i == 0 else 150 if i == 1 else 150 if i == 2 else 120 if i == 3 else 120 if i == 4 else 120 if i == 5 else 80
             )
             data_label.place(x=sum([50, 150, 150, 120, 120, 120, 80][:i]) + i*5, y=10)
@@ -7274,10 +7342,10 @@ Puedes agregar más matrículas usando este formulario."""
             text="Editar",
             width=56,
             height=28,
-            font=ctk.CTkFont(size=11),
+            font=theme.font(theme.SIZE_CAPTION),
             command=lambda s=student: self.edit_student(s),
-            fg_color="#ffc107",
-            hover_color="#e0a800"
+            fg_color=theme.WARNING,
+            hover_color=theme.WARNING_DARK
         )
         edit_btn.pack(side="left", padx=(0, 4))
         
@@ -7286,10 +7354,10 @@ Puedes agregar más matrículas usando este formulario."""
             text="Eliminar",
             width=56,
             height=28,
-            font=ctk.CTkFont(size=11),
+            font=theme.font(theme.SIZE_CAPTION),
             command=lambda s=student: self.delete_student(s),
-            fg_color="#dc3545",
-            hover_color="#c82333"
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK
         )
         delete_btn.pack(side="left")
         
@@ -7357,13 +7425,13 @@ Puedes agregar más matrículas usando este formulario."""
         title = ctk.CTkLabel(
             main_frame,
             text="Agregar Estudiante" if not student else "Editar Estudiante",
-            font=ctk.CTkFont(size=24, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=(0, 20))
         
         # Formulario
-        form_frame = ctk.CTkFrame(main_frame, fg_color="white", corner_radius=10)
+        form_frame = ctk.CTkFrame(main_frame, fg_color=theme.SURFACE, corner_radius=10)
         form_frame.pack(fill="x", pady=(0, 20))
         
         # Campos del formulario
@@ -7374,8 +7442,8 @@ Puedes agregar más matrículas usando este formulario."""
         name_label = ctk.CTkLabel(
             fields_frame,
             text="Nombre:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         name_label.pack(anchor="w", pady=(0, 8))
         
@@ -7383,9 +7451,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="Ingrese el nombre del estudiante",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         name_entry.pack(fill="x", pady=(0, 20))
         
@@ -7393,8 +7461,8 @@ Puedes agregar más matrículas usando este formulario."""
         lastname_label = ctk.CTkLabel(
             fields_frame,
             text="Apellido:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         lastname_label.pack(anchor="w", pady=(0, 8))
         
@@ -7402,9 +7470,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="Ingrese el apellido del estudiante",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         lastname_entry.pack(fill="x", pady=(0, 20))
         
@@ -7412,8 +7480,8 @@ Puedes agregar más matrículas usando este formulario."""
         phone_label = ctk.CTkLabel(
             fields_frame,
             text="Teléfono:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         phone_label.pack(anchor="w", pady=(0, 8))
         
@@ -7421,9 +7489,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="Ej: 555-0123",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         phone_entry.pack(fill="x", pady=(0, 20))
         
@@ -7431,8 +7499,8 @@ Puedes agregar más matrículas usando este formulario."""
         baptism_label = ctk.CTkLabel(
             fields_frame,
             text="Fecha de Bautismo:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         baptism_label.pack(anchor="w", pady=(0, 8))
         
@@ -7440,9 +7508,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="YYYY-MM-DD (ej: 2020-01-15)",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         baptism_entry.pack(fill="x", pady=(0, 20))
         
@@ -7450,8 +7518,8 @@ Puedes agregar más matrículas usando este formulario."""
         birth_label = ctk.CTkLabel(
             fields_frame,
             text="Fecha de Nacimiento:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         birth_label.pack(anchor="w", pady=(0, 8))
         
@@ -7459,9 +7527,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="YYYY-MM-DD (ej: 1995-05-20)",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         birth_entry.pack(fill="x", pady=(0, 20))
         
@@ -7469,8 +7537,8 @@ Puedes agregar más matrículas usando este formulario."""
         team_label = ctk.CTkLabel(
             fields_frame,
             text="Equipo:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         team_label.pack(anchor="w", pady=(0, 8))
         
@@ -7494,10 +7562,10 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             values=team_options,
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d",
-            button_color="#1f538d"
+            border_color=theme.PRIMARY,
+            button_color=theme.PRIMARY
         )
         team_combo.pack(fill="x", pady=(0, 30))
         
@@ -7610,12 +7678,12 @@ Puedes agregar más matrículas usando este formulario."""
             width=200,
             height=50,
             command=save_student,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             corner_radius=10,
             border_width=2,
-            border_color="#1e7e34"
+            border_color=theme.SUCCESS_DARK
         )
         save_btn.pack(side="right", padx=(15, 0))
         
@@ -7625,12 +7693,12 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=50,
             command=dialog.destroy,
-            fg_color="#6c757d",
-            hover_color="#5a6268",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             corner_radius=10,
             border_width=2,
-            border_color="#5a6268"
+            border_color=theme.NEUTRAL_DARK
         )
         cancel_btn.pack(side="right")
         
@@ -7729,7 +7797,7 @@ Puedes agregar más matrículas usando este formulario."""
         self.teachers_table_container.pack(fill="both", expand=True, padx=20, pady=(0, 20))
         
         # Headers de la tabla
-        headers_frame = ctk.CTkFrame(self.teachers_table_container, fg_color="#1f538d", height=50)
+        headers_frame = ctk.CTkFrame(self.teachers_table_container, fg_color=theme.PRIMARY, height=50)
         headers_frame.pack(fill="x", pady=(0, 5))
         headers_frame.pack_propagate(False)
         
@@ -7741,8 +7809,8 @@ Puedes agregar más matrículas usando este formulario."""
             header_label = ctk.CTkLabel(
                 headers_frame,
                 text=header,
-                font=ctk.CTkFont(size=12, weight="bold"),
-                text_color="white",
+                font=theme.font(theme.SIZE_SMALL, "bold"),
+                text_color=theme.SURFACE,
                 width=width
             )
             header_label.place(x=sum(header_widths[:i]) + i*5, y=15)
@@ -7750,7 +7818,7 @@ Puedes agregar más matrículas usando este formulario."""
         # Frame para las filas de datos
         self.teachers_rows_frame = ctk.CTkScrollableFrame(
             self.teachers_table_container,
-            fg_color="#f8f9fa",
+            fg_color=theme.SURFACE_ALT,
             height=450
         )
         self.teachers_rows_frame.pack(fill="both", expand=True)
@@ -7763,8 +7831,8 @@ Puedes agregar más matrículas usando este formulario."""
         self.teachers_pagination_info = ctk.CTkLabel(
             pagination_frame,
             text="Mostrando 0 de 0 docentes",
-            font=ctk.CTkFont(size=12),
-            text_color="#666666"
+            font=theme.font(theme.SIZE_SMALL),
+            text_color=theme.TEXT_MUTED
         )
         self.teachers_pagination_info.pack(side="left")
         
@@ -7778,8 +7846,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=30,
             command=self.teachers_prev_page,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         self.teachers_prev_page_btn.pack(side="left", padx=(0, 5))
         
@@ -7789,8 +7857,8 @@ Puedes agregar más matrículas usando este formulario."""
             width=100,
             height=30,
             command=self.teachers_next_page,
-            fg_color="#6c757d",
-            hover_color="#5a6268"
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK
         )
         self.teachers_next_page_btn.pack(side="left")
         
@@ -7866,7 +7934,7 @@ Puedes agregar más matrículas usando este formulario."""
         
     def create_teacher_row(self, teacher):
         """Crear fila de docente en la tabla"""
-        row_frame = ctk.CTkFrame(self.teachers_rows_frame, fg_color="white", height=40)
+        row_frame = ctk.CTkFrame(self.teachers_rows_frame, fg_color=theme.SURFACE, height=40)
         row_frame.pack(fill="x", pady=2)
         row_frame.pack_propagate(False)
         
@@ -7887,8 +7955,8 @@ Puedes agregar más matrículas usando este formulario."""
             data_label = ctk.CTkLabel(
                 row_frame,
                 text=data,
-                font=ctk.CTkFont(size=12),
-                text_color="#333333",
+                font=theme.font(theme.SIZE_SMALL),
+                text_color=theme.TEXT,
                 width=header_widths[i]
             )
             data_label.place(x=sum(header_widths[:i]) + i*5, y=10)
@@ -7902,10 +7970,10 @@ Puedes agregar más matrículas usando este formulario."""
             text="Editar",
             width=56,
             height=28,
-            font=ctk.CTkFont(size=11),
+            font=theme.font(theme.SIZE_CAPTION),
             command=lambda t=teacher: self.edit_teacher(t),
-            fg_color="#ffc107",
-            hover_color="#e0a800"
+            fg_color=theme.WARNING,
+            hover_color=theme.WARNING_DARK
         )
         edit_btn.pack(side="left", padx=(0, 4))
         
@@ -7914,10 +7982,10 @@ Puedes agregar más matrículas usando este formulario."""
             text="Eliminar",
             width=56,
             height=28,
-            font=ctk.CTkFont(size=11),
+            font=theme.font(theme.SIZE_CAPTION),
             command=lambda t=teacher: self.delete_teacher(t),
-            fg_color="#dc3545",
-            hover_color="#c82333"
+            fg_color=theme.DANGER,
+            hover_color=theme.DANGER_DARK
         )
         delete_btn.pack(side="left")
         
@@ -7985,13 +8053,13 @@ Puedes agregar más matrículas usando este formulario."""
         title = ctk.CTkLabel(
             main_frame,
             text="Agregar Docente" if not teacher else "Editar Docente",
-            font=ctk.CTkFont(size=24, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         title.pack(pady=(0, 20))
         
         # Formulario
-        form_frame = ctk.CTkFrame(main_frame, fg_color="white", corner_radius=10)
+        form_frame = ctk.CTkFrame(main_frame, fg_color=theme.SURFACE, corner_radius=10)
         form_frame.pack(fill="x", pady=(0, 20))
         
         # Campos del formulario
@@ -8002,8 +8070,8 @@ Puedes agregar más matrículas usando este formulario."""
         name_label = ctk.CTkLabel(
             fields_frame,
             text="Nombre:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         name_label.pack(anchor="w", pady=(0, 8))
         
@@ -8011,9 +8079,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="Ingrese el nombre del docente",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         name_entry.pack(fill="x", pady=(0, 20))
         
@@ -8021,8 +8089,8 @@ Puedes agregar más matrículas usando este formulario."""
         lastname_label = ctk.CTkLabel(
             fields_frame,
             text="Apellido:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         lastname_label.pack(anchor="w", pady=(0, 8))
         
@@ -8030,9 +8098,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="Ingrese el apellido del docente",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         lastname_entry.pack(fill="x", pady=(0, 20))
         
@@ -8040,8 +8108,8 @@ Puedes agregar más matrículas usando este formulario."""
         phone_label = ctk.CTkLabel(
             fields_frame,
             text="Teléfono:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         phone_label.pack(anchor="w", pady=(0, 8))
         
@@ -8049,9 +8117,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="Ej: 555-0123",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         phone_entry.pack(fill="x", pady=(0, 20))
         
@@ -8059,8 +8127,8 @@ Puedes agregar más matrículas usando este formulario."""
         baptism_label = ctk.CTkLabel(
             fields_frame,
             text="Fecha de Bautismo:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         baptism_label.pack(anchor="w", pady=(0, 8))
         
@@ -8068,9 +8136,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="YYYY-MM-DD (ej: 2020-01-15)",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         baptism_entry.pack(fill="x", pady=(0, 20))
         
@@ -8078,8 +8146,8 @@ Puedes agregar más matrículas usando este formulario."""
         birth_label = ctk.CTkLabel(
             fields_frame,
             text="Fecha de Nacimiento:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         birth_label.pack(anchor="w", pady=(0, 8))
         
@@ -8087,9 +8155,9 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             placeholder_text="YYYY-MM-DD (ej: 1995-05-20)",
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d"
+            border_color=theme.PRIMARY
         )
         birth_entry.pack(fill="x", pady=(0, 20))
         
@@ -8097,8 +8165,8 @@ Puedes agregar más matrículas usando este formulario."""
         team_label = ctk.CTkLabel(
             fields_frame,
             text="Equipo:",
-            font=ctk.CTkFont(size=16, weight="bold"),
-            text_color="#333333"
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
+            text_color=theme.TEXT
         )
         team_label.pack(anchor="w", pady=(0, 8))
         
@@ -8122,10 +8190,10 @@ Puedes agregar más matrículas usando este formulario."""
             fields_frame,
             values=team_options,
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             border_width=2,
-            border_color="#1f538d",
-            button_color="#1f538d"
+            border_color=theme.PRIMARY,
+            button_color=theme.PRIMARY
         )
         team_combo.pack(fill="x", pady=(0, 30))
         
@@ -8238,12 +8306,12 @@ Puedes agregar más matrículas usando este formulario."""
             width=200,
             height=50,
             command=save_teacher,
-            fg_color="#28a745",
-            hover_color="#218838",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color=theme.SUCCESS,
+            hover_color=theme.SUCCESS_DARK,
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             corner_radius=10,
             border_width=2,
-            border_color="#1e7e34"
+            border_color=theme.SUCCESS_DARK
         )
         save_btn.pack(side="right", padx=(15, 0))
         
@@ -8253,12 +8321,12 @@ Puedes agregar más matrículas usando este formulario."""
             width=150,
             height=50,
             command=dialog.destroy,
-            fg_color="#6c757d",
-            hover_color="#5a6268",
-            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color=theme.NEUTRAL,
+            hover_color=theme.NEUTRAL_DARK,
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             corner_radius=10,
             border_width=2,
-            border_color="#5a6268"
+            border_color=theme.NEUTRAL_DARK
         )
         cancel_btn.pack(side="right")
         

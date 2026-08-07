@@ -1,28 +1,78 @@
 """
 Generador de gráficos usando matplotlib para el dashboard.
+
+Todas las figuras comparten la paleta, la tipografía y el espaciado definidos
+en view/theme.py, y usan layout restringido para que títulos, ejes y etiquetas
+nunca se solapen.
 """
 
-import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from matplotlib.ticker import MaxNLocator
 import numpy as np
-from datetime import datetime, timedelta
-import os
+
+from view import theme
 
 
 class ChartGenerator:
     """Generador de gráficos para el dashboard"""
-    
+
     def __init__(self):
-        # Configurar estilo de matplotlib
-        plt.style.use('default')
-        self.colors = ['#28a745', '#007bff', '#ffc107', '#dc3545', '#6f42c1', '#20c997', '#fd7e14', '#e83e8c']
-    
+        self.colors = list(theme.CHART_PALETTE)
+
+    # ------------------------------------------------------------------
+    # Utilidades internas
+    # ------------------------------------------------------------------
+
+    def _new_figure(self, width, height):
+        """Crear una figura con layout restringido y fondo de la aplicación."""
+        fig = Figure(figsize=(width, height), facecolor=theme.CHART_FACE,
+                     layout="constrained")
+        fig.get_layout_engine().set(w_pad=0.06, h_pad=0.06,
+                                    wspace=0.02, hspace=0.02)
+        return fig
+
+    def _style_axes(self, ax, title, xlabel=None, ylabel=None, grid_axis="both"):
+        """Aplicar el estilo común a un eje cartesiano."""
+        ax.set_title(title, fontsize=theme.CHART_TITLE_SIZE, fontweight="bold",
+                     color=theme.CHART_TITLE, pad=10)
+        if xlabel:
+            ax.set_xlabel(xlabel, fontsize=theme.CHART_LABEL_SIZE,
+                          color=theme.CHART_LABEL, labelpad=6)
+        if ylabel:
+            ax.set_ylabel(ylabel, fontsize=theme.CHART_LABEL_SIZE,
+                          color=theme.CHART_LABEL, labelpad=6)
+
+        ax.set_facecolor(theme.CHART_PLOT_FACE)
+        ax.grid(True, axis=grid_axis, alpha=0.6, linestyle="--", linewidth=0.7,
+                color=theme.CHART_GRID)
+        ax.set_axisbelow(True)
+        ax.tick_params(colors=theme.CHART_TICK, labelsize=theme.CHART_TICK_SIZE,
+                       length=3, width=0.8)
+
+        for side, spine in ax.spines.items():
+            if side in ("top", "right"):
+                spine.set_visible(False)
+            else:
+                spine.set_color(theme.CHART_SPINE)
+
+    def _empty_message(self, fig, title, message="Sin datos disponibles"):
+        """Dibujar un mensaje cuando no hay datos que graficar."""
+        ax = fig.add_subplot(111)
+        ax.set_title(title, fontsize=theme.CHART_TITLE_SIZE, fontweight="bold",
+                     color=theme.CHART_TITLE, pad=10)
+        ax.text(0.5, 0.5, message, ha="center", va="center",
+                fontsize=theme.CHART_LABEL_SIZE, color=theme.CHART_LABEL)
+        ax.set_axis_off()
+        return fig
+
+    # ------------------------------------------------------------------
+    # Gráficos
+    # ------------------------------------------------------------------
+
     def create_line_chart(self, data, title, xlabel, ylabel, width=6, height=4):
-        """
-        Crear gráfico de línea
-        
+        """Crear gráfico de línea.
+
         Args:
             data: Lista de tuplas (x, y) o diccionario con 'x' y 'y'
             title: Título del gráfico
@@ -30,95 +80,105 @@ class ChartGenerator:
             ylabel: Etiqueta del eje Y
             width: Ancho de la figura
             height: Alto de la figura
-            
+
         Returns:
             Figure: Figura de matplotlib
         """
-        fig = Figure(figsize=(width, height), facecolor='white')
-        ax = fig.add_subplot(111)
-        
-        # Preparar datos
+        fig = self._new_figure(width, height)
+
         if isinstance(data, dict):
-            x_data = data.get('x', [])
-            y_data = data.get('y', [])
+            x_data = data.get("x", [])
+            y_data = data.get("y", [])
         else:
             x_data, y_data = zip(*data) if data else ([], [])
-        
-        # Crear gráfico de línea
-        ax.plot(x_data, y_data, marker='o', linewidth=2.5, markersize=6, 
-                color=self.colors[1], markerfacecolor=self.colors[0], 
-                markeredgecolor='white', markeredgewidth=2)
-        
-        # Configurar el gráfico
-        ax.set_title(title, fontsize=14, fontweight='bold', color='#1f538d', pad=20)
-        ax.set_xlabel(xlabel, fontsize=12, color='#666666')
-        ax.set_ylabel(ylabel, fontsize=12, color='#666666')
-        
-        # Estilo de la cuadrícula
-        ax.grid(True, alpha=0.3, linestyle='--')
-        ax.set_facecolor('#f8f9fa')
-        
-        # Configurar colores de ejes
-        ax.tick_params(colors='#666666')
-        for spine in ax.spines.values():
-            spine.set_color('#e9ecef')
-        
-        # Ajustar layout
-        fig.tight_layout(pad=2)
-        
+
+        if not len(x_data):
+            return self._empty_message(fig, title)
+
+        ax = fig.add_subplot(111)
+        ax.plot(x_data, y_data,
+                marker="o", linewidth=2.2, markersize=5,
+                color=theme.CHART_PALETTE[0],
+                markerfacecolor=theme.SURFACE,
+                markeredgecolor=theme.CHART_PALETTE[0],
+                markeredgewidth=1.8)
+        ax.fill_between(range(len(x_data)), y_data,
+                        color=theme.CHART_PALETTE[0], alpha=0.10)
+
+        self._style_axes(ax, title, xlabel, ylabel, grid_axis="y")
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True, nbins=5))
+        ax.margins(x=0.04, y=0.18)
+        ax.set_ylim(bottom=0)
         return fig
-    
+
     def create_pie_chart(self, data, labels, title, width=6, height=4):
-        """
-        Crear gráfico de pastel
-        
+        """Crear gráfico de pastel.
+
+        Las categorías con valor cero se omiten para no mostrar etiquetas
+        de porcentaje vacías ni sectores invisibles.
+
         Args:
             data: Lista de valores
             labels: Lista de etiquetas
             title: Título del gráfico
             width: Ancho de la figura
             height: Alto de la figura
-            
+
         Returns:
             Figure: Figura de matplotlib
         """
-        fig = Figure(figsize=(width, height), facecolor='white')
-        # Crear subplot con más espacio para el título
+        fig = self._new_figure(width, height)
+
+        pairs = [(value, label) for value, label in zip(data, labels)
+                 if value and value > 0]
+        if not pairs:
+            return self._empty_message(fig, title)
+
+        values = [p[0] for p in pairs]
+        names = [p[1] for p in pairs]
+        total = float(sum(values))
+
         ax = fig.add_subplot(111)
-        ax.set_position([0.1, 0.1, 0.8, 0.7])  # [left, bottom, width, height]
-        
-        # Crear gráfico de pastel
-        wedges, texts, autotexts = ax.pie(
-            data, 
-            labels=labels, 
-            autopct='%1.1f%%',
+        ax.set_title(title, fontsize=theme.CHART_TITLE_SIZE, fontweight="bold",
+                     color=theme.CHART_TITLE, pad=10)
+
+        def autopct(pct):
+            # Ocultar el porcentaje de sectores vacíos o demasiado pequeños
+            return f"{pct:.1f}%" if pct >= 3 else ""
+
+        wedges, _texts, autotexts = ax.pie(
+            values,
+            labels=None,
+            autopct=autopct,
             startangle=90,
-            colors=self.colors[:len(data)],
-            textprops={'fontsize': 10, 'color': '#333333'},
-            wedgeprops={'edgecolor': 'white', 'linewidth': 2}
+            counterclock=False,
+            radius=0.95,
+            pctdistance=0.0 if len(values) == 1 else 0.62,
+            colors=[self.colors[i % len(self.colors)] for i in range(len(values))],
+            wedgeprops={"edgecolor": theme.SURFACE, "linewidth": 1.5},
         )
-        
-        # Configurar título con posición fija
-        fig.suptitle(title, fontsize=14, fontweight='bold', color='#1f538d', y=0.95)
-        
-        # Mejorar el estilo de los porcentajes
+
         for autotext in autotexts:
-            autotext.set_color('white')
-            autotext.set_fontweight('bold')
-            autotext.set_fontsize(9)
-        
-        # Asegurar que el gráfico sea circular
-        ax.axis('equal')
-        
-        # Ajustar el layout para dar más espacio al título
-        fig.tight_layout(pad=1)
-        
+            autotext.set_color(theme.SURFACE)
+            autotext.set_fontweight("bold")
+            autotext.set_fontsize(theme.CHART_VALUE_SIZE)
+
+        ax.legend(
+            wedges,
+            [f"{n} ({int(v)})" if float(v).is_integer() else f"{n} ({v})"
+             for n, v in zip(names, values)],
+            loc="center left",
+            bbox_to_anchor=(1.0, 0.5),
+            frameon=False,
+            fontsize=theme.CHART_TICK_SIZE,
+            labelcolor=theme.CHART_LABEL,
+        )
+        ax.axis("equal")
         return fig
-    
+
     def create_bar_chart(self, data, labels, title, xlabel, ylabel, width=6, height=4):
-        """
-        Crear gráfico de barras
-        
+        """Crear gráfico de barras.
+
         Args:
             data: Lista de valores
             labels: Lista de etiquetas
@@ -127,50 +187,41 @@ class ChartGenerator:
             ylabel: Etiqueta del eje Y
             width: Ancho de la figura
             height: Alto de la figura
-            
+
         Returns:
             Figure: Figura de matplotlib
         """
-        fig = Figure(figsize=(width, height), facecolor='white')
+        fig = self._new_figure(width, height)
+        if not len(data):
+            return self._empty_message(fig, title)
+
         ax = fig.add_subplot(111)
-        
-        # Crear gráfico de barras
-        bars = ax.bar(labels, data, color=self.colors[:len(data)], 
-                     edgecolor='white', linewidth=1, alpha=0.8)
-        
-        # Agregar valores en las barras
+        bars = ax.bar(labels, data,
+                      color=[self.colors[i % len(self.colors)] for i in range(len(data))],
+                      edgecolor=theme.SURFACE, linewidth=1, width=0.62)
+
+        top = max(data) if max(data) else 1
         for bar, value in zip(bars, data):
-            height = bar.get_height()
-            ax.text(bar.get_x() + bar.get_width()/2., height + 0.1,
-                   f'{value}', ha='center', va='bottom', 
-                   fontweight='bold', color='#333333')
-        
-        # Configurar el gráfico
-        ax.set_title(title, fontsize=14, fontweight='bold', color='#1f538d', pad=20)
-        ax.set_xlabel(xlabel, fontsize=12, color='#666666')
-        ax.set_ylabel(ylabel, fontsize=12, color='#666666')
-        
-        # Estilo de la cuadrícula
-        ax.grid(True, alpha=0.3, linestyle='--', axis='y')
-        ax.set_facecolor('#f8f9fa')
-        
-        # Configurar colores de ejes
-        ax.tick_params(colors='#666666')
-        for spine in ax.spines.values():
-            spine.set_color('#e9ecef')
-        
-        # Rotar etiquetas del eje X si son muy largas
-        plt.setp(ax.get_xticklabels(), rotation=45, ha='right')
-        
-        # Ajustar layout
-        fig.tight_layout(pad=2)
-        
+            ax.text(bar.get_x() + bar.get_width() / 2, bar.get_height() + top * 0.03,
+                    f"{value}", ha="center", va="bottom",
+                    fontsize=theme.CHART_VALUE_SIZE, fontweight="bold",
+                    color=theme.CHART_LABEL)
+
+        self._style_axes(ax, title, xlabel, ylabel, grid_axis="y")
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True, nbins=5))
+        ax.set_ylim(0, top * 1.2)
+
+        # Rotar las etiquetas solo cuando son largas o hay muchas categorías
+        longest = max((len(str(l)) for l in labels), default=0)
+        if len(labels) > 4 or longest > 9:
+            ax.tick_params(axis="x", labelrotation=25)
+            for label in ax.get_xticklabels():
+                label.set_horizontalalignment("right")
         return fig
-    
+
     def create_histogram(self, data, title, xlabel, ylabel, bins=10, width=6, height=4):
-        """
-        Crear histograma
-        
+        """Crear histograma.
+
         Args:
             data: Lista de valores
             title: Título del gráfico
@@ -179,45 +230,26 @@ class ChartGenerator:
             bins: Número de intervalos
             width: Ancho de la figura
             height: Alto de la figura
-            
+
         Returns:
             Figure: Figura de matplotlib
         """
-        fig = Figure(figsize=(width, height), facecolor='white')
+        fig = self._new_figure(width, height)
+        if not len(data):
+            return self._empty_message(fig, title)
+
         ax = fig.add_subplot(111)
-        
-        # Crear histograma
-        n, bins_edges, patches = ax.hist(data, bins=bins, color=self.colors[0], 
-                                        alpha=0.7, edgecolor='white', linewidth=1)
-        
-        # Colorear las barras con gradiente
-        for i, patch in enumerate(patches):
-            patch.set_facecolor(self.colors[i % len(self.colors)])
-            patch.set_alpha(0.8)
-        
-        # Configurar el gráfico
-        ax.set_title(title, fontsize=14, fontweight='bold', color='#1f538d', pad=20)
-        ax.set_xlabel(xlabel, fontsize=12, color='#666666')
-        ax.set_ylabel(ylabel, fontsize=12, color='#666666')
-        
-        # Estilo de la cuadrícula
-        ax.grid(True, alpha=0.3, linestyle='--')
-        ax.set_facecolor('#f8f9fa')
-        
-        # Configurar colores de ejes
-        ax.tick_params(colors='#666666')
-        for spine in ax.spines.values():
-            spine.set_color('#e9ecef')
-        
-        # Ajustar layout
-        fig.tight_layout(pad=2)
-        
+        ax.hist(data, bins=bins, color=theme.CHART_PALETTE[0],
+                edgecolor=theme.SURFACE, linewidth=1)
+
+        self._style_axes(ax, title, xlabel, ylabel, grid_axis="y")
+        ax.yaxis.set_major_locator(MaxNLocator(integer=True, nbins=5))
+        ax.margins(y=0.15)
         return fig
-    
+
     def create_scatter_plot(self, x_data, y_data, title, xlabel, ylabel, width=6, height=4):
-        """
-        Crear gráfico de dispersión
-        
+        """Crear gráfico de dispersión.
+
         Args:
             x_data: Datos del eje X
             y_data: Datos del eje Y
@@ -226,44 +258,32 @@ class ChartGenerator:
             ylabel: Etiqueta del eje Y
             width: Ancho de la figura
             height: Alto de la figura
-            
+
         Returns:
             Figure: Figura de matplotlib
         """
-        fig = Figure(figsize=(width, height), facecolor='white')
+        fig = self._new_figure(width, height)
+        if not len(x_data):
+            return self._empty_message(fig, title)
+
         ax = fig.add_subplot(111)
-        
-        # Crear gráfico de dispersión
-        scatter = ax.scatter(x_data, y_data, c=self.colors[1], alpha=0.7, 
-                           s=60, edgecolors='white', linewidth=1)
-        
-        # Agregar línea de tendencia si hay suficientes datos
+        ax.scatter(x_data, y_data, c=theme.CHART_PALETTE[0], alpha=0.85,
+                   s=55, edgecolors=theme.SURFACE, linewidth=1, zorder=3)
+
         if len(x_data) > 1:
             z = np.polyfit(x_data, y_data, 1)
             p = np.poly1d(z)
-            ax.plot(x_data, p(x_data), color=self.colors[2], linestyle='--', 
-                   linewidth=2, alpha=0.8, label='Tendencia')
-            ax.legend()
-        
-        # Configurar el gráfico
-        ax.set_title(title, fontsize=14, fontweight='bold', color='#1f538d', pad=20)
-        ax.set_xlabel(xlabel, fontsize=12, color='#666666')
-        ax.set_ylabel(ylabel, fontsize=12, color='#666666')
-        
-        # Estilo de la cuadrícula
-        ax.grid(True, alpha=0.3, linestyle='--')
-        ax.set_facecolor('#f8f9fa')
-        
-        # Configurar colores de ejes
-        ax.tick_params(colors='#666666')
-        for spine in ax.spines.values():
-            spine.set_color('#e9ecef')
-        
-        # Ajustar layout
-        fig.tight_layout(pad=2)
-        
+            ordered = sorted(x_data)
+            ax.plot(ordered, p(ordered), color=theme.CHART_PALETTE[2],
+                    linestyle="--", linewidth=1.8, label="Tendencia", zorder=2)
+            legend = ax.legend(frameon=False, fontsize=theme.CHART_TICK_SIZE,
+                               loc="best", labelcolor=theme.CHART_LABEL)
+            legend.set_zorder(4)
+
+        self._style_axes(ax, title, xlabel, ylabel)
+        ax.margins(0.12)
         return fig
-    
+
     def get_matriculas_trend_data(self, inscription_repo):
         """
         Obtener datos de tendencia de matrículas por mes
