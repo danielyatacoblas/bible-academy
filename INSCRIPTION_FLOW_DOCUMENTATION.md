@@ -165,22 +165,22 @@ payment_repo.insert_row(payment_data)
 
 ### 1. Validaciones Automáticas
 
-- ✅ Existencia del estudiante
-- ✅ Existencia del aula
-- ✅ Integridad referencial (FK)
-- ✅ Rollback automático en caso de error
+- Existencia del estudiante
+- Existencia del aula
+- Integridad referencial (FK)
+- Rollback automático en caso de error
 
 ### 2. Transacciones
 
-- ✅ Inscripción y pago en una sola transacción
-- ✅ Rollback si falla cualquier paso
-- ✅ Consistencia de datos garantizada
+- Inscripción y pago en una sola transacción
+- Rollback si falla cualquier paso
+- Consistencia de datos garantizada
 
 ### 3. Manejo de Errores
 
-- ✅ Mensajes de error descriptivos
-- ✅ Logging de errores
-- ✅ Recuperación automática
+- Mensajes de error descriptivos
+- Logging de errores
+- Recuperación automática
 
 ## Casos de Uso
 

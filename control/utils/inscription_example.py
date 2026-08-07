@@ -36,13 +36,13 @@ def example_complete_inscription():
         )
         
         if result["success"]:
-            print("✅ Inscripción creada exitosamente!")
+            print("Inscripción creada exitosamente!")
             print(f"   - ID de Inscripción: {result['inscription_id']}")
             print(f"   - ID de Pago: {result['payment_id']}")
             print(f"   - Estudiante: {result['student_name']}")
             print(f"   - Aula: {result['classroom_name']}")
         else:
-            print(f"❌ Error: {result['error']}")
+            print(f"Error: {result['error']}")
             
         return result
         
@@ -62,14 +62,14 @@ def example_get_student_inscriptions():
         result = flow_manager.get_student_inscriptions(student_id)
         
         if result["success"]:
-            print(f"✅ Inscripciones del estudiante {student_id}:")
+            print(f"Inscripciones del estudiante {student_id}:")
             for inscription in result["inscriptions"]:
                 print(f"   - Inscripción ID: {inscription['id']}")
                 print(f"   - Año: {inscription['year']}")
                 print(f"   - Ciclo: {inscription['cycle']}")
                 print(f"   - Pagos: {len(inscription['payments'])}")
         else:
-            print(f"❌ Error: {result['error']}")
+            print(f"Error: {result['error']}")
             
         return result
         
@@ -93,10 +93,10 @@ def example_add_additional_payment():
         )
         
         if result["success"]:
-            print("✅ Pago adicional agregado!")
+            print("Pago adicional agregado!")
             print(f"   - ID de Pago: {result['payment_id']}")
         else:
-            print(f"❌ Error: {result['error']}")
+            print(f"Error: {result['error']}")
             
         return result
         
@@ -121,7 +121,7 @@ def example_get_inscription_summary():
             classroom = result["classroom"]
             payments = result["payments"]
             
-            print("✅ Resumen de Inscripción:")
+            print("Resumen de Inscripción:")
             print(f"   - Estudiante: {student['name']} {student['lastname']}")
             print(f"   - Aula: {classroom.get('name', 'Sin nombre')}")
             print(f"   - Año: {inscription['year']}")
@@ -132,7 +132,7 @@ def example_get_inscription_summary():
             for i, payment in enumerate(payments, 1):
                 print(f"     Pago {i}: ${payment['amount']} ({payment['method_payment']})")
         else:
-            print(f"❌ Error: {result['error']}")
+            print(f"Error: {result['error']}")
             
         return result
         

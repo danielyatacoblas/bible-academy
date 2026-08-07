@@ -76,18 +76,18 @@ class LoginPage:
             else:
                 # Si no existe la imagen, usar texto como fallback
                 self.logo_text = ctk.CTkLabel(
-                    self.logo_frame, 
-                    text="🌍✝️", 
-                    font=ctk.CTkFont(size=25),
+                    self.logo_frame,
+                    text="AB",
+                    font=ctk.CTkFont(size=25, weight="bold"),
                     text_color="white"
                 )
                 self.logo_text.pack(expand=True)
         except ImportError:
             # Si no hay PIL, usar texto como fallback
             self.logo_text = ctk.CTkLabel(
-                self.logo_frame, 
-                text="🌍✝️", 
-                font=ctk.CTkFont(size=25),
+                self.logo_frame,
+                text="AB",
+                font=ctk.CTkFont(size=25, weight="bold"),
                 text_color="white"
             )
             self.logo_text.pack(expand=True)
