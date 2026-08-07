@@ -3,6 +3,7 @@ import tkinter as tk
 from tkinter import messagebox
 
 from control.session.user_repository import UserRepository
+from view import theme
 
 class ForgotPasswordDialog:
     def __init__(self, parent):
@@ -24,15 +25,15 @@ class ForgotPasswordDialog:
         self.dialog.grab_set()
         
         # Frame principal con fondo gris claro
-        self.main_frame = ctk.CTkFrame(self.dialog, fg_color="#f5f5f5")
+        self.main_frame = ctk.CTkFrame(self.dialog, fg_color=theme.BACKGROUND)
         self.main_frame.pack(fill="both", expand=True)
         
         # Título principal
         self.title_label = ctk.CTkLabel(
             self.main_frame,
             text="Modo Administrador",
-            font=ctk.CTkFont(size=24, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
         self.title_label.pack(pady=(40, 15))
         
@@ -40,8 +41,8 @@ class ForgotPasswordDialog:
         self.desc_label = ctk.CTkLabel(
             self.main_frame,
             text="Ingrese las credenciales de administrador para recuperar el acceso:",
-            font=ctk.CTkFont(size=14),
-            text_color="#666666"
+            font=theme.font(theme.SIZE_BODY),
+            text_color=theme.TEXT_MUTED
         )
         self.desc_label.pack(pady=(0, 30))
         
@@ -51,11 +52,11 @@ class ForgotPasswordDialog:
             placeholder_text="Usuario Administrador",
             width=320,
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             corner_radius=8,
             border_width=1,
-            border_color="#dee2e6",
-            fg_color="#ffffff"
+            border_color=theme.BORDER,
+            fg_color=theme.SURFACE
         )
         self.admin_user_entry.pack(pady=(0, 15))
         
@@ -65,12 +66,12 @@ class ForgotPasswordDialog:
             placeholder_text="Contraseña Administrador",
             width=320,
             height=45,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             show="*",
             corner_radius=8,
             border_width=1,
-            border_color="#dee2e6",
-            fg_color="#ffffff"
+            border_color=theme.BORDER,
+            fg_color=theme.SURFACE
         )
         self.admin_password_entry.pack(pady=(0, 30))
         
@@ -84,10 +85,10 @@ class ForgotPasswordDialog:
             text="Acceder",
             width=150,
             height=45,
-            font=ctk.CTkFont(size=16, weight="bold"),
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             command=self.verify_admin_credentials,
-            fg_color="#1f538d",
-            hover_color="#0d47a1",
+            fg_color=theme.PRIMARY,
+            hover_color=theme.PRIMARY_DARK,
             corner_radius=8
         )
         self.access_button.pack(expand=True)

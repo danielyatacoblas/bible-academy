@@ -9,6 +9,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(
 
 from control.session.user_repository import UserRepository
 from control.bd.db_connection import Connection
+from view import theme
 
 class LoginPage:
     def __init__(self, parent):
@@ -22,21 +23,23 @@ class LoginPage:
         ctk.set_default_color_theme("blue")
         
         # Configurar fondo claro como en la imagen
-        self.parent.configure(bg="#f5f5f5")
+        self.parent.configure(bg=theme.BACKGROUND)
         
         # Frame principal con fondo claro
-        self.main_frame = ctk.CTkFrame(self.parent, fg_color="#f5f5f5")
+        self.main_frame = ctk.CTkFrame(self.parent, fg_color=theme.BACKGROUND)
         self.main_frame.pack(fill="both", expand=True)
         
         # Frame central para el login (panel claro) - como en la imagen
         self.login_frame = ctk.CTkFrame(
-            self.main_frame, 
-            width=380, 
-            height=480,
-            fg_color="#ffffff",
-            corner_radius=12
+            self.main_frame,
+            width=400,
+            height=478,
+            fg_color=theme.SURFACE,
+            corner_radius=theme.RADIUS_LG,
+            border_width=1,
+            border_color=theme.BORDER
         )
-        self.login_frame.pack(expand=True, fill="both")
+        self.login_frame.pack(expand=True)
         self.login_frame.pack_propagate(False)
         
         # Logo/Icono usando la imagen iacym.jpg
@@ -47,10 +50,10 @@ class LoginPage:
             self.login_frame, 
             width=80, 
             height=80, 
-            fg_color="#1f538d",
+            fg_color=theme.PRIMARY,
             corner_radius=10
         )
-        self.logo_frame.pack(pady=(50, 20))
+        self.logo_frame.pack(pady=(theme.SPACE_XL + theme.SPACE_SM, theme.SPACE_MD))
         self.logo_frame.pack_propagate(False)
         
         # Cargar la imagen del logo
@@ -76,19 +79,19 @@ class LoginPage:
             else:
                 # Si no existe la imagen, usar texto como fallback
                 self.logo_text = ctk.CTkLabel(
-                    self.logo_frame, 
-                    text="🌍✝️", 
-                    font=ctk.CTkFont(size=25),
-                    text_color="white"
+                    self.logo_frame,
+                    text="AB",
+                    font=theme.font(theme.SIZE_TITLE, "bold"),
+                    text_color=theme.SURFACE
                 )
                 self.logo_text.pack(expand=True)
         except ImportError:
             # Si no hay PIL, usar texto como fallback
             self.logo_text = ctk.CTkLabel(
-                self.logo_frame, 
-                text="🌍✝️", 
-                font=ctk.CTkFont(size=25),
-                text_color="white"
+                self.logo_frame,
+                text="AB",
+                font=theme.font(theme.SIZE_TITLE, "bold"),
+                text_color=theme.SURFACE
             )
             self.logo_text.pack(expand=True)
         
@@ -96,10 +99,19 @@ class LoginPage:
         self.title_label = ctk.CTkLabel(
             self.login_frame,
             text="Academia Bíblica",
-            font=ctk.CTkFont(size=22, weight="bold"),
-            text_color="#1f538d"
+            font=theme.font(theme.SIZE_TITLE, "bold"),
+            text_color=theme.PRIMARY
         )
-        self.title_label.pack(pady=(0, 40))
+        self.title_label.pack(pady=(0, 2))
+
+        # Subtítulo
+        self.subtitle_label = ctk.CTkLabel(
+            self.login_frame,
+            text="Sistema de Gestión Académica",
+            font=theme.font(theme.SIZE_SMALL),
+            text_color=theme.TEXT_MUTED
+        )
+        self.subtitle_label.pack(pady=(0, theme.SPACE_XL))
         
         # Campo de usuario
         self.username_entry = ctk.CTkEntry(
@@ -107,12 +119,12 @@ class LoginPage:
             placeholder_text="Usuario",
             width=280,
             height=40,
-            font=ctk.CTkFont(size=14),
-            corner_radius=8,
+            font=theme.font(theme.SIZE_BODY),
+            corner_radius=theme.RADIUS_SM,
             border_width=1,
-            border_color="#dee2e6"
+            border_color=theme.BORDER
         )
-        self.username_entry.pack(pady=(0, 15))
+        self.username_entry.pack(pady=(0, theme.SPACE_MD))
         
         # Campo de contraseña
         self.password_entry = ctk.CTkEntry(
@@ -120,13 +132,13 @@ class LoginPage:
             placeholder_text="Contraseña",
             width=280,
             height=40,
-            font=ctk.CTkFont(size=14),
+            font=theme.font(theme.SIZE_BODY),
             show="*",
-            corner_radius=8,
+            corner_radius=theme.RADIUS_SM,
             border_width=1,
-            border_color="#dee2e6"
+            border_color=theme.BORDER
         )
-        self.password_entry.pack(pady=(0, 30))
+        self.password_entry.pack(pady=(0, theme.SPACE_LG))
         
         # Botón de iniciar sesión
         self.login_button = ctk.CTkButton(
@@ -134,23 +146,23 @@ class LoginPage:
             text="Iniciar Sesión",
             width=280,
             height=40,
-            font=ctk.CTkFont(size=16, weight="bold"),
+            font=theme.font(theme.SIZE_SUBTITLE, "bold"),
             command=self.login_attempt,
-            fg_color="#6c757d",
-            hover_color="#5a6268",
-            corner_radius=8
+            fg_color=theme.PRIMARY,
+            hover_color=theme.PRIMARY_DARK,
+            corner_radius=theme.RADIUS_SM
         )
-        self.login_button.pack(pady=(0, 20))
+        self.login_button.pack(pady=(0, theme.SPACE_MD))
         
         # Enlace de olvidar contraseña
         self.forgot_password_label = ctk.CTkLabel(
             self.login_frame,
             text="Olvide mi contraseña",
-            font=ctk.CTkFont(size=12),
-            text_color="#6c757d",
+            font=theme.font(theme.SIZE_SMALL),
+            text_color=theme.PRIMARY_LIGHT,
             cursor="hand2"
         )
-        self.forgot_password_label.pack(pady=(0, 30))
+        self.forgot_password_label.pack(pady=(0, theme.SPACE_LG))
         self.forgot_password_label.bind("<Button-1>", self.show_forgot_password_dialog)
         
     def login_attempt(self):
