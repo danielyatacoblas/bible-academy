@@ -1,0 +1,35 @@
+flowchart LR
+  subgraph persona["Personas"]
+    direction TB
+    admin(["Administrador<br/>gestiona la academia"])
+  end
+  subgraph vista["Vista (CustomTkinter)"]
+    direction TB
+    login["Login<br/>usuario y clave"]
+    dashboard["Dashboard<br/>indicadores y navegacion"]
+    modulos["Módulos<br/>ciclos, aulas, matrículas, personas"]
+  end
+  subgraph control["Control (repositorios)"]
+    direction TB
+    auth["Autenticación<br/>verificación de clave con Argon2"]
+    repos{{"Repositorios<br/>una clase por entidad sobre una base común"}}
+    flujo{{"Flujo de matrícula<br/>inscripción, pagos y borrado en cascada"}}
+  end
+  subgraph modelo["Modelo y datos"]
+    direction TB
+    sqlite[("SQLite<br/>academy.db versionado como datos demo")]
+  end
+  subgraph salida["Salidas"]
+    direction TB
+    graficos["Gráficos<br/>matplotlib embebido en la ventana"]
+    tests["Pruebas<br/>44 pruebas sobre base en memoria"]
+  end
+  admin -->|"abre la app"| login
+  login -->|"valida"| auth
+  auth -->|"sesión iniciada"| dashboard
+  dashboard -->|"navega"| modulos
+  modulos -->|"consulta y escribe"| repos
+  repos -->|"SQL"| sqlite
+  flujo -->|"orquesta"| repos
+  dashboard -->|"dibuja"| graficos
+  repos -.->|"cubierto por"| tests

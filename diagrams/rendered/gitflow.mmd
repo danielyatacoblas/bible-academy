@@ -1,0 +1,36 @@
+flowchart LR
+  subgraph trabajo["Ramas de trabajo"]
+    direction TB
+    feature["feature/*<br/>funcionalidad nueva"]
+    fix["fix/*<br/>corrección de defecto"]
+    chore["chore/*<br/>mantenimiento y tooling"]
+    docs["docs/*<br/>documentación y capturas"]
+  end
+  subgraph integracion["Integración"]
+    direction TB
+    develop["develop<br/>integra el trabajo antes de publicar"]
+  end
+  subgraph verificacion["Verificación"]
+    direction TB
+    tests["pytest<br/>44 pruebas de repositorio"]
+    ci["GitHub Actions<br/>se ejecuta en push y pull request"]
+  end
+  subgraph publicacion["Publicación"]
+    direction TB
+    main["main<br/>solo recibe merges desde develop"]
+  end
+  subgraph distribucion["Distribución"]
+    direction TB
+    github["GitHub<br/>historia con un único autor"]
+    release["Versión publicada<br/>clonar y ejecutar"]
+  end
+  feature -->|"merge --no-ff"| develop
+  fix -->|"merge --no-ff"| develop
+  chore -->|"merge --no-ff"| develop
+  docs -->|"merge --no-ff"| develop
+  develop -->|"se verifica"| tests
+  tests -->|"y además"| ci
+  ci -->|"merge --no-ff"| main
+  main -->|"push"| github
+  github -->|"publica"| release
+  tests -.->|"si falla, se corrige"| develop

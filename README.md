@@ -81,6 +81,28 @@ python -m pytest tests/ -v    # 44 passed
 | Seguridad | argon2-cffi (hash de contraseñas) |
 | Tests / CI | pytest + GitHub Actions |
 
+## Diagramas
+
+Ambos diagramas se generan con `scripts/render_diagrams.py` a partir de
+`diagrams/architecture.json`, que es la fuente de verdad. Al cambiar la
+arquitectura o el modelo de ramas se edita ese archivo y se vuelven a generar,
+de modo que la documentacion no se desincroniza del proyecto.
+
+### Flujo de la aplicacion
+
+![Flujo de la aplicacion](diagrams/rendered/flujo.svg)
+
+### Modelo de ramas
+
+![Gitflow](diagrams/rendered/gitflow.svg)
+
+Regenerar despues de editar la especificacion:
+
+```bash
+python scripts/render_diagrams.py --render-png   # SVG, PNG y mermaid
+python scripts/render_diagrams.py --check        # falla si quedaron desactualizados
+```
+
 ## Autor
 
 **Daniel Yataco Blas** — [GitHub](https://github.com/danielyatacoblas)
