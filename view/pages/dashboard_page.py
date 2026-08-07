@@ -21,6 +21,13 @@ from tkinter import ttk
 from view.components.chart import ChartGenerator, create_matplotlib_widget
 from view import theme
 
+# Anchos de columna de las tablas de personas (estudiantes y docentes).
+# Cabecera y filas usan la misma lista para que no se desalineen, y el
+# total deja sitio a los botones de accion dentro del area desplazable.
+PERSON_TABLE_WIDTHS = [40, 130, 130, 110, 110, 110, 70]
+PERSON_TABLE_ACTIONS_WIDTH = 130
+
+
 class DashboardPage:
     def __init__(self, parent, current_user=None):
         self.parent = parent
@@ -6301,8 +6308,8 @@ Puedes agregar más matrículas usando este formulario."""
         edit_btn = ctk.CTkButton(
             actions_frame,
             text="Editar",
-            width=56,
-            height=28,
+            width=58,
+            height=26,
             font=theme.font(theme.SIZE_CAPTION),
             command=lambda t=team: self.edit_team(t),
             fg_color=theme.WARNING,
@@ -6313,8 +6320,8 @@ Puedes agregar más matrículas usando este formulario."""
         delete_btn = ctk.CTkButton(
             actions_frame,
             text="Eliminar",
-            width=56,
-            height=28,
+            width=62,
+            height=26,
             font=theme.font(theme.SIZE_CAPTION),
             command=lambda t=team: self.delete_team(t),
             fg_color=theme.DANGER,
@@ -6855,8 +6862,8 @@ Puedes agregar más matrículas usando este formulario."""
         edit_btn = ctk.CTkButton(
             actions_frame,
             text="Editar",
-            width=56,
-            height=28,
+            width=58,
+            height=26,
             font=theme.font(theme.SIZE_CAPTION),
             command=lambda c=course: self.edit_course(c),
             fg_color=theme.WARNING,
@@ -6867,8 +6874,8 @@ Puedes agregar más matrículas usando este formulario."""
         delete_btn = ctk.CTkButton(
             actions_frame,
             text="Eliminar",
-            width=56,
-            height=28,
+            width=62,
+            height=26,
             font=theme.font(theme.SIZE_CAPTION),
             command=lambda c=course: self.delete_course(c),
             fg_color=theme.DANGER,
@@ -7176,7 +7183,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         # Headers
         headers = ["ID", "Nombre", "Apellido", "Teléfono", "Fecha Bautismo", "Fecha Nacimiento", "ID Equipo", "Acciones"]
-        header_widths = [50, 150, 150, 120, 120, 120, 80, 120]
+        header_widths = PERSON_TABLE_WIDTHS + [PERSON_TABLE_ACTIONS_WIDTH]
         
         for i, (header, width) in enumerate(zip(headers, header_widths)):
             header_label = ctk.CTkLabel(
@@ -7329,19 +7336,19 @@ Puedes agregar más matrículas usando este formulario."""
                 text=data,
                 font=theme.font(theme.SIZE_SMALL),
                 text_color=theme.TEXT,
-                width=50 if i == 0 else 150 if i == 1 else 150 if i == 2 else 120 if i == 3 else 120 if i == 4 else 120 if i == 5 else 80
+                width=PERSON_TABLE_WIDTHS[i]
             )
-            data_label.place(x=sum([50, 150, 150, 120, 120, 120, 80][:i]) + i*5, y=10)
+            data_label.place(x=sum(PERSON_TABLE_WIDTHS[:i]) + i*5, y=10)
         
         # Botones de acción
         actions_frame = ctk.CTkFrame(row_frame, fg_color="transparent")
-        actions_frame.place(x=sum([50, 150, 150, 120, 120, 120, 80]) + 7*5, y=5)
+        actions_frame.place(x=sum(PERSON_TABLE_WIDTHS) + len(PERSON_TABLE_WIDTHS)*5, y=5)
         
         edit_btn = ctk.CTkButton(
             actions_frame,
             text="Editar",
-            width=56,
-            height=28,
+            width=58,
+            height=26,
             font=theme.font(theme.SIZE_CAPTION),
             command=lambda s=student: self.edit_student(s),
             fg_color=theme.WARNING,
@@ -7352,8 +7359,8 @@ Puedes agregar más matrículas usando este formulario."""
         delete_btn = ctk.CTkButton(
             actions_frame,
             text="Eliminar",
-            width=56,
-            height=28,
+            width=62,
+            height=26,
             font=theme.font(theme.SIZE_CAPTION),
             command=lambda s=student: self.delete_student(s),
             fg_color=theme.DANGER,
@@ -7803,7 +7810,7 @@ Puedes agregar más matrículas usando este formulario."""
         
         # Headers
         headers = ["ID", "Nombre", "Apellido", "Teléfono", "Fecha Bautismo", "Fecha Nacimiento", "ID Equipo", "Acciones"]
-        header_widths = [50, 150, 150, 120, 120, 120, 80, 120]
+        header_widths = PERSON_TABLE_WIDTHS + [PERSON_TABLE_ACTIONS_WIDTH]
         
         for i, (header, width) in enumerate(zip(headers, header_widths)):
             header_label = ctk.CTkLabel(
@@ -7950,7 +7957,7 @@ Puedes agregar más matrículas usando este formulario."""
         ]
         
         # Mostrar datos
-        header_widths = [50, 150, 150, 120, 120, 120, 80]
+        header_widths = list(PERSON_TABLE_WIDTHS)
         for i, data in enumerate(teacher_data):
             data_label = ctk.CTkLabel(
                 row_frame,
@@ -7963,13 +7970,13 @@ Puedes agregar más matrículas usando este formulario."""
         
         # Botones de acción
         actions_frame = ctk.CTkFrame(row_frame, fg_color="transparent")
-        actions_frame.place(x=sum(header_widths) + 7*5, y=5)
+        actions_frame.place(x=sum(PERSON_TABLE_WIDTHS) + len(PERSON_TABLE_WIDTHS)*5, y=5)
         
         edit_btn = ctk.CTkButton(
             actions_frame,
             text="Editar",
-            width=56,
-            height=28,
+            width=58,
+            height=26,
             font=theme.font(theme.SIZE_CAPTION),
             command=lambda t=teacher: self.edit_teacher(t),
             fg_color=theme.WARNING,
@@ -7980,8 +7987,8 @@ Puedes agregar más matrículas usando este formulario."""
         delete_btn = ctk.CTkButton(
             actions_frame,
             text="Eliminar",
-            width=56,
-            height=28,
+            width=62,
+            height=26,
             font=theme.font(theme.SIZE_CAPTION),
             command=lambda t=teacher: self.delete_teacher(t),
             fg_color=theme.DANGER,

@@ -139,8 +139,10 @@ class ChartGenerator:
         total = float(sum(values))
 
         ax = fig.add_subplot(111)
-        ax.set_title(title, fontsize=theme.CHART_TITLE_SIZE, fontweight="bold",
-                     color=theme.CHART_TITLE, pad=10)
+        # El titulo se ancla a la figura, no al eje: la leyenda lateral desplaza
+        # el eje hacia la izquierda y arrastraria el titulo fuera del recuadro.
+        fig.suptitle(title, fontsize=theme.CHART_TITLE_SIZE, fontweight="bold",
+                     color=theme.CHART_TITLE)
 
         def autopct(pct):
             # Ocultar el porcentaje de sectores vacíos o demasiado pequeños
