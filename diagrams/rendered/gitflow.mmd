@@ -1,36 +1,61 @@
-flowchart LR
-  subgraph trabajo["Ramas de trabajo"]
-    direction TB
-    feature["feature/*<br/>funcionalidad nueva"]
-    fix["fix/*<br/>corrección de defecto"]
-    chore["chore/*<br/>mantenimiento y tooling"]
-    docs["docs/*<br/>documentación y capturas"]
-  end
-  subgraph integracion["Integración"]
-    direction TB
-    develop["develop<br/>integra el trabajo antes de publicar"]
-  end
-  subgraph verificacion["Verificación"]
-    direction TB
-    tests["pytest<br/>44 pruebas de repositorio"]
-    ci["GitHub Actions<br/>se ejecuta en push y pull request"]
-  end
-  subgraph publicacion["Publicación"]
-    direction TB
-    main["main<br/>solo recibe merges desde develop"]
-  end
-  subgraph distribucion["Distribución"]
-    direction TB
-    github["GitHub<br/>historia con un único autor"]
-    release["Versión publicada<br/>clonar y ejecutar"]
-  end
-  feature -->|"merge --no-ff"| develop
-  fix -->|"merge --no-ff"| develop
-  chore -->|"merge --no-ff"| develop
-  docs -->|"merge --no-ff"| develop
-  develop -->|"se verifica"| tests
-  tests -->|"y además"| ci
-  ci -->|"merge --no-ff"| main
-  main -->|"push"| github
-  github -->|"publica"| release
-  tests -.->|"si falla, se corrige"| develop
+gitGraph
+   commit id: "Initial commit"
+   commit id: "+2 commits mas"
+   commit id: "Subbmit Dashboard Finished"
+   branch develop
+   branch fix/security-and-cleanup
+   commit id: "fix: remove hardcoded admin/admin ba..."
+   commit id: "chore: remove dead code (unused page..."
+   commit id: "+2 commits mas (2)"
+   checkout develop
+   merge fix/security-and-cleanup
+   branch feature/project-tooling
+   commit id: "chore: add requirements.txt and requ..."
+   commit id: "ci: add GitHub Actions workflow to r..."
+   checkout develop
+   merge feature/project-tooling
+   branch fix/update-tests-to-repository-api
+   commit id: "test: update repository tests to cur..."
+   checkout develop
+   merge fix/update-tests-to-repository-api
+   branch docs/readme-and-license
+   commit id: "docs: add proprietary license"
+   commit id: "docs: add app screenshots"
+   commit id: "+1 commits mas"
+   checkout develop
+   merge docs/readme-and-license
+   checkout main
+   merge develop tag: "portfolio release"
+   checkout develop
+   branch chore/remove-emojis
+   commit id: "chore: remove all emojis from UI, sc..."
+   checkout develop
+   merge chore/remove-emojis
+   branch feature/ui-polish
+   commit id: "feat: unify visual design with a sha..."
+   checkout develop
+   merge feature/ui-polish
+   branch docs/readme
+   commit id: "docs: rewrite README in a profession..."
+   checkout develop
+   merge docs/readme
+   branch fix/ui-details
+   commit id: "fix: keep table action buttons and c..."
+   checkout develop
+   merge fix/ui-details
+   checkout main
+   merge develop tag: "portfolio release"
+   checkout develop
+   branch chore/harden-gitignore
+   commit id: "chore: harden gitignore against comm..."
+   checkout develop
+   merge chore/harden-gitignore
+   checkout main
+   merge develop tag: "gitignore hardening"
+   checkout develop
+   branch docs/diagrams
+   commit id: "docs: add generated architecture and..."
+   checkout develop
+   merge docs/diagrams
+   checkout main
+   merge develop tag: "diagrams"
