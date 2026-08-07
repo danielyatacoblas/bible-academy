@@ -12,16 +12,17 @@
   <img src="https://img.shields.io/badge/Licencia-Propietaria-red" alt="Licencia propietaria">
 </p>
 
-Aplicación de escritorio para la **gestión integral de una academia bíblica**: ciclos académicos, aulas, matrículas con control de pagos, estudiantes, docentes, equipos y cursos — con autenticación real (Argon2), dashboard de indicadores con gráficos y suite de tests.
+Aplicación de escritorio para la **gestión integral de una academia bíblica**: ciclos académicos, aulas, matrículas con control de pagos, estudiantes, docentes, equipos y cursos. Incluye autenticación real con Argon2, un dashboard de indicadores con gráficos embebidos y una suite de tests automatizados.
 
 ## Funcionalidades
 
 - **Autenticación segura** contra SQLite con hash **Argon2** y gestión de usuarios con roles.
-- **Dashboard de indicadores**: KPIs (estudiantes, aulas activas, matrículas del mes) y 5 gráficos matplotlib embebidos (tendencia de matrículas, distribución por equipo, pagos por método, edades, rendimiento por curso).
+- **Dashboard de indicadores**: KPIs (estudiantes, aulas activas, matrículas del mes) y cinco gráficos matplotlib embebidos (tendencia de matrículas, distribución por equipo, pagos por método, distribución de edades y rendimiento por curso).
 - **Gestión académica completa**: ciclos → aulas → matrículas → pagos, con flujo de inscripción guiado y borrado en cascada.
 - **CRUD** de estudiantes, docentes, equipos y cursos con búsqueda, filtros, paginación y menús contextuales.
-- **Patrón Repository** sobre SQLite con base de datos demo incluida — la app funciona al clonar, sin configurar nada.
-- **44 tests** de repositorios con pytest (SQLite in-memory) + CI en GitHub Actions.
+- **Patrón Repository** sobre SQLite con base de datos demo incluida: la aplicación funciona al clonar el repositorio, sin configuración adicional.
+- **Interfaz unificada** mediante un módulo de diseño (`view/theme.py`) que centraliza la paleta de colores, la tipografía, el espaciado y el estilo de las tablas.
+- **44 tests** de repositorios con pytest sobre SQLite en memoria, ejecutados en CI con GitHub Actions.
 
 ## Interfaces
 
@@ -47,10 +48,10 @@ flowchart LR
     S["Argon2<br/>hash de contraseñas"] --- C
 ```
 
-- **`view/`** — páginas y diálogos CustomTkinter; gráficos matplotlib embebidos vía `backend_tkagg`.
-- **`control/`** — un repositorio por entidad heredando de `base_repository.py` (API por diccionarios), inicialización de BD y flujo de inscripción.
+- **`view/`** — páginas y diálogos CustomTkinter, sistema de diseño compartido (`theme.py`) y gráficos matplotlib embebidos mediante `backend_tkagg`.
+- **`control/`** — un repositorio por entidad heredando de `base_repository.py` (API basada en diccionarios), inicialización de la base de datos y flujo de inscripción.
 - **`model/`** — entidades (`BaseEntity`) y generadores de gráficos.
-- **`tests/`** — 9 suites de tests de repositorio contra SQLite in-memory.
+- **`tests/`** — nueve suites de tests de repositorio contra SQLite en memoria.
 
 ## Instalación y ejecución
 
@@ -61,7 +62,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-**Credenciales demo:** usuario `admin` / contraseña `admin` (la BD demo incluida ya trae datos de ejemplo; si no existe, se crea automáticamente al iniciar).
+**Credenciales demo:** usuario `admin`, contraseña `admin`. La base de datos demo incluida ya trae datos de ejemplo; si no existe, se crea automáticamente al iniciar la aplicación.
 
 ### Ejecutar los tests
 
@@ -76,7 +77,7 @@ python -m pytest tests/ -v    # 44 passed
 |---|---|
 | UI | CustomTkinter + tkinter/ttk |
 | Gráficos | matplotlib + numpy |
-| Base de datos | SQLite (stdlib `sqlite3`) |
+| Base de datos | SQLite (módulo estándar `sqlite3`) |
 | Seguridad | argon2-cffi (hash de contraseñas) |
 | Tests / CI | pytest + GitHub Actions |
 
@@ -86,4 +87,4 @@ python -m pytest tests/ -v    # 44 passed
 
 ## Licencia
 
-Proyecto de portafolio bajo **licencia propietaria**: el código puede verse con fines de evaluación profesional, pero no copiarse, redistribuirse ni reutilizarse sin autorización escrita. Ver [LICENSE](LICENSE).
+Proyecto de portafolio bajo **licencia propietaria**: el código puede consultarse con fines de evaluación profesional, pero no copiarse, redistribuirse ni reutilizarse sin autorización escrita. Ver [LICENSE](LICENSE).
